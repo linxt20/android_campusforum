@@ -7,25 +7,15 @@
 ## 现有困难
 - 第三方库有哪些？怎么用？
   - 第三方组件网站：
-    - https://android-arsenal.com/
-    - https://github.com/material-components/material-components-android
-    - https://github.com/wasabeef/awesome-android-ui
-    - https://github.com/ColorfulCat/AndroidLibs
-    - https://guides.codepath.com/android
+    - 直接使用的组件 https://blog.csdn.net/sinat_33585352/article/details/88825720
+    - 直接使用的组件 https://blog.csdn.net/qq_36875339/article/details/77602890
+    - 直接使用的组件 https://github.com/ColorfulCat/AndroidLibs/tree/master/%E5%8A%A8%E7%94%BBAnimation
   - 关于使用方式：要在 Android Studio 中使用这些第三方库，通常需要将库的依赖项添加到项目的 build.gradle 文件中。然后，你可以像使用系统自带的控件一样在布局文件中添加这些自定义控件，并在代码中操作它们。
-- ~~前后端~~
-  - ~~**后端的选择：具体选择有待考量**~~
-    - 看了一圈比较正常的还是django，这个是之前学过的
-    - 另一个是java领域比较常用的Spring Boot，掌握一个新的广泛使用的框架，提前适应打工人生活(x)
-    - 还有一种可能就是不用独立的后端，就是前后端不分离，就直接在android studio中写这个(这个得和助教沟通一下，不知道助教对前后端分离的意愿情况如何)
-  - ~~前后端连接+轮询/websocket：这个好解决，等实际写的时候，再具体研究~~
-- 这评分方式中有没有卷额外功能的需求？
-  - 这个确实比较抽象
 - 这个消息分享的功能有点抽象，没想明白实现方式:`对信息进行分享:将消息标题或内容分享到任何其他可展示内容的APP中`
   - 这个实际实现的时候再具体研究
 
 ## 文档部分
-- 需求与设计文档：介绍系统的角色、功能清单(详细说明)、功能实现方式规划 (ddl：4/26)
+- ~~需求与设计文档：介绍系统的角色、功能清单(详细说明)、功能实现方式规划 (ddl：4/26)~~
 - 项目说明文档：核心功能的设计与实现，组员的分工  (ddl：6/18)
 - 各个功能的操作指南 (ddl：6/18)
 
@@ -53,18 +43,15 @@
 https://modao.cc/app/1Jj3Dyt3rt0do85bEFvrNp
 
 ## 目前功能点与分工安排
-- 林欣涛:
-- 张雨恬:原型设计
-- 汪静雅:原型设计
+- 林欣涛:前端
+- 张雨恬:后端
+- 汪静雅:前端
 
-## 每次会议主要工作记录
+## 周四下午工作
+前端，
+1、前端，迁移完成信息展示页、信息详情页和信息发布页部分，拆分为前后端
+2、搜索和筛选两个页面再看看，
 
-### 第一次会议 23/04/16
-主要工作：
-- 原型设计
-- 需求与设计文档整理
-- 后端选择与前后端连接
-- 数据库连接
-
-### 第二次会议
-- waiting
+后端
+1、先准备创建表
+2、检查迁移过程才中后端需要新加的内容
