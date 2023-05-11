@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/baseline_home_24"
+        android:title="首页" />
+
+    <item
+        android:id="@+id/nav_topic"
+        android:icon="@drawable/baseline_phone_in_talk_24"
+        android:title="话题" />
+
+    <item
+        android:id="@+id/nav_guide"
+        android:icon="@drawable/baseline_bookmark_border_24"
+        android:title="导读" />
+
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/baseline_emoji_people_24"
+        android:title="我的" />
+</menu>

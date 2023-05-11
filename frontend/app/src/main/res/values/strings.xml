@@ -1,3 +1,12 @@
 <resources>
-    <string name="app_name">frontend</string>
+    <string name="app_name">Uidesign</string>
+    <string name="act_back">back</string>
+    <string name="act_reset">reset</string>
+    <string name="act_push">push</string>
+    <string name="text_replies">这里是最新回复</string>
+    <string name="text_hot">这里是热度</string>
+    <string name="text_follow">这里是关注</string>
+    <string name="text_topic">这是话题</string>
+    <string name="text_profile">这是我的</string>
+    <string name="text_guide">这是导读</string>
 </resources>
