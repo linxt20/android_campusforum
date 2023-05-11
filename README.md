@@ -6,6 +6,8 @@
 
 ## 现有困难
 - 第三方库有哪些？怎么用？
+  - 部分参考源码
+    - https://cloud.tsinghua.edu.cn/f/064a0959b7fd48828d78/?dl=1
   - 第三方组件网站：
     - 直接使用的组件 https://blog.csdn.net/sinat_33585352/article/details/88825720
     - 直接使用的组件 https://blog.csdn.net/qq_36875339/article/details/77602890
