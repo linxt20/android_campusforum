@@ -1,4 +1,4 @@
-package com.example.backend;
+package com.example.backend.Controller;
 
 import com.example.backend.Base.Message;
 import com.example.backend.Base.User;
