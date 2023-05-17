@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -88,7 +91,47 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //sendMessage(1);
-                sendImage();
+                //sendImage();
+                receiveImage();
+            }
+        });
+    }
+
+    public void receiveImage(){
+//        ImageView imageView = findViewById(R.id.profileCircleImageView);
+//        String imageUrl = "http://8.130.126.81:8080/images/you.jpg"; // 替换为您的图片URL
+//        ImageDownloader imageDownloader = new ImageDownloader(imageView);
+//        imageDownloader.execute(imageUrl);
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("http://183.172.163.194:8080/api/images/you.jpg")  // 替换为实际的Spring Boot应用程序URL和图片文件名
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                // 处理请求失败的情况
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    // 获取图片数据
+                    InputStream inputStream = response.body().byteStream();
+                    // 处理图片数据
+                    ImageView imageView = findViewById(R.id.profileCircleImageView);
+                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            imageView.setImageBitmap(bitmap);
+                        }
+                    });
+
+                } else {
+                    // 处理请求失败的情况
+                }
             }
         });
     }
