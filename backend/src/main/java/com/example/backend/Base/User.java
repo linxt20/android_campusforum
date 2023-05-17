@@ -6,10 +6,15 @@ import org.springframework.lang.NonNull;
 public class User {
     // mongodb唯一id
     String id;
-    // 用户ID
+    // 用户ID 用户名？
     String userID;
     // 密码
     String password;
+
+    String description;//简介
+    String user_head;
+    String user_email;
+
     public User(String userID, String password) {
         this.userID = userID;
         this.password = password;
