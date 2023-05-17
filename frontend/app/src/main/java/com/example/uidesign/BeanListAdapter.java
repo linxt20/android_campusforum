@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -65,7 +66,7 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-
+        // 这里是六个图片的显示逻辑
         int i = 0;
         for(i = 0;i<imagelist.length;i++){
             try {
@@ -82,6 +83,41 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
             holder.imageshow[i].setVisibility(View.GONE);
             i++;
         }
+        if(current.getIf_like() == 0){
+            holder.likeimage.setImageResource(R.drawable.baseline_favorite_border_24);
+        }
+        else {
+            holder.likeimage.setImageResource(R.drawable.love);
+        }
+        if(current.getIf_star() == 0){
+            holder.starimage.setImageResource(R.drawable.baseline_star_border_24);
+        }
+        else {
+            holder.starimage.setImageResource(R.drawable.collect_red);
+        }
+        // 这是点赞和收藏按钮的点击函数，这里需要等待后端的api写好，然后传递信息
+        holder.likearea.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(current.getIf_like() == 0){
+                    holder.likeimage.setImageResource(R.drawable.love);
+                }
+                else {
+                    holder.likeimage.setImageResource(R.drawable.baseline_favorite_border_24);
+                }
+            }
+        });
+        holder.stararea.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(current.getIf_star() == 0){
+                    holder.starimage.setImageResource(R.drawable.collect_red);
+                }
+                else {
+                    holder.starimage.setImageResource(R.drawable.baseline_star_border_24);
+                }
+            }
+        });
     }
 
     @Override
@@ -105,6 +141,14 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
 
         public final ImageView image_user;
         public final ImageView[] imageshow = new ImageView[6];
+        public final LinearLayout getdetailarea;
+        public final LinearLayout likearea;
+        public final LinearLayout stararea;
+
+        public final ImageView likeimage;
+        public final ImageView starimage;
+
+
 
         public BeanViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -113,9 +157,14 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
             Titletext = itemView.findViewById(R.id.titletext);
             Contenttext = itemView.findViewById(R.id.contenttext);
             commenttext = itemView.findViewById(R.id.comment);
-            liketext = itemView.findViewById(R.id.like);
-            startext = itemView.findViewById(R.id.star);
+            liketext = itemView.findViewById(R.id.liketext);
+            startext = itemView.findViewById(R.id.startext);
             image_user = itemView.findViewById(R.id.userhead);
+            getdetailarea = itemView.findViewById(R.id.getdetailarea);
+            likearea = itemView.findViewById(R.id.like);
+            stararea = itemView.findViewById(R.id.star);
+            likeimage = itemView.findViewById(R.id.likeimage);
+            starimage = itemView.findViewById(R.id.starimage);
 
             int[] imageViewIds = {R.id.imageView1, R.id.imageView2, R.id.imageView3, R.id.imageView4, R.id.imageView5,R.id.imageView6};
 
@@ -124,7 +173,7 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
                 imageshow[i].setBackground(null);
             }
 
-            itemView.setOnClickListener(new View.OnClickListener() {
+            getdetailarea.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if(mOnItemClickListener!=null){

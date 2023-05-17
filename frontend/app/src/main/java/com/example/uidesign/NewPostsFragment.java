@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 public class NewPostsFragment extends Fragment {
     private final BeanList BeanList = new BeanList();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,9 +37,9 @@ public class NewPostsFragment extends Fragment {
             imagelist[i] = "content://media/external/images/media/40";
         }
 
-        BeanList.insert("Zero","2022-02-01 10:30:00","我的新年计划",
+        BeanList.insert("Zero","2022-02-01 10:30:00","显示标签","我的新年计划",
                 "今年我决定要更加健康地生活，所以我打算每天都去跑步和做瑜伽，同时控制饮食，希望能在年底达成我的目标。",
-                0,0,0,"content://media/external/images/media/40",imagelist);
+                0,0,0,0,0,"content://media/external/images/media/40",imagelist);
 
         RecyclerView recyclerView = view.findViewById(R.id.recyclerview);
         BeanListAdapter adapter = new BeanListAdapter(getContext(), BeanList);
@@ -78,15 +79,27 @@ public class NewPostsFragment extends Fragment {
                 Bean current = BeanList.get(position);
                 String Username = current.getUsername();
                 String createAt = current.getcreateAt();
+                String tag = current.gettag();
                 String title = current.gettitle();
                 String Content = current.getContent();
+                int comment_count = current.getcomment_count();
+                int like_count = current.getlike_count();
+                int if_like = current.getIf_like();
+                int star_count = current.getstar_count();
+                int if_star = current.getIf_star();
                 String user_head = current.getuser_head();
                 String[] imagelist = current.getimagelist();
                 Intent intent = new Intent(requireActivity(), DetailActivity.class);
                 intent.putExtra("Username", Username);
                 intent.putExtra("createAt", createAt);
+                intent.putExtra("tag",tag);
                 intent.putExtra("title", title);
                 intent.putExtra("Content", Content);
+                intent.putExtra("comment_count",comment_count);
+                intent.putExtra("like_count",like_count);
+                intent.putExtra("if_like",if_like);
+                intent.putExtra("star_count",star_count);
+                intent.putExtra("if_star",if_star);
                 intent.putExtra("user_head", user_head);
                 intent.putExtra("imagelist", imagelist);
                 activityLauncher.launch(intent);

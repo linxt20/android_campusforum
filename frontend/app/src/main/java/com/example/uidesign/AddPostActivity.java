@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +51,8 @@ public class AddPostActivity extends AppCompatActivity {
     public String[] stringlist = new String[6];
     public int count;
     private SharedPreferences sharedPreferences;
+    private LinearLayout linearLayout;
+    private Button currentSelectedButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +115,28 @@ public class AddPostActivity extends AppCompatActivity {
                 }
             }
         });
+        linearLayout = findViewById(R.id.linear_layout);
+
+        for (int i = 1; i <= 10; i++) {
+            Button button = new Button(this);
+            button.setText("标签" + i);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (currentSelectedButton != null) {
+                        currentSelectedButton.setTextColor(ContextCompat.getColor(view.getContext(), R.color.black));  // set the color of previously selected button to default color
+                    }
+                    Button clickedButton = (Button)view;
+                    clickedButton.setTextColor(ContextCompat.getColor(view.getContext(), R.color.teal_200));  // set the color of selected button to blue
+                    currentSelectedButton = clickedButton;  // save the reference to the newly selected button
+                }
+            });
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(10, 10, 10, 10);
+            button.setLayoutParams(layoutParams);
+
+            linearLayout.addView(button);
+        }
     }
     private void selectImageFromGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -167,8 +192,8 @@ public class AddPostActivity extends AppCompatActivity {
     public void push(View view){
         // 这个insert是无效的，因为beanlist在addpostactivity文件的生命周期里面，活动结束了beanlist也无法存储，所以无法在动态那边显示，
         // 这里等后续后端接口出来，调用后端的插入接口，再在动态那边调用后端的获取接口即可
-        BeanList.insert(username,currentTime,Titletext.getText().toString(),contenttext.getText().toString(),
-                0,0,0,user_head,stringlist);
+        BeanList.insert(username,currentTime,"显示标签", Titletext.getText().toString(),contenttext.getText().toString(),
+                0,0,0,0,0,user_head,stringlist);
         reset(view);
         goback(view);
     }
