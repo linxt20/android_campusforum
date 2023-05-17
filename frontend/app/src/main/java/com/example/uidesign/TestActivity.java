@@ -51,16 +51,14 @@ public class TestActivity extends AppCompatActivity {
 
     public void receiveImage(){
 //        ImageView imageView = findViewById(R.id.profileCircleImageView);
-//        String imageUrl = "http://8.130.126.81:8080/images/you.jpg"; // 替换为您的图片URL
+//        String imageUrl = "http://xxx"; // 替换为您的图片URL
 //        ImageDownloader imageDownloader = new ImageDownloader(imageView);
 //        imageDownloader.execute(imageUrl);
         OkHttpClient client = new OkHttpClient();
 
-        String url = "http://101.5.14.7:8080/api/images/";
-
         for(int i = 0; i < 9; i++){
             final int position = i;
-            String imageUrl = url + (i+1) + ".jpg";
+            String imageUrl = GlobalVariables.get_image_url + (i+1) + ".jpg";
             Request request = new Request.Builder()
                     .url(imageUrl)  // 替换为实际的Spring Boot应用程序URL和图片文件名
                     .build();

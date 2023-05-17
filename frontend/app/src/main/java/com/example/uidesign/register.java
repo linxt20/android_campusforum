@@ -16,8 +16,6 @@ public class register extends AppCompatActivity {
     EditText username,password;
     TextView registermessage;
     OkHttpClient client;
-    private static final String URL = "http://10.0.2.2:8080/register"; // 使用你的服务器IP地址和端口
-    // private static final String URL = "http://101.5.9.60:8080/register";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +53,7 @@ public class register extends AppCompatActivity {
                 .build();
 
         Request request = new Request.Builder()
-                .url(URL)
+                .url(GlobalVariables.register_url)
                 .post(body)
                 .build();
 

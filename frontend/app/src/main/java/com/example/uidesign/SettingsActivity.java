@@ -91,8 +91,8 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //sendMessage(1);
-                //sendImage();
-                receiveImage();
+                sendImage();
+                //receiveImage();
             }
         });
     }
@@ -105,7 +105,7 @@ public class SettingsActivity extends AppCompatActivity {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url("http://183.172.163.194:8080/api/images/you.jpg")  // 替换为实际的Spring Boot应用程序URL和图片文件名
+                .url(GlobalVariables.get_image_url + "you.jpg")  // 替换为实际的Spring Boot应用程序URL和图片文件名
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -158,7 +158,8 @@ public class SettingsActivity extends AppCompatActivity {
             if (data != null) {
                 Uri imageUri = data.getData();
                 Log.d("Settings", "Image Uri: " + imageUri);
-                Log.d("Settings", MediaType.parse(getContentResolver().getType(imageUri)).toString());
+                String mediaType = MediaType.parse(getContentResolver().getType(imageUri)).toString();
+                Log.d("Settings", mediaType);
                 Log.d("Settings2", imageUri.getPath());
                 InputStream inputStream = null;
                 try {
@@ -167,12 +168,12 @@ public class SettingsActivity extends AppCompatActivity {
                     // RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpeg"), tempFile);
                     RequestBody requestBody = new MultipartBody.Builder()
                             .setType(MultipartBody.FORM)
-                            .addFormDataPart("image", tempFile.getName(), RequestBody.create(MediaType.parse("image/jpeg"), tempFile))
+                            .addFormDataPart("image", tempFile.getName(), RequestBody.create(MediaType.parse(mediaType), tempFile))
                             .build();
 
                     // RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpeg"), imageData); // 或者使用临时文件：RequestBody.create(MediaType.parse("image/jpeg"), tempFile);
                     Request request = new Request.Builder()
-                            .url("http://10.0.2.2:8080/test_image")
+                            .url(GlobalVariables.test_image_url)
                             .post(requestBody)
                             .build();
                     client.newCall(request).enqueue(new Callback() {

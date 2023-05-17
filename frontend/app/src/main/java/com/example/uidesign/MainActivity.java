@@ -19,8 +19,7 @@ public class MainActivity extends AppCompatActivity {
     OkHttpClient client;
     TextView loginmessage;
     SharedPreferences prefs;
-    private static final String URL = "http://10.0.2.2:8080/login";
-    // private static final String URL = "http://101.5.9.60:8080/login";
+    private static final String URL = GlobalVariables.login_url;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             loginmessage.setText(responseText);
-                            if(responseText.equals("登录成功")){
+                            if(!responseText.equals("用户名不存在") &&!responseText.equals("密码错误")){
                                 prefs.edit().putBoolean("isLoggedIn", true).apply();
 
                                 // 启动 HomeActivity
