@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -89,6 +92,46 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //sendMessage(1);
                 sendImage();
+                //receiveImage();
+            }
+        });
+    }
+
+    public void receiveImage(){
+//        ImageView imageView = findViewById(R.id.profileCircleImageView);
+//        String imageUrl = "http://8.130.126.81:8080/images/you.jpg"; // 替换为您的图片URL
+//        ImageDownloader imageDownloader = new ImageDownloader(imageView);
+//        imageDownloader.execute(imageUrl);
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url(GlobalVariables.get_image_url + "you.jpg")  // 替换为实际的Spring Boot应用程序URL和图片文件名
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                // 处理请求失败的情况
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    // 获取图片数据
+                    InputStream inputStream = response.body().byteStream();
+                    // 处理图片数据
+                    ImageView imageView = findViewById(R.id.profileCircleImageView);
+                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            imageView.setImageBitmap(bitmap);
+                        }
+                    });
+
+                } else {
+                    // 处理请求失败的情况
+                }
             }
         });
     }
@@ -115,7 +158,8 @@ public class SettingsActivity extends AppCompatActivity {
             if (data != null) {
                 Uri imageUri = data.getData();
                 Log.d("Settings", "Image Uri: " + imageUri);
-                Log.d("Settings", MediaType.parse(getContentResolver().getType(imageUri)).toString());
+                String mediaType = MediaType.parse(getContentResolver().getType(imageUri)).toString();
+                Log.d("Settings", mediaType);
                 Log.d("Settings2", imageUri.getPath());
                 InputStream inputStream = null;
                 try {
@@ -124,12 +168,12 @@ public class SettingsActivity extends AppCompatActivity {
                     // RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpeg"), tempFile);
                     RequestBody requestBody = new MultipartBody.Builder()
                             .setType(MultipartBody.FORM)
-                            .addFormDataPart("image", tempFile.getName(), RequestBody.create(MediaType.parse("image/jpeg"), tempFile))
+                            .addFormDataPart("image", tempFile.getName(), RequestBody.create(MediaType.parse(mediaType), tempFile))
                             .build();
 
                     // RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpeg"), imageData); // 或者使用临时文件：RequestBody.create(MediaType.parse("image/jpeg"), tempFile);
                     Request request = new Request.Builder()
-                            .url("http://10.0.2.2:8080/test_image")
+                            .url(GlobalVariables.test_image_url)
                             .post(requestBody)
                             .build();
                     client.newCall(request).enqueue(new Callback() {

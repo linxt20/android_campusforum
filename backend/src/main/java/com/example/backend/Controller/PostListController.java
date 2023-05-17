@@ -41,8 +41,7 @@ public class PostListController {
         //TODO 目前不能传输图片
         try{
             System.out.println("Start new post");
-            String[] tmp = new String[]{"s1","s2","s3"};
-            Post post_new = new Post(Username,createAt,title,content,"123",tmp);
+            Post post_new = new Post(Username,createAt,title,content,"123");
             mongoTemplate.insert(post_new);
             return "success";
         }catch (Exception e){
