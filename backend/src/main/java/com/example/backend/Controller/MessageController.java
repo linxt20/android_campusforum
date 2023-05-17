@@ -2,7 +2,7 @@ package com.example.backend.Controller;
 
 import com.example.backend.Base.Message;
 
-import jdk.internal.loader.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.core.io.ClassPathResource;
@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
+@RequestMapping("/api")
 public class MessageController {
     @Autowired
     MongoTemplate mongoTemplate;
@@ -86,6 +87,21 @@ public class MessageController {
 //                    .body("Failed to upload image: " + e.getMessage());
 //        }
 //    }
+
+    @GetMapping("/images/{imageName}")
+    public ResponseEntity<ClassPathResource> getImage(@PathVariable String imageName) throws IOException {
+        System.out.println("Received get image request");
+        String haha= new String("you.jpg");
+        ClassPathResource imageResource = new ClassPathResource("static/images/" + imageName);
+
+        if (imageResource.exists() && imageResource.isReadable()) {
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(imageResource);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 
     @PostMapping("/test_data")

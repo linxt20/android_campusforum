@@ -9,8 +9,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#FFF7F7F7</color>
     <color name="green">#FF39AE61</color>
-    <color name="background">#ff94aa67</color>
-    <color name="foreground">#ffdbccb1</color>
+    <color name="background">#fff7f7f7</color>
+    <color name="foreground">#ffffffff</color>
     <color name="colorPrimary">#FFFFFF</color>
     <color name="colorPrimaryDark">#FFFFFF</color>
     <color name="colorAccent">#FFFFFF</color>
