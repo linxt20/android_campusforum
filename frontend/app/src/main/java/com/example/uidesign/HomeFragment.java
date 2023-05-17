@@ -62,7 +62,7 @@ public class HomeFragment extends Fragment {
             linearLayout.addView(button);
         }
 
-        List<String> tabTitles = Arrays.asList("新发表", "新回复", "热门", "关注");
+        List<String> tabTitles = Arrays.asList("新发表","热门", "关注");
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getActivity(), tabTitles);
         viewPager.setAdapter(sectionsPagerAdapter);
 

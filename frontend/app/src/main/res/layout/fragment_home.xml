@@ -63,11 +63,55 @@
             android:orientation="horizontal" />
     </HorizontalScrollView>
 
+<!--    <LinearLayout-->
+<!--        android:id="@+id/sortlist"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="3dp"-->
+<!--        android:layout_marginBottom="8dp"-->
+<!--        android:gravity="center"-->
+<!--        android:orientation="horizontal"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/horizontal_scroll_view"-->
+<!--        >-->
+<!--        <Button-->
+<!--            android:id="@+id/time"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="40dp"-->
+<!--            android:layout_marginEnd="25dp"-->
+<!--            android:background="@drawable/rectangle_circle"-->
+<!--            android:fontFamily="@font/calibri"-->
+<!--            android:text="时间最近"-->
+<!--            android:textAllCaps="false"-->
+<!--            android:textStyle="bold"-->
+<!--            android:textColor="#96ffffff"/>-->
+<!--        <Button-->
+<!--            android:id="@+id/hot"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="40dp"-->
+<!--            android:background="@drawable/rectangle_circle"-->
+<!--            android:fontFamily="@font/calibri"-->
+<!--            android:text="点赞最高"-->
+<!--            android:textAllCaps="false"-->
+<!--            android:textColor="#96ffffff"-->
+<!--            android:textStyle="bold" />-->
+<!--        <Button-->
+<!--            android:id="@+id/comment"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="40dp"-->
+<!--            android:layout_marginStart="25dp"-->
+<!--            android:background="@drawable/rectangle_circle"-->
+<!--            android:fontFamily="@font/calibri"-->
+<!--            android:text="评论最多"-->
+<!--            android:textAllCaps="false"-->
+<!--            android:textColor="#96ffffff"-->
+<!--            android:textStyle="bold" />-->
+<!--    </LinearLayout>-->
+
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/horizontal_scroll_view"
+        app:layout_constraintTop_toBottomOf="@id/sortlist"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

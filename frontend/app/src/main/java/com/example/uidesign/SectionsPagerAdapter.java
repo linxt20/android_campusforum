@@ -23,16 +23,13 @@ public class SectionsPagerAdapter extends FragmentStateAdapter {
             case 0:
                 return new NewPostsFragment();
             case 1:
-                return new NewRepliesFragment();
-            case 2:
                 return new HotFragment();
-            case 3:
+            case 2:
                 return new FollowFragment();
             default:
                 throw new IllegalStateException("Invalid position: " + position);
         }
     }
-
     @Override
     public int getItemCount() {
         return tabTitles.size();
