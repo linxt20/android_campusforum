@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,30 +17,31 @@ import org.springframework.web.bind.annotation.RestController;
  * @描述 用户控制器，用于执行用户相关的业务
  **/
 @RestController
+@RequestMapping("/user")
 public class UserController {
     @Autowired
     MongoTemplate mongoTemplate;
 
     @PostMapping("/register")
-    public String register(@RequestParam String username, @RequestParam String password) {
+    public ResponseEntity<String> register(@RequestParam String username, @RequestParam String password) {
         System.out.println("Received register message" + username + " " + password);
         if(username.equals("") || password.equals("")) {
             System.out.println("用户名或密码不能为空");
-            return "用户名或密码不能为空";
+            return new ResponseEntity<>("用户名或密码不能为空", HttpStatus.BAD_REQUEST);
         }
         // TODO 进行检查，如果用户名已经存在，返回错误
         Query query = new Query();
         query.addCriteria(Criteria.where("userID").is(username)); // userID查重
         if(mongoTemplate.findOne(query, User.class) != null) {
             System.out.println("用户名已存在");
-            return "用户名已存在";
+            return new ResponseEntity<>("用户名或密码不能为空", HttpStatus.BAD_REQUEST);
         }
         // 把字符串存到数据库里
         User user_tmp = new User(username, password);
         String rv = user_tmp.getId();
         System.out.println(rv);
         mongoTemplate.insert(user_tmp);
-        return "注册成功";
+        return new ResponseEntity<>(rv, HttpStatus.OK);
     }
 
     @PostMapping("/login")
@@ -63,4 +66,5 @@ public class UserController {
         String returnid = user.getId();
         return ResponseEntity.ok().body(returnid);
     }
+
 }
