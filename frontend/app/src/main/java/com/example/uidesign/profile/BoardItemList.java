@@ -1,5 +1,7 @@
 package com.example.uidesign.profile;
 
+import android.graphics.Bitmap;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,23 +14,30 @@ public class BoardItemList  {
 
     public BoardItemList(ArrayList<String>Img, ArrayList<String>title, ArrayList<String> date) {
         // TODO 通过contents初始化List
-        for (int i = 0; i < title.size(); i++) {
-            data.add(new BoardItem(Img.get(i), title.get(i), date.get(i)));
-            count++;
-        }
+//        for (int i = 0; i < title.size(); i++) {
+//            data.add(new BoardItem(Img.get(i), title.get(i), date.get(i)));
+//            count++;
+//        }
     }
 
     public BoardItemList() {
     }
 
-    public void insert(String Img, String title,String date) {
+    public void insert(Bitmap Img, String title, String date) {
 
-        // add todo
         data.add(new BoardItem(Img,title,date));
         // TODO 在加入的时候就进行排序
         count++;
     }
 
+    public  void sort() {
+        Collections.sort(data, new Comparator<BoardItem>() {
+            @Override
+            public int compare(BoardItem o1, BoardItem o2) {
+                return o2.convertTime2Num() - (o1.convertTime2Num());
+            }
+        });
+    }
 
     public void delete(int number) {
         data.remove(number);

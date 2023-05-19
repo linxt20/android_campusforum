@@ -55,7 +55,7 @@ public class MessageController {
         try {
             System.out.println("Start to upload");
             // 指定存储文件的目录
-            String uploadDirectory = "D:\\astudy\\2023spring\\Android\\bighw\\android_campusforum\\backend\\image";
+            String uploadDirectory = "/Users/janet/Desktop/android_campusforum/backend/src/main/resources/static/images";
             // 获取文件名
             String fileName = file.getOriginalFilename();
             // 构建存储文件的路径

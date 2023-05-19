@@ -28,7 +28,7 @@ public class UserController {
         }
         // TODO 进行检查，如果用户名已经存在，返回错误
         Query query = new Query();
-        query.addCriteria(Criteria.where("userID").is(username)); // userID查重
+        query.addCriteria(Criteria.where("username").is(username)); // userID查重
         if(mongoTemplate.findOne(query, User.class) != null) {
             System.out.println("用户名已存在");
             return "用户名已存在";

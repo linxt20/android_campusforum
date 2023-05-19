@@ -61,28 +61,28 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
         holder.commenttext.setText(String.valueOf(comment_count));
         holder.liketext.setText(String.valueOf(like_count));
         holder.startext.setText(String.valueOf(star_count));
-        try {
-            holder.image_user.setBackground(new BitmapDrawable(mContext.getResources(), BitmapFactory.decodeStream(mContext.getContentResolver().openInputStream(Uri.parse(user_head)))));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            holder.image_user.setBackground(new BitmapDrawable(mContext.getResources(), BitmapFactory.decodeStream(mContext.getContentResolver().openInputStream(Uri.parse(user_head)))));
+//        } catch (FileNotFoundException e) {
+//            throw new RuntimeException(e);
+//        }
         // 这里是六个图片的显示逻辑
-        int i = 0;
-        for(i = 0;i<imagelist.length;i++){
-            try {
-                holder.imageshow[i].setBackground(new BitmapDrawable(mContext.getResources(), BitmapFactory.decodeStream(mContext.getContentResolver().openInputStream(Uri.parse(imagelist[i])))));
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        while (i<3){
-            holder.imageshow[i].setVisibility(View.INVISIBLE);
-            i++;
-        }
-        while(i<6){
-            holder.imageshow[i].setVisibility(View.GONE);
-            i++;
-        }
+//        int i = 0;
+//        for(i = 0;i<imagelist.length;i++){
+//            try {
+//                holder.imageshow[i].setBackground(new BitmapDrawable(mContext.getResources(), BitmapFactory.decodeStream(mContext.getContentResolver().openInputStream(Uri.parse(imagelist[i])))));
+//            } catch (FileNotFoundException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//        while (i<3){
+//            holder.imageshow[i].setVisibility(View.INVISIBLE);
+//            i++;
+//        }
+//        while(i<6){
+//            holder.imageshow[i].setVisibility(View.GONE);
+//            i++;
+//        }
         if(current.getIf_like() == 0){
             holder.likeimage.setImageResource(R.drawable.baseline_favorite_border_24);
         }

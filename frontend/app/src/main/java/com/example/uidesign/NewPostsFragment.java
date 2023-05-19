@@ -34,12 +34,12 @@ public class NewPostsFragment extends Fragment {
         // 这里是插入了一个默认的动态，这里等后端的获取接口完成，调用获取接口就能获得所有的动态信息，然后在插入adapter
         String[] imagelist = new String[2];
         for (int i = 0; i < 2; i++) {
-            imagelist[i] = "content://media/external/images/media/40";
+            imagelist[i] = "content://com.google.android.apps.photos.contentprovider/-1/1/content%3A%2F%2Fmedia%2Fexternal%2Fimages%2Fmedia%2F19/ORIGINAL/NONE/image%2Fjpeg/472739084";
         }
 
         BeanList.insert("Zero","2022-02-01 10:30:00","显示标签","我的新年计划",
                 "今年我决定要更加健康地生活，所以我打算每天都去跑步和做瑜伽，同时控制饮食，希望能在年底达成我的目标。",
-                0,0,0,0,0,"content://media/external/images/media/40",imagelist);
+                0,0,0,0,0,"content://com.google.android.apps.photos.contentprovider/-1/1/content%3A%2F%2Fmedia%2Fexternal%2Fimages%2Fmedia%2F19/ORIGINAL/NONE/image%2Fjpeg/472739084",imagelist);
 
         RecyclerView recyclerView = view.findViewById(R.id.recyclerview);
         BeanListAdapter adapter = new BeanListAdapter(getContext(), BeanList);
@@ -58,7 +58,7 @@ public class NewPostsFragment extends Fragment {
                 // 将时间和用户名作为额外数据添加到 Intent
                 intent.putExtra("currentTime", currentDateTime);
                 intent.putExtra("username", username);
-                intent.putExtra("user_head","content://media/external/images/media/40");
+                intent.putExtra("user_head","content://com.google.android.apps.photos.contentprovider/-1/1/content%3A%2F%2Fmedia%2Fexternal%2Fimages%2Fmedia%2F20/ORIGINAL/NONE/image%2Fpng/1726101009");
 
                 startActivity(intent);
             }

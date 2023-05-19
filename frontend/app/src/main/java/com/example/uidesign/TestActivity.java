@@ -75,6 +75,7 @@ public class TestActivity extends AppCompatActivity {
                         InputStream inputStream = response.body().byteStream();
                         // 处理图片数据
                         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                        inputStream.close();
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,18 +17,22 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.uidesign.model.Post;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -49,9 +54,13 @@ public class SettingsActivity extends AppCompatActivity {
     final int REQUEST_CODE_SELECT_IMAGE = 1001;
 
     private TextView logoutView;
+    private TextView editPersonalInfoButton, editPasswordButton;
+    private LinearLayout expandableLayoutInfo;
+    private LinearLayout expandableLayoutPassword;
     private static final int REQUEST_READ_EXTERNAL_STORAGE_PERMISSION = 100;
     private ImageButton beforeView;
     private Button submitButton;
+    private boolean isVisibleInfo = false, isVisiblePassword = false;
     ObjectMapper objectMapper = new ObjectMapper();
 
     OkHttpClient client;
@@ -80,12 +89,47 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
         beforeView = findViewById(R.id.beforeButton);
+        expandableLayoutInfo = findViewById(R.id.expandableLayout);
+        expandableLayoutInfo.setVisibility(View.GONE);
+        expandableLayoutPassword = findViewById(R.id.expandableLayoutPassword);
+        expandableLayoutPassword.setVisibility(View.GONE);
+
+        editPersonalInfoButton = findViewById(R.id.editPersonalInfoTextView);
+        editPersonalInfoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isVisibleInfo) {
+                    expandableLayoutInfo.setVisibility(View.GONE);
+                    isVisibleInfo = false;
+                } else {
+                    expandableLayoutInfo.setVisibility(View.VISIBLE);
+                    isVisibleInfo = true;
+                }
+            }
+        });
+
+        editPasswordButton = findViewById(R.id.editPasswordTextView);
+        editPasswordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isVisiblePassword) {
+                    expandableLayoutPassword.setVisibility(View.GONE);
+                    isVisiblePassword = false;
+                } else {
+                    expandableLayoutPassword.setVisibility(View.VISIBLE);
+                    isVisiblePassword = true;
+                }
+            }
+        });
+
         beforeView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onBackPressed();
             }
         });
+
+
         submitButton = findViewById(R.id.submitButton);
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,6 +166,7 @@ public class SettingsActivity extends AppCompatActivity {
                     // 处理图片数据
                     ImageView imageView = findViewById(R.id.profileCircleImageView);
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    inputStream.close();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -140,8 +185,19 @@ public class SettingsActivity extends AppCompatActivity {
         OkHttpClient client = new OkHttpClient();
 
         // 创建文件选择器Intent
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        intent.setType("image/*");
+//        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//        intent.setType("image/*");
+        /*
+                // get single image from imagepicker
+                // 参考：https://www.youtube.com/watch?v=bLi1qr6h4T4&ab_channel=WsCubeTech
+                Intent intent = new   Intent(Intent.ACTION_PICK);
+                intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, GALLERY_REQ_CODE);
+                */
+        // get multiple images (no more than 9) from imagepicker
+        Intent intent = new  Intent(Intent.ACTION_GET_CONTENT);
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.setType("video/*");
 
         // 启动文件选择器
         startActivityForResult(intent, REQUEST_CODE_SELECT_IMAGE);
@@ -155,16 +211,59 @@ public class SettingsActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_CODE_SELECT_IMAGE && resultCode == RESULT_OK) {
-            if (data != null) {
+            ClipData clipData = data.getClipData();
+            int picsCount = 0;
+            if(clipData != null && clipData.getItemCount() > 0 && clipData.getItemCount() <= 9) {
+                // get multiple images
+                picsCount = clipData.getItemCount();
+                for (int i = 0; i < clipData.getItemCount(); i++) {
+                    Uri imageUri = clipData.getItemAt(i).getUri();
+                    String mediaType = MediaType.parse(getContentResolver().getType(imageUri)).toString();
+                    InputStream inputStream = null;
+                    try {
+                        inputStream = getContentResolver().openInputStream(imageUri);
+                        File tempFile = saveInputStreamToFile(inputStream); // 自定义方法，将输入流保存为临时文件
+                        inputStream.close();
+                        RequestBody requestBody = new MultipartBody.Builder()
+                                .setType(MultipartBody.FORM)
+                                .addFormDataPart("image", tempFile.getName(), RequestBody.create(MediaType.parse(mediaType), tempFile))
+                                .build();
+
+                        // RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpeg"), imageData); // 或者使用临时文件：RequestBody.create(MediaType.parse("image/jpeg"), tempFile);
+                        Request request = new Request.Builder()
+                                .url(GlobalVariables.test_image_url)
+                                .post(requestBody)
+                                .build();
+                        client.newCall(request).enqueue(new Callback() {
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                // 处理响应
+                                Log.d("LOG_NAME", response.body().string());
+                            }
+
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                e.printStackTrace();
+                                // 处理异常
+                            }
+                        });
+
+                    } catch (FileNotFoundException e) {
+                        throw new RuntimeException(e);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            } else if(clipData == null){
+                picsCount = 1;
+                // get single image
                 Uri imageUri = data.getData();
-                Log.d("Settings", "Image Uri: " + imageUri);
                 String mediaType = MediaType.parse(getContentResolver().getType(imageUri)).toString();
-                Log.d("Settings", mediaType);
-                Log.d("Settings2", imageUri.getPath());
                 InputStream inputStream = null;
                 try {
                     inputStream = getContentResolver().openInputStream(imageUri);
                     File tempFile = saveInputStreamToFile(inputStream); // 自定义方法，将输入流保存为临时文件
+                    inputStream.close();
                     // RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpeg"), tempFile);
                     RequestBody requestBody = new MultipartBody.Builder()
                             .setType(MultipartBody.FORM)
@@ -196,6 +295,9 @@ public class SettingsActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+            } else {
+                // 选中的图片数量不符合要求
+                Toast.makeText(this, "请选择1到9张图片", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -260,6 +362,7 @@ public class SettingsActivity extends AppCompatActivity {
                                 // 访问解析后的数据
                                 String value1 = (String) parsedData.get("key1");
                                 int value2 = (Integer) parsedData.get("key2");
+                                Post post = (Post) parsedData.get("post");
 
                                 System.out.println(value1); // 输出：value1
                                 System.out.println(value2); // 输出：value2
