@@ -4,17 +4,17 @@ import android.graphics.Bitmap;
 
 public class BoardItem {
 
-    private Bitmap image;
+    private String image;
     private String title;
     private String dateTime;
 
-    public BoardItem(Bitmap image, String title, String dateTime) {
+    public BoardItem(String image, String title, String dateTime) {
         this.image = image;
         this.title = title;
         this.dateTime = dateTime;
     }
 
-    public Bitmap getImage() {
+    public String getImage() {
         return image;
     }
 

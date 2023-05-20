@@ -50,10 +50,7 @@ public class TestActivity extends AppCompatActivity {
     }
 
     public void receiveImage(){
-//        ImageView imageView = findViewById(R.id.profileCircleImageView);
-//        String imageUrl = "http://xxx"; // 替换为您的图片URL
-//        ImageDownloader imageDownloader = new ImageDownloader(imageView);
-//        imageDownloader.execute(imageUrl);
+
         OkHttpClient client = new OkHttpClient();
 
         for(int i = 0; i < 9; i++){

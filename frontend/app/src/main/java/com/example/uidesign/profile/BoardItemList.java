@@ -23,7 +23,7 @@ public class BoardItemList  {
     public BoardItemList() {
     }
 
-    public void insert(Bitmap Img, String title, String date) {
+    public void insert(String Img, String title, String date) {
 
         data.add(new BoardItem(Img,title,date));
         // TODO 在加入的时候就进行排序

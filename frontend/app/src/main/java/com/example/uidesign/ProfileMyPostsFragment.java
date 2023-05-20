@@ -47,17 +47,31 @@ public class ProfileMyPostsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        // Inflate the layout for this fragment
+
         View view = inflater.inflate(R.layout.fragment_profile_my_posts, container, false);
         recyclerView = (RecyclerView)view.findViewById(R.id.recycler_view);
         // TODO 从后端获得数据并展示在Recyclerview上
         // Create an adapter and supply the data to be displayed.
-        String imageUrl = GlobalVariables.get_image_url + 8 + ".jpg";
-        Request request = new Request.Builder()
-                .url(imageUrl)  // 替换为实际的Spring Boot应用程序URL和图片文件名
-                .build();
-        OkHttpClient client = new OkHttpClient();
+//        String imageUrl = GlobalVariables.get_image_url + 8 + ".jpg";
+//        Request request = new Request.Builder()
+//                .url(imageUrl)  // 替换为实际的Spring Boot应用程序URL和图片文件名
+//                .build();
+//        OkHttpClient client = new OkHttpClient();
         int picsCount = 20;
+
+        for(int i = 0; i < picsCount; i++){
+            String imageUrl = "http://" + GlobalVariables.host + ":8080/static/1.jpg"; // 替换为您的图片URL
+            boardItemList.insert(imageUrl, "haha", "2020-05-20 11:11:01");
+            if(boardItemList.size() == picsCount){
+                // sort boardItemList by date
+                //boardItemList.sort();
+                adapter = new RecycleAdapter(getActivity(), boardItemList);
+                // Connect the adapter with the recycler view.
+                recyclerView.setAdapter(adapter);
+                // Give the recycler view a default layout manager.
+                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            }
+        }
 
         /* for(int i = 0; i < picsCount; i++){
             int pos = i;
@@ -103,7 +117,6 @@ public class ProfileMyPostsFragment extends Fragment {
             });
         }
         */
-
 
         return view;
     }

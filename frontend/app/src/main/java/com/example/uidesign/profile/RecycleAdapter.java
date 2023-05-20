@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.uidesign.DetailActivity;
 import com.example.uidesign.GlobalVariables;
+import com.example.uidesign.ImageDownloader;
 import com.example.uidesign.R;
 
 import java.io.IOException;
@@ -53,7 +54,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<BoardItemViewHolder> {
         // Retrieve the data for that position.
         String title = boardItemList.get(position).getTitle();
         String dateTime = boardItemList.get(position).getDateTime();
-        Bitmap bitmap = boardItemList.get(position).getImage();
+        String image = boardItemList.get(position).getImage();
         // Add the data to the view holder.
         // !!!!!!!!!!!!
         holder.titleView.setText(title); // 调用postList中第position的post的方法
@@ -62,7 +63,9 @@ public class RecycleAdapter extends RecyclerView.Adapter<BoardItemViewHolder> {
         //int id = context.getResources().getIdentifier(image, "drawable", context.getPackageName());
         //Log.d("RecycleAdapter", "avatar: " + id);
         //holder.imgView.setImageResource(id);
-        holder.imgView.setImageBitmap(bitmap);
+
+        ImageDownloader imageDownloader = new ImageDownloader(holder.imgView);
+        imageDownloader.execute(image);
         holder.timeView.setText(dateTime);
     }
 
