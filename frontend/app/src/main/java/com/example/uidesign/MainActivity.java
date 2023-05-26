@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
                             loginmessage.setText(responseText);
                             if(!responseText.equals("用户名不存在") &&!responseText.equals("密码错误")){
                                 prefs.edit().putBoolean("isLoggedIn", true).apply();
+                                prefs.edit().putString("userID", responseText).apply();
                                 // 启动 HomeActivity
                                 Intent intent = new Intent(MainActivity.this, ContentAll.class);
                                 startActivity(intent);

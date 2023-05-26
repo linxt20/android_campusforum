@@ -1,5 +1,6 @@
 package com.example.uidesign;
 
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -13,22 +14,31 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.uidesign.model.Post;
 import com.example.uidesign.profile.BoardItemList;
 import com.example.uidesign.profile.RecycleAdapter;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ProfileMyPostsFragment extends Fragment {
 
     private RecyclerView recyclerView;//声明RecyclerView
     private RecycleAdapter adapter;//声明适配器
+    SharedPreferences prefs;
+
+    private String userID;
 
     public BoardItemList boardItemList = new BoardItemList();
 
@@ -50,73 +60,56 @@ public class ProfileMyPostsFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_profile_my_posts, container, false);
         recyclerView = (RecyclerView)view.findViewById(R.id.recycler_view);
-        // TODO 从后端获得数据并展示在Recyclerview上
+
         // Create an adapter and supply the data to be displayed.
 //        String imageUrl = GlobalVariables.get_image_url + 8 + ".jpg";
 //        Request request = new Request.Builder()
 //                .url(imageUrl)  // 替换为实际的Spring Boot应用程序URL和图片文件名
 //                .build();
 //        OkHttpClient client = new OkHttpClient();
-        int picsCount = 20;
 
-        for(int i = 0; i < picsCount; i++){
-            String imageUrl = "http://" + GlobalVariables.host + ":8080/static/1.jpg"; // 替换为您的图片URL
-            boardItemList.insert(imageUrl, "haha", "2020-05-20 11:11:01");
-            if(boardItemList.size() == picsCount){
-                // sort boardItemList by date
-                //boardItemList.sort();
-                adapter = new RecycleAdapter(getActivity(), boardItemList);
-                // Connect the adapter with the recycler view.
-                recyclerView.setAdapter(adapter);
-                // Give the recycler view a default layout manager.
-                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        // TODO 从后端获得数据Post的List并展示在Recyclerview上
+        OkHttpClient client = new OkHttpClient();
+        prefs = getActivity().getSharedPreferences("com.example.android.myapp", 0);
+        userID = prefs.getString("userID", "");
+
+        RequestBody body = new FormBody.Builder()
+                .add("userid", userID)
+                .build();
+        Request request = new Request.Builder()
+                .url(GlobalVariables.get_posts_url)
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
             }
-        }
 
-        /* for(int i = 0; i < picsCount; i++){
-            int pos = i;
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    // 处理请求失败的情况
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseText = response.body().string();
+                Log.d("ProfileMyPost response: ", responseText);
+                final List<Post> myResponse = new Gson().fromJson(responseText, new TypeToken<List<Post>>(){}.getType());
+                for(int i = 0; i < myResponse.size(); i++){
+                    Log.d("ProfileMyPostsFragment", myResponse.get(i).toString());
+                    String[] images = myResponse.get(i).getResource_list();
+                    if(images.length == 0) return;
+                    boardItemList.insert(GlobalVariables.name2url(images[0]), myResponse.get(i).getTitle(), myResponse.get(i).getCreate_time());
                 }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    if (response.isSuccessful()) {
-                        // 获取图片数据
-                        Log.d("ProfileMyPostFragment", "Successful response");
-                        InputStream inputStream = response.body().byteStream();
-                        // 处理图片数据
-                        final Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                        inputStream.close();
-                        // 将图片展示在页面上
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if(pos < 10)
-                                    boardItemList.insert(bitmap, "Home " + pos, "2023-05-16 10:00:0" + pos);
-                                else
-                                    boardItemList.insert(bitmap, "Home " + pos, "2023-05-16 10:00:" + pos);
-                                if(boardItemList.size() == picsCount){
-                                    // sort boardItemList by date
-                                    boardItemList.sort();
-                                    adapter = new RecycleAdapter(getActivity(), boardItemList);
-                                    // Connect the adapter with the recycler view.
-                                    recyclerView.setAdapter(adapter);
-                                    // Give the recycler view a default layout manager.
-                                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                                }
-                            }
-                        });
-                    } else {
-                        // 处理请求失败的情况
-                        Log.d("ProfileMyPostFragment", "Err: " + response.body().string());
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // TODO set adapter
+                        adapter = new RecycleAdapter(getActivity(), boardItemList);
+                        recyclerView.setAdapter(adapter);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                     }
-                }
-            });
-        }
-        */
+                });
+            }
+        });
+
 
         return view;
     }

@@ -40,6 +40,16 @@ public class PostListController {
             List<Post> rv=mongoTemplate.findAll(Post.class);
             System.out.println(rv);
             //根据用户id 设置用户名称及头像
+
+            ///////////// 此处开始测试代码////////////
+            List<String> tmp=new ArrayList<>();
+            int resource_num = 1;
+            String[] resource_list=new String[resource_num];
+            resource_list[0]="1.jpg";
+            Post post_new = new Post("1",userid,"2020-01-01 07:31:00","title","content","tag",resource_num,"jpg",
+                    0,0,tmp,tmp,0,resource_list);
+            rv.add(post_new);
+            ///////////// 此处结束测试代码////////////
             for(Post post:rv){
                 Query query = new Query();
                 //query.addCriteria(Criteria.where("userid").is(post.getAuthor_id()));
