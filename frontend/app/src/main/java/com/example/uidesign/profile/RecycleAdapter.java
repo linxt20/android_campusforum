@@ -2,6 +2,8 @@ package com.example.uidesign.profile;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,9 +16,19 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.uidesign.DetailActivity;
+import com.example.uidesign.GlobalVariables;
+import com.example.uidesign.ImageDownloader;
 import com.example.uidesign.R;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class RecycleAdapter extends RecyclerView.Adapter<BoardItemViewHolder> {
 
@@ -47,10 +59,13 @@ public class RecycleAdapter extends RecyclerView.Adapter<BoardItemViewHolder> {
         // !!!!!!!!!!!!
         holder.titleView.setText(title); // 调用postList中第position的post的方法
         // TODO image resource 怎么设置
-        Context context = holder.imgView.getContext(); // 真的很怪
-        int id = context.getResources().getIdentifier(image, "drawable", context.getPackageName());
-        Log.d("RecycleAdapter", "avatar: " + id);
-        holder.imgView.setImageResource(id);
+        //Context context = holder.imgView.getContext(); // 真的很怪
+        //int id = context.getResources().getIdentifier(image, "drawable", context.getPackageName());
+        //Log.d("RecycleAdapter", "avatar: " + id);
+        //holder.imgView.setImageResource(id);
+
+        ImageDownloader imageDownloader = new ImageDownloader(holder.imgView);
+        imageDownloader.execute(image);
         holder.timeView.setText(dateTime);
     }
 

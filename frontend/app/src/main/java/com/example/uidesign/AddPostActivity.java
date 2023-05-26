@@ -76,11 +76,11 @@ public class AddPostActivity extends AppCompatActivity {
         }
         UsernameView.setText(username);
         createTime.setText(currentTime);
-        try {
-            image_user.setBackground(new BitmapDrawable(getResources(), BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri.parse(user_head)))));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            image_user.setBackground(new BitmapDrawable(getResources(), BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri.parse(user_head)))));
+//        } catch (FileNotFoundException e) {
+//            throw new RuntimeException(e);
+//        }
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_EXTERNAL_STORAGE_PERMISSION);
         }
@@ -148,6 +148,7 @@ public class AddPostActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == RESULT_OK && data != null) {
             urilist[count] = data.getData();
+            Log.d("LOG_NAME", "uri: " + urilist[count]);
             stringlist[count] = urilist[count].toString();
             try {
                 imageshow[count].setBackground(new BitmapDrawable(getResources(), BitmapFactory.decodeStream(getContentResolver().openInputStream(urilist[count]))));
@@ -218,11 +219,6 @@ public class AddPostActivity extends AppCompatActivity {
                 if (!uriStringArray[i].equals("null")) {
                     stringlist[i] = uriStringArray[i];
                     urilist[i] = Uri.parse(uriStringArray[i]);
-                    try {
-                        imageshow[i].setBackground(new BitmapDrawable(getResources(), BitmapFactory.decodeStream(getContentResolver().openInputStream(urilist[i]))));
-                    } catch (FileNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
                 } else {
                     urilist[i] = null;
                     stringlist[i] ="";

@@ -1,11 +1,13 @@
 package com.example.backend.Controller;
 
+import com.example.backend.BackendApplication;
 import com.example.backend.Base.Message;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +31,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpSession;
 
 
 @RestController
@@ -31,6 +39,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class MessageController {
     @Autowired
     MongoTemplate mongoTemplate;
+    @Autowired
+    ResourceLoader resourceLoader;
 
     @PostMapping("/message")
     public String receiveMessage(@RequestParam String message) {
@@ -55,12 +65,17 @@ public class MessageController {
         try {
             System.out.println("Start to upload");
             // 指定存储文件的目录
-            String uploadDirectory = "D:\\astudy\\2023spring\\Android\\bighw\\android_campusforum\\backend\\image";
+            //Resource resource = resourceLoader.getResource("classpath:static/images/");
+            //String uploadDirectory = resource.getFile().getPath();
+            String uploadDirectory = "/Users/janet/Desktop/android_campusforum/backend/target/static/static";
+            System.out.println("upload: " + uploadDirectory);
+            //String uploadDirectory = "src/main/resources/static/images/";
             // 获取文件名
             String fileName = file.getOriginalFilename();
+            // 将后缀改为jpg
+            fileName = fileName.substring(0, fileName.lastIndexOf(".")) + ".mp4";
             // 构建存储文件的路径
             String filePath = uploadDirectory + File.separator + fileName;
-            // 将文件保存到本地
             file.transferTo(new File(filePath));
             // 返回成功状态码和文件保存的URL
             return ResponseEntity.ok("Image uploaded successfully. URL: http://127.0.0.1/images/" + fileName);
