@@ -1,5 +1,6 @@
 package com.example.backend.Controller;
 
+import com.example.backend.Base.Comment;
 import com.example.backend.Base.Post;
 import com.example.backend.Base.User;
 import org.bson.types.ObjectId;
@@ -42,7 +43,7 @@ public class PostListController {
             //根据用户id 设置用户名称及头像
             for(Post post:rv){
                 Query query = new Query();
-                //query.addCriteria(Criteria.where("userid").is(post.getAuthor_id()));
+                query.addCriteria(Criteria.where("userid").is(post.getAuthor_id()));
                 User user = mongoTemplate.findOne(query, User.class);
                 if(user==null){
                     System.out.println("Error: user not found");
@@ -114,6 +115,7 @@ public class PostListController {
 
         try{
             System.out.println("Start new post");
+            //初始化post
             List<String> tmp=new ArrayList<>();
             ObjectId tmp_id = new ObjectId();
             String postid =tmp_id.toString();
@@ -124,8 +126,21 @@ public class PostListController {
                 System.out.println("tmp_resource_id "+tmp_resource_id);
                 resource_list[i]=tmp_resource_id;
             }
+            List<Comment> tmp_comment=new ArrayList<>();
             Post post_new = new Post(postid,userid,createAt,title,content,tag,resource_num,resource_type,
-                    0,0,tmp,tmp,0,resource_list);
+                    0,0,tmp,tmp,0,resource_list,tmp_comment);
+
+            //在User的数据库中找到user，将post加入user的my_post_list
+            Query query = new Query();
+            query.addCriteria(Criteria.where("userid").is(userid));
+            User user = mongoTemplate.findOne(query, User.class);
+            if(user==null){
+                System.out.println("Error: user not found");
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            user.addMyPost(postid);
+
+            //将post加入数据库，返回图片id
             mongoTemplate.insert(post_new);
             String[] rv=post_new.getResource_list();
             return new ResponseEntity<>(rv, HttpStatus.OK);
@@ -162,20 +177,36 @@ public class PostListController {
 //            System.out.println("haha2");
 //            System.out.println(post.getPostid());
 //            System.out.println(post.getLike_count());
+            //在User的数据库中找到user，将post加入user的like_post_list或star_post_list，或删除user的like_post_list或star_post_list中的postid
+            Query query2 = new Query();
+            query2.addCriteria(Criteria.where("userid").is(userid));
+            User user = mongoTemplate.findOne(query2, User.class);
+            if(user==null){
+                System.out.println("Error: user not found");
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
             if(state==0){
+                //在User的数据库中找到user，将post加入user的like_post_list或删除user的like_post_list中的postid
                 if(cancel==0){
                     post.add_like(userid);
+                    user.addLikePost(postid);
                 }
                 else{
                     post.cancel_like(userid);
+                    user.cancelLikePost(postid);
                 }
             }
             else{
+                //在User的数据库中找到user，将post加入user的star_post_list或删除user的star_post_list中的postid
+                //添加
                 if(cancel==0){
                     post.add_star(userid);
+                    user.addStarPost(postid);
                 }
+                //删除
                 else{
                     post.cancel_star(userid);
+                    user.cancelStarPost(postid);
                 }
             }
 //            System.out.println("haha3");

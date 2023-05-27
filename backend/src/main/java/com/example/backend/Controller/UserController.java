@@ -1,7 +1,9 @@
 package com.example.backend.Controller;
 
 import com.example.backend.Base.Message;
+import com.example.backend.Base.Post;
 import com.example.backend.Base.User;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -12,6 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @描述 用户控制器，用于执行用户相关的业务
@@ -37,7 +43,8 @@ public class UserController {
             return new ResponseEntity<>("用户名或密码不能为空", HttpStatus.BAD_REQUEST);
         }
         // 把字符串存到数据库里
-        User user_tmp = new User(username, password);
+        List<String> tmp=new ArrayList<>();
+        User user_tmp = new User(username, password, "默认简介", "9.jpg", tmp,tmp, tmp,tmp);
         String rv = user_tmp.getId();
         System.out.println(rv);
         mongoTemplate.insert(user_tmp);
@@ -66,5 +73,160 @@ public class UserController {
         String returnid = user.getId();
         return ResponseEntity.ok().body(returnid);
     }
+
+    @PostMapping("/get_user_info")
+    public ResponseEntity<User> get_user_info(@RequestParam String userid) {
+        /*
+        * 功能：返回用户个人信息、用户发过的帖子（如果需要）、用户收藏的帖子（如果需要）
+        * 传入参数：
+        *  userid：用户id
+        * 返回参数：
+        * User：包含用户个人信息
+        * */
+        System.out.println("Received get_user_info message" + userid);
+        if(userid.equals("")) {
+            System.out.println("用户id不能为空");
+            return ResponseEntity.badRequest().body(null);
+        }
+        //进行检查，如果用户名不存在，返回错误
+        Query query = new Query();
+        query.addCriteria(Criteria.where("userID").is(userid));
+        User user = mongoTemplate.findOne(query, User.class);
+        if(user == null) {
+            System.out.println("用户不存在");
+            return ResponseEntity.badRequest().body(null);
+        }
+        return ResponseEntity.ok().body(user);
+    }
+
+    @PostMapping("/update_user_info")
+    public ResponseEntity<String> update_user_info(@RequestParam String userid, @RequestParam String username, @RequestParam String password, @RequestParam String introduction) {
+        /*
+         * 功能：更新用户个人信息
+         * 传入参数：
+         *  userid：用户id
+         *  username：用户名
+         *  password：密码
+         *  introduction：个人简介
+         * 返回参数：
+         *  String：success/fail
+         * */
+        System.out.println("Received update_user_info message" + userid + " " + username + " " + password + " " + introduction);
+        if(userid.equals("")) {
+            System.out.println("用户id不能为空");
+            return ResponseEntity.badRequest().body(null);
+        }
+        //进行检查，如果用户名不存在，返回错误
+        Query query = new Query();
+        query.addCriteria(Criteria.where("userid").is(userid));
+        User user = mongoTemplate.findOne(query, User.class);
+        if(user == null) {
+            System.out.println("用户不存在");
+            return ResponseEntity.badRequest().body("用户不存在");
+        }
+        // TODO 进行检查，如果用户名已经存在，返回错误
+        query = new Query();
+        query.addCriteria(Criteria.where("username").is(username));
+        if(mongoTemplate.findOne(query, User.class) != null) {
+            System.out.println("用户名已存在");
+            return ResponseEntity.badRequest().body("用户名已存在");
+        }
+        // 把字符串存到数据库里
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setDescription(introduction);
+        mongoTemplate.save(user);
+        return ResponseEntity.ok().body("success");
+    }
+
+    @PostMapping("/update_user_avatar")
+    public ResponseEntity<String> update_user_avatar(@RequestParam String userid) {
+        /*
+         * 功能：更新用户头像
+         * 传入参数：
+         *  userid：用户id
+         * 返回参数：
+         *  String：userhead_id
+         * */
+        System.out.println("Received update_user_avatar message" + userid);
+        if(userid.equals("")) {
+            System.out.println("用户id不能为空");
+            return ResponseEntity.badRequest().body("用户id不能为空");
+        }
+        //进行检查，如果用户名不存在，返回错误
+        Query query = new Query();
+        query.addCriteria(Criteria.where("userid").is(userid));
+        User user = mongoTemplate.findOne(query, User.class);
+        if(user == null) {
+            System.out.println("用户不存在");
+            return ResponseEntity.badRequest().body("用户不存在");
+        }
+        //用mongodb objectid给头像新建一个id,并把id存到数据库里,返回id
+        ObjectId tmp_userhead_id = new ObjectId();
+        String userhead_id = tmp_userhead_id.toString()+".jpg";
+        user.setUser_head(userhead_id);
+        mongoTemplate.save(user);
+        return ResponseEntity.ok().body(userhead_id);
+    }
+
+    @PostMapping("/get_user_postlist")
+    public ResponseEntity<List<Post>> get_user_postlist(@RequestParam String userid, @RequestParam String type) {
+        /*
+         * 功能：返回用户发过或收藏的帖子
+         * 传入参数：
+         *  userid：用户id
+         *  type：“create”或“star” 用户发过的帖子还是收藏的帖子
+         * 返回参数：
+         *  List<Post>：用户发过的帖子
+         * */
+        System.out.println("Received get_user_postlist message" + userid + " " + type);
+        if(userid.equals("")) {
+            System.out.println("用户id不能为空");
+            return ResponseEntity.badRequest().body(null);
+        }
+        //进行检查，如果用户名不存在，返回错误
+        Query query = new Query();
+        query.addCriteria(Criteria.where("userid").is(userid));
+        User user = mongoTemplate.findOne(query, User.class);
+        if(user == null) {
+            System.out.println("用户不存在");
+            return ResponseEntity.badRequest().body(null);
+        }
+        //根据传入的type，返回用户发过的帖子或收藏的帖子
+        List<String> postid_list = new ArrayList<>();
+        if(Objects.equals(type, "create"))
+            postid_list = user.getMy_post_list();
+        else if(Objects.equals(type, "star"))
+            postid_list = user.getStar_post_list();
+        else {
+            System.out.println("type参数错误");
+            return ResponseEntity.badRequest().body(null);
+        }
+        List<Post> post_list = new ArrayList<>();
+        for (String s : postid_list) {
+            query = new Query();
+            query.addCriteria(Criteria.where("postid").is(s));
+            Post post = mongoTemplate.findOne(query, Post.class);
+            //检查用户是否喜欢或收藏了这个帖子，如果喜欢或收藏了，把is_star和is_like设为true
+            if (post != null) {
+                if (user.getStar_post_list().contains(post.getPostid())){
+                    post.setIf_star(1);
+                }
+                else {
+                    post.setIf_star(0);
+                }
+                if (user.getLike_post_list().contains(post.getPostid())){
+                    post.setIf_like(1);
+                }
+                else {
+                    post.setIf_like(0);
+                }
+            }
+            post_list.add(post);
+        }
+        return ResponseEntity.ok().body(post_list);
+    }
+
+
 
 }
