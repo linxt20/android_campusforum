@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 
@@ -127,10 +128,7 @@ public class PostListController {
                 resource_list[i]=tmp_resource_id;
             }
             List<Comment> tmp_comment=new ArrayList<>();
-            Post post_new = new Post(postid,userid,createAt,title,content,tag,resource_num,resource_type,
-                    0,0,tmp,tmp,0,resource_list,tmp_comment);
-
-            //在User的数据库中找到user，将post加入user的my_post_list
+            //寻找用户的头像及名称
             Query query = new Query();
             query.addCriteria(Criteria.where("userid").is(userid));
             User user = mongoTemplate.findOne(query, User.class);
@@ -138,8 +136,13 @@ public class PostListController {
                 System.out.println("Error: user not found");
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
-            user.addMyPost(postid);
+            String user_head=user.getUser_head();
+            String user_name=user.getUsername();
+            Post post_new = new Post(postid,userid,user_name,user_head,createAt,title,content,tag,resource_num,resource_type,
+                    0,0,tmp,tmp,0,resource_list,tmp_comment);
 
+            //将post加入user的my_post_list
+            user.addMyPost(postid);
             //将post加入数据库，返回图片id
             mongoTemplate.insert(post_new);
             String[] rv=post_new.getResource_list();
@@ -174,9 +177,6 @@ public class PostListController {
                 System.out.println("Error: post not found");
                 return ResponseEntity.notFound().build();
             }
-//            System.out.println("haha2");
-//            System.out.println(post.getPostid());
-//            System.out.println(post.getLike_count());
             //在User的数据库中找到user，将post加入user的like_post_list或star_post_list，或删除user的like_post_list或star_post_list中的postid
             Query query2 = new Query();
             query2.addCriteria(Criteria.where("userid").is(userid));
@@ -229,6 +229,68 @@ public class PostListController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PostMapping("/new_comment")
+    public ResponseEntity<String> new_comment(
+            @RequestParam String postid,
+            @RequestParam String userid,
+            @RequestParam Date createAt,
+            @RequestParam String content
+    ){
+        /*
+        * 功能：新建评论
+        * 输入：postid 帖子id
+        *      userid 用户id
+        *      createAt 评论创建时间
+        *      content 评论内容
+        * 输出：
+        *     success/fail
+        * */
+
+        try{
+            System.out.println("Start new comment");
+            ObjectId tmp_id = new ObjectId();
+            String commentid =tmp_id.toString();
+            //初始化comment
+            //寻找userid对应用户的username和userhead，将其加入comment
+            Query query2 = new Query();
+            query2.addCriteria(Criteria.where("userid").is(userid));
+            User user = mongoTemplate.findOne(query2, User.class);
+            if(user==null){
+                System.out.println("Error: user not found");
+                return ResponseEntity.badRequest().body("user not found");
+            }
+            String username=user.getUsername();
+            String userhead=user.getUser_head();
+            Comment comment = new Comment(userid,createAt,content,username,userhead);
+            //将postid加入user的comment_post_list
+            user.addCommentPost(postid);
+
+            //在Post的数据库中找到post，将comment加入post的comment_list
+            Query query = new Query();
+            query.addCriteria(Criteria.where("postid").is(postid));
+            Post post = mongoTemplate.findOne(query, Post.class);
+            if(post==null){
+                System.out.println("Error: post not found");
+                return ResponseEntity.badRequest().body("post not found");
+            }
+            post.add_comment(comment);
+
+            //保存
+            mongoTemplate.save(user);
+            mongoTemplate.save(post);
+            System.out.println("New comment success");
+            return ResponseEntity.ok().body("success");
+        }
+        catch(Exception e){
+            System.out.println("Error: "+e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+
+
 
 
 

@@ -1,5 +1,6 @@
 package com.example.backend.Controller;
 
+import com.example.backend.Base.Comment;
 import com.example.backend.Base.Message;
 import com.example.backend.Base.Post;
 import com.example.backend.Base.User;
@@ -44,7 +45,7 @@ public class UserController {
         }
         // 把字符串存到数据库里
         List<String> tmp=new ArrayList<>();
-        User user_tmp = new User(username, password, "默认简介", "9.jpg", tmp,tmp, tmp,tmp);
+        User user_tmp = new User(username, password, "默认简介", "9.jpg", tmp,tmp, tmp,tmp, tmp,tmp);
         String rv = user_tmp.getId();
         System.out.println(rv);
         mongoTemplate.insert(user_tmp);
@@ -124,13 +125,44 @@ public class UserController {
             System.out.println("用户不存在");
             return ResponseEntity.badRequest().body("用户不存在");
         }
-        // TODO 进行检查，如果用户名已经存在，返回错误
+        //进行检查，如果用户名已经存在，返回错误
         query = new Query();
         query.addCriteria(Criteria.where("username").is(username));
         if(mongoTemplate.findOne(query, User.class) != null) {
             System.out.println("用户名已存在");
             return ResponseEntity.badRequest().body("用户名已存在");
         }
+        //寻找用户每一个帖子，更新帖子的用户名
+        List<String> post_list = user.getMy_post_list();
+        if(post_list!=null){
+            for(String postid:user.getMy_post_list()){
+                query = new Query();
+                query.addCriteria(Criteria.where("postid").is(postid));
+                Post post = mongoTemplate.findOne(query, Post.class);
+                if(post != null) {
+                    post.setAuthor_name(username);
+                    mongoTemplate.save(post);
+                }
+            }
+        }
+        //对用户评论过的帖子，即comment_post_list,找到其评论，把评论里的用户名改成新的用户名
+        List<String> comment_post_list = user.getComment_post_list();
+        if(comment_post_list!=null){
+            for(String postid:user.getComment_post_list()){
+                query = new Query();
+                query.addCriteria(Criteria.where("postid").is(postid));
+                Post post = mongoTemplate.findOne(query, Post.class);
+                if(post != null) {
+                    for(Comment comment:post.getComment_list()){
+                        if(comment.getAuthor_id().equals(userid)){
+                            comment.setAuthor_name(username);
+                        }
+                    }
+                    mongoTemplate.save(post);
+                }
+            }
+        }
+
         // 把字符串存到数据库里
         user.setUsername(username);
         user.setPassword(password);
@@ -165,6 +197,37 @@ public class UserController {
         ObjectId tmp_userhead_id = new ObjectId();
         String userhead_id = tmp_userhead_id.toString()+".jpg";
         user.setUser_head(userhead_id);
+
+        //寻找用户每一个帖子，更新帖子的作者头像
+        List<String> post_list = user.getMy_post_list();
+        if(post_list!=null){
+            for(String postid:user.getMy_post_list()){
+                query = new Query();
+                query.addCriteria(Criteria.where("postid").is(postid));
+                Post post = mongoTemplate.findOne(query, Post.class);
+                if(post != null) {
+                    post.setAuthor_head(userhead_id);
+                    mongoTemplate.save(post);
+                }
+            }
+        }
+        //对用户评论过的帖子，即comment_post_list,找到其评论，把评论里的头像改成新的头像
+        List<String> comment_post_list = user.getComment_post_list();
+        if(comment_post_list!=null){
+            for(String postid:user.getComment_post_list()){
+                query = new Query();
+                query.addCriteria(Criteria.where("postid").is(postid));
+                Post post = mongoTemplate.findOne(query, Post.class);
+                if(post != null) {
+                    for(Comment comment:post.getComment_list()){
+                        if(comment.getAuthor_id().equals(userid)){
+                            comment.setAuthor_head(userhead_id);
+                        }
+                    }
+                    mongoTemplate.save(post);
+                }
+            }
+        }
         mongoTemplate.save(user);
         return ResponseEntity.ok().body(userhead_id);
     }
@@ -227,6 +290,107 @@ public class UserController {
         return ResponseEntity.ok().body(post_list);
     }
 
+    @PostMapping("/get_follow_or_fans_list")
+    public ResponseEntity<List<User>> get_follow_list(@RequestParam String userid, @RequestParam String type) {
+        /*
+         * 功能：返回用户关注或粉丝列表
+         * 传入参数：
+         *  userid：用户id
+         *  type：“follow”或“fans” 用户关注的人还是粉丝
+         * 返回参数：
+         *  List<User>：用户关注或粉丝列表
+         * */
+        System.out.println("Received get_follow_or_fans_list message" + userid + " " + type);
+        if(userid.equals("")) {
+            System.out.println("用户id不能为空");
+            return ResponseEntity.badRequest().body(null);
+        }
+        //进行检查，如果用户名不存在，返回错误
+        Query query = new Query();
+        query.addCriteria(Criteria.where("userid").is(userid));
+        User user = mongoTemplate.findOne(query, User.class);
+        if(user == null) {
+            System.out.println("用户不存在");
+            return ResponseEntity.badRequest().body(null);
+        }
+        //根据传入的type，返回用户关注或粉丝列表
+        List<String> follow_list = new ArrayList<>();
+        if(Objects.equals(type, "follow"))
+            follow_list = user.getFollow_list();
+        else if(Objects.equals(type, "fans"))
+            follow_list = user.getFans_list();
+        else {
+            System.out.println("type参数错误");
+            return ResponseEntity.badRequest().body(null);
+        }
+        List<User> user_list = new ArrayList<>();
+        for (String s : follow_list) {
+            query = new Query();
+            query.addCriteria(Criteria.where("userid").is(s));
+            User tmp_user = mongoTemplate.findOne(query, User.class);
+            user_list.add(tmp_user);
+        }
+        return ResponseEntity.ok().body(user_list);
+    }
+
+    @PostMapping("/follow_or_unfollow")
+    public ResponseEntity<String> follow_or_unfollow(@RequestParam String fans_id, @RequestParam String follow_userid, @RequestParam String type) {
+        /*
+         * 功能：关注或取消关注用户
+         * 传入参数：
+         *  fans_id：用户id
+         *  follow_userid：被关注或取消关注的用户id
+         *  type：“follow”或“unfollow” 关注还是取消关注
+         * 返回参数：
+         *  String：success
+         * */
+        System.out.println("Received follow_or_unfollow message" + fans_id + " " + follow_userid + " " + type);
+        if(fans_id.equals("") || follow_userid.equals("")) {
+            System.out.println("用户id不能为空");
+            return ResponseEntity.badRequest().body("用户id不能为空");
+        }
+        //进行检查，如果用户名不存在，返回错误
+        Query query = new Query();
+        query.addCriteria(Criteria.where("userid").is(fans_id));
+        User fans = mongoTemplate.findOne(query, User.class);
+        if(fans == null) {
+            System.out.println("用户不存在");
+            return ResponseEntity.badRequest().body("用户不存在");
+        }
+        query = new Query();
+        query.addCriteria(Criteria.where("userid").is(follow_userid));
+        User follow_user = mongoTemplate.findOne(query, User.class);
+        if(follow_user == null) {
+            System.out.println("被关注用户不存在");
+            return ResponseEntity.badRequest().body("被关注用户不存在");
+        }
+        //根据传入的type，关注或取消关注用户
+        if(Objects.equals(type, "follow")) {
+            //如果已经关注了，返回错误
+            if(fans.getFollow_list().contains(follow_userid)) {
+                System.out.println("已经关注了");
+                return ResponseEntity.badRequest().body("已经关注了");
+            }
+            fans.addFollow(follow_userid);
+            follow_user.addFans(fans_id);
+        }
+        else if(Objects.equals(type, "unfollow")) {
+            //如果没有关注，返回错误
+            if(!fans.getFollow_list().contains(follow_userid)) {
+                System.out.println("本来没有关注");
+                return ResponseEntity.badRequest().body("本来没有关注");
+            }
+            fans.cancelFollow(follow_userid);
+            follow_user.cancelFans(fans_id);
+        }
+        else {
+            System.out.println("type参数错误");
+            return ResponseEntity.badRequest().body("type参数错误");
+        }
+        mongoTemplate.save(fans);
+        mongoTemplate.save(follow_user);
+        return ResponseEntity.ok().body("success");
+    }
 
 
 }
