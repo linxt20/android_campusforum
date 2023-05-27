@@ -38,6 +38,7 @@ public class Post {
     String[] resource_list;//资源列表 记录其在static/images中的名称
 
     String tag;//标签仅一个
+    List<Comment> comment_list;//评论列表
 
     public Post(String postid,
                 String author_id,
@@ -52,8 +53,10 @@ public class Post {
                 List<String> like_userid_list,
                 List<String> star_userid_list,
                 int comment_count,
-                String[] resource_list){
-        
+                String[] resource_list,
+                List<Comment> comment_list
+                ){
+
         System.out.println("Start new1 post");
         this.author_id=author_id;
         this.create_time=create_time;
@@ -72,6 +75,7 @@ public class Post {
         this.if_star=0;
         this.like_userid_list=like_userid_list;
         this.star_userid_list=star_userid_list;
+        this.comment_list=comment_list;
     }
 
 
