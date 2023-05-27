@@ -11,6 +11,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.uidesign.utils.GlobalVariables;
+import com.example.uidesign.utils.ImageDownloader;
+
 import java.io.FileNotFoundException;
 
 public class DetailActivity extends AppCompatActivity {
@@ -113,16 +116,20 @@ public class DetailActivity extends AppCompatActivity {
                 }
             }
         });
-        try {
-            image_user.setBackground(new BitmapDrawable(getResources(), BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri.parse(user_head)))));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        // TODO 改为从后端获取图片
+//        try {
+//            image_user.setBackground(new BitmapDrawable(getResources(), BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri.parse(user_head)))));
+//        } catch (FileNotFoundException e) {
+//            throw new RuntimeException(e);
+//        }
+        ImageDownloader headDownloader = new ImageDownloader(image_user);
+        headDownloader.execute(GlobalVariables.name2url(user_head));
         int i = 0;
-        for(i = 0;i<imagelist.length;i++){
+        for(i = 0; i < imagelist.length; i++){
             try {
-                imageshow[i].setBackground(new BitmapDrawable(getResources(), BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri.parse(imagelist[i])))));
-            } catch (FileNotFoundException e) {
+                ImageDownloader imageDownloader = new ImageDownloader(imageshow[i]);
+                imageDownloader.execute(GlobalVariables.name2url(imagelist[i]));
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }

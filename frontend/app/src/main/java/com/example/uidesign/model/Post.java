@@ -73,6 +73,14 @@ public class Post {
         return resource_list;
     }
 
+    public int getIf_like() {
+        return if_like;
+    }
+
+    public int getIf_star() {
+        return if_star;
+    }
+
     public String getId() {
         return postid;
     }

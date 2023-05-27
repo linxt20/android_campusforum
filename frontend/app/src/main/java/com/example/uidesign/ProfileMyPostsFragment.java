@@ -1,8 +1,6 @@
 package com.example.uidesign;
 
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -17,11 +15,11 @@ import android.view.ViewGroup;
 import com.example.uidesign.model.Post;
 import com.example.uidesign.profile.BoardItemList;
 import com.example.uidesign.profile.RecycleAdapter;
+import com.example.uidesign.utils.GlobalVariables;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import okhttp3.Call;

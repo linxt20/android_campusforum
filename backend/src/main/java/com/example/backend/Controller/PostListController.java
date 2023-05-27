@@ -48,7 +48,12 @@ public class PostListController {
             resource_list[0]="1.jpg";
             Post post_new = new Post("1",userid,"2020-01-01 07:31:00","title","content","tag",resource_num,"jpg",
                     0,0,tmp,tmp,0,resource_list);
+            String[] resource_list2=new String[resource_num];
+            resource_list2[0]="2.jpg";
+            Post post_new2 = new Post("2",userid,"2020-01-01 07:31:01","title22","content","tag",resource_num,"jpg",
+                    0,0,tmp,tmp,0,resource_list2);
             rv.add(post_new);
+            rv.add(post_new2);
             ///////////// 此处结束测试代码////////////
             for(Post post:rv){
                 Query query = new Query();

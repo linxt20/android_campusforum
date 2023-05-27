@@ -2,9 +2,6 @@ package com.example.uidesign.profile;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,19 +13,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.uidesign.DetailActivity;
-import com.example.uidesign.GlobalVariables;
-import com.example.uidesign.ImageDownloader;
+import com.example.uidesign.utils.GlobalVariables;
+import com.example.uidesign.utils.ImageDownloader;
 import com.example.uidesign.R;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class RecycleAdapter extends RecyclerView.Adapter<BoardItemViewHolder> {
 
@@ -97,13 +84,21 @@ class BoardItemViewHolder extends RecyclerView.ViewHolder{
                 Intent intent = new Intent(v.getContext(), DetailActivity.class);
                 String title = titleView.getText().toString();
                 String time = timeView.getText().toString();
+                // TODO 还是得搞到这些数据
                 intent.putExtra("title", title);
                 intent.putExtra("text", "This is a text");
-                intent.putExtra("Username", "aaa");
+                intent.putExtra("Username", "小绿薯");
                 intent.putExtra("Content", "This is a content");
+                intent.putExtra("tag", "tag1");
                 intent.putExtra("createAt", time);
-                intent.putExtra("user_head", "https://codegeex.cn");
-                intent.putExtra("imageList", "CodeGeeX");
+                intent.putExtra("comment_count",0);
+                intent.putExtra("like_count",0);
+                intent.putExtra("if_like", 0);
+                intent.putExtra("star_count",0);
+                intent.putExtra("user_head", GlobalVariables.name2url("jyjjyyds.jpg"));
+                String[] list =  {GlobalVariables.name2url("1.jpg"), GlobalVariables.name2url("1.jpg")};
+                intent.putExtra("imageList", list);
+                v.getContext().startActivity(intent);
                 }
             });
     }

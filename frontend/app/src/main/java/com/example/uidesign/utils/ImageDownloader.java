@@ -1,4 +1,4 @@
-package com.example.uidesign;
+package com.example.uidesign.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

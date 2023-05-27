@@ -14,12 +14,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Base64;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -29,10 +25,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.uidesign.model.Post;
+import com.example.uidesign.utils.GlobalVariables;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -141,6 +137,7 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
+    // 用来测试后端给前端传图片，目前有了url可以不用这个方法～
     public void receiveImage(){
 //        ImageView imageView = findViewById(R.id.profileCircleImageView);
 //        String imageUrl = "http://8.130.126.81:8080/images/you.jpg"; // 替换为您的图片URL
@@ -182,18 +179,6 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public void sendImage(){
-        OkHttpClient client = new OkHttpClient();
-
-        // 创建文件选择器Intent
-//        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//        intent.setType("image/*");
-        /*
-                // get single image from imagepicker
-                // 参考：https://www.youtube.com/watch?v=bLi1qr6h4T4&ab_channel=WsCubeTech
-                Intent intent = new   Intent(Intent.ACTION_PICK);
-                intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, GALLERY_REQ_CODE);
-                */
         // get multiple images (no more than 9) from imagepicker
         Intent intent = new  Intent(Intent.ACTION_GET_CONTENT);
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
@@ -201,8 +186,6 @@ public class SettingsActivity extends AppCompatActivity {
 
         // 启动文件选择器
         startActivityForResult(intent, REQUEST_CODE_SELECT_IMAGE);
-
-
     }
 
 
@@ -212,10 +195,8 @@ public class SettingsActivity extends AppCompatActivity {
 
         if (requestCode == REQUEST_CODE_SELECT_IMAGE && resultCode == RESULT_OK) {
             ClipData clipData = data.getClipData();
-            int picsCount = 0;
             if(clipData != null && clipData.getItemCount() > 0 && clipData.getItemCount() <= 9) {
                 // get multiple images
-                picsCount = clipData.getItemCount();
                 for (int i = 0; i < clipData.getItemCount(); i++) {
                     Uri imageUri = clipData.getItemAt(i).getUri();
                     String mediaType = MediaType.parse(getContentResolver().getType(imageUri)).toString();
@@ -255,7 +236,6 @@ public class SettingsActivity extends AppCompatActivity {
                     }
                 }
             } else if(clipData == null){
-                picsCount = 1;
                 // get single image
                 Uri imageUri = data.getData();
                 String mediaType = MediaType.parse(getContentResolver().getType(imageUri)).toString();

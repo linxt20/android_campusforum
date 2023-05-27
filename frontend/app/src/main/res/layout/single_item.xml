@@ -13,13 +13,12 @@
         android:layout_height="60dp"
         android:gravity="center_vertical">
 
-        <ImageView
+        <com.example.uidesign.utils.CircleImageView
             android:id="@+id/userhead"
-            android:src="@drawable/ring_user"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
-            android:background="@drawable/man_1"
+            android:src="@drawable/man_1"
             />
 
         <LinearLayout
@@ -104,7 +103,7 @@
             android:layout_width="0dp"
             android:layout_height="100dp"
             android:layout_columnWeight="1"
-            android:background="@drawable/man_1"
+            
             android:layout_margin="2dp"/>
 
         <ImageView
@@ -113,7 +112,7 @@
             android:layout_width="0dp"
             android:layout_height="100dp"
             android:layout_columnWeight="1"
-            android:background="@drawable/man_1"
+            
             android:layout_margin="2dp"/>
 
         <ImageView
@@ -122,7 +121,7 @@
             android:layout_width="0dp"
             android:layout_height="100dp"
             android:layout_columnWeight="1"
-            android:background="@drawable/man_1"
+            
             android:layout_margin="2dp"/>
 
         <ImageView
@@ -131,7 +130,7 @@
             android:layout_width="0dp"
             android:layout_height="100dp"
             android:layout_columnWeight="1"
-            android:background="@drawable/man_1"
+            
             android:layout_margin="2dp"/>
 
         <ImageView
@@ -140,7 +139,7 @@
             android:layout_width="0dp"
             android:layout_height="100dp"
             android:layout_columnWeight="1"
-            android:background="@drawable/man_1"
+            
             android:layout_margin="2dp"/>
 
         <ImageView
@@ -149,7 +148,7 @@
             android:layout_width="0dp"
             android:layout_height="100dp"
             android:layout_columnWeight="1"
-            android:background="@drawable/man_1"
+            
             android:layout_margin="2dp"/>
     </GridLayout>
 

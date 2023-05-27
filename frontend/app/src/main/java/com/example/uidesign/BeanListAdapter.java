@@ -1,25 +1,17 @@
 package com.example.uidesign;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.GridLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.LinkedList;
+import com.example.uidesign.utils.GlobalVariables;
+import com.example.uidesign.utils.ImageDownloader;
 
 public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanViewHolder> {
     private final BeanList BeanList;
@@ -61,17 +53,16 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
         holder.commenttext.setText(String.valueOf(comment_count));
         holder.liketext.setText(String.valueOf(like_count));
         holder.startext.setText(String.valueOf(star_count));
-        try {
-            holder.image_user.setBackground(new BitmapDrawable(mContext.getResources(), BitmapFactory.decodeStream(mContext.getContentResolver().openInputStream(Uri.parse(user_head)))));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        holder.tagView.setText(current.gettag());
+        ImageDownloader headDownloader = new ImageDownloader(holder.image_user);
+        headDownloader.execute(GlobalVariables.name2url(user_head));
         // 这里是六个图片的显示逻辑
         int i = 0;
-        for(i = 0;i<imagelist.length;i++){
+        for(i = 0; i < imagelist.length; i++){
             try {
-                holder.imageshow[i].setBackground(new BitmapDrawable(mContext.getResources(), BitmapFactory.decodeStream(mContext.getContentResolver().openInputStream(Uri.parse(imagelist[i])))));
-            } catch (FileNotFoundException e) {
+                ImageDownloader imageDownloader = new ImageDownloader(holder.imageshow[i]);
+                imageDownloader.execute(GlobalVariables.name2url(imagelist[i]));
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -147,6 +138,7 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
 
         public final ImageView likeimage;
         public final ImageView starimage;
+        public final TextView tagView;
 
 
 
@@ -165,12 +157,13 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
             stararea = itemView.findViewById(R.id.star);
             likeimage = itemView.findViewById(R.id.likeimage);
             starimage = itemView.findViewById(R.id.starimage);
+            tagView = itemView.findViewById(R.id.Tagshow);
 
             int[] imageViewIds = {R.id.imageView1, R.id.imageView2, R.id.imageView3, R.id.imageView4, R.id.imageView5,R.id.imageView6};
 
             for (int i = 0; i < 6; i++) {
                 imageshow[i] = itemView.findViewById(imageViewIds[i]);
-                imageshow[i].setBackground(null);
+                //imageshow[i].setBackground(null);
             }
 
             getdetailarea.setOnClickListener(new View.OnClickListener() {

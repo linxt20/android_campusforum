@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.example.uidesign.utils.GlobalVariables;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
