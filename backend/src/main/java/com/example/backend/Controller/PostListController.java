@@ -296,16 +296,24 @@ public class PostListController {
         * 输出：post_list
         * */
         for(Post post:post_list){
-            //判断是否点赞
-            if(post.getLike_userid_list().contains(userid)){
-                post.setIf_like(1);
+            if(post.getLike_userid_list()!=null){
+                if(post.getLike_userid_list().contains(userid)){
+                    post.setIf_like(1);
+                }
+                else{
+                    post.setIf_like(0);
+                }
             }
             else{
                 post.setIf_like(0);
             }
-            //判断是否收藏
-            if(post.getStar_userid_list().contains(userid)){
-                post.setIf_star(1);
+            if(post.getStar_userid_list()!=null){
+                if(post.getStar_userid_list().contains(userid)){
+                    post.setIf_star(1);
+                }
+                else{
+                    post.setIf_star(0);
+                }
             }
             else{
                 post.setIf_star(0);
@@ -314,15 +322,45 @@ public class PostListController {
         return post_list;
     }
 
+    @PostMapping("/get_post")
+    public ResponseEntity<Post> get_post (String postid, String userid){
+        //根据postid获取post,并根据userid设置post的like和star信息
+        try{
+            System.out.println("Start get post");
+            Query query = new Query();
+            query.addCriteria(Criteria.where("postid").is(postid));
+            Post post = mongoTemplate.findOne(query, Post.class);
+            if(post==null){
+                System.out.println("Error: post not found");
+                return ResponseEntity.notFound().build();
+            }
+            post.setIf_like(0);
+            post.setIf_star(0);
+            if(post.getLike_userid_list()!=null){
+                if(post.getLike_userid_list().contains(userid)){
+                    post.setIf_like(1);
+                }
+                else{
+                    post.setIf_like(0);
+                }
+            }
+            if(post.getStar_userid_list()!=null){
+                if(post.getStar_userid_list().contains(userid)){
+                    post.setIf_star(1);
+                }
+                else{
+                    post.setIf_star(0);
+                }
+            }
+            System.out.println("Get post success");
+            return ResponseEntity.ok().body(post);
+        }
+        catch(Exception e){
+            System.out.println("Error: "+e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
-
-
-
-
-
-
-
-
+    }
 
 
 
