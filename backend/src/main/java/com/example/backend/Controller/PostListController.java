@@ -14,10 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @RestController
@@ -28,11 +25,18 @@ public class PostListController {
 
 
     @PostMapping("/get_all")
-    public ResponseEntity<List<Post>> post_get(@RequestParam String userid) {
+    public ResponseEntity<List<Post>> post_get(@RequestParam String userid,
+                                               @RequestParam String search_key,
+                                               @RequestParam String tag,
+                                               @RequestParam String sort_by) {
         //之后会增加search key，返回固定的帖子
         /*
         * 功能：返回所有帖子
-        * 输入： userid 用户id
+        * 输入：
+        * userid: 用户id
+        * search_key: 搜索关键词 和帖子的标题、内容、tag、用户名匹配；支持多关键词，按逻辑与进行匹配，关键词之间用空格分隔
+        * tag: 标签
+        * sort_by: 排序依据 //热度怎么计算？
         * 输出： List<Post> 所有帖子
         * */
 
@@ -41,6 +45,33 @@ public class PostListController {
             System.out.println("Start get all post");
             List<Post> rv=mongoTemplate.findAll(Post.class);
             System.out.println(rv);
+            //根据tag筛选帖子
+            if(!tag.equals("")){
+                List<String> tag_list=Arrays.asList(tag.split(" "));
+                List<Post> tmp=new ArrayList<>();
+                for(Post post:rv){
+                    if(post.getTag()!=null){
+                        if(Objects.equals(post.getTag(), tag)){
+                            tmp.add(post);
+                        }
+                    }
+                }
+                rv=tmp;
+            }
+            //根据关键词筛选帖子，若帖子标题、内容、tag、用户名中包含关键词则保留，无需一样
+            if(!search_key.equals("")){
+                List<String> key_list=Arrays.asList(search_key.split(" "));
+                List<Post> tmp=new ArrayList<>();
+                for(Post post:rv){
+                    if(if_contain_serchkey_list(post,key_list)){
+                        tmp.add(post);
+                    }
+                }
+                rv=tmp;
+            }
+
+            //TODO 根据sortby排序帖子
+
             //根据用户id 设置用户名称及头像
             // TODO 可能可删 如果修改密码部分没有bug的话
             for(Post post:rv){
@@ -54,8 +85,7 @@ public class PostListController {
                 post.setAuthor_name(user.getUsername());
                 post.setAuthor_head(user.getUser_head());
             }
-            //System.out.println(rv.get(0).getAuthor_name());
-            //System.out.println("haha1");
+            
             //根据用户id设置Post的点赞、收藏状态，若userid在点赞列表中则设置为true，反之为false
             for(Post post:rv){
                 if(post.getLike_userid_list()!=null){
@@ -89,6 +119,51 @@ public class PostListController {
             System.out.println("Error: "+e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public boolean if_contain_serchkey_list(Post post, List<String> key_list){
+        //判断post中是否包含key_list中的每一个值
+        if(post.getTitle()!=null){
+            for(String key:key_list){
+                if(post.getTitle().contains(key)){
+                    continue;
+                }
+                else{
+                    return false;
+                }
+            }
+        }
+        if(post.getContent()!=null){
+            for(String key:key_list){
+                if(post.getContent().contains(key)){
+                    continue;
+                }
+                else{
+                    return false;
+                }
+            }
+        }
+        if(post.getTag()!=null){
+            for(String key:key_list){
+                if(post.getTag().contains(key)){
+                    continue;
+                }
+                else{
+                    return false;
+                }
+            }
+        }
+        if(post.getAuthor_name()!=null){
+            for(String key:key_list){
+                if(post.getAuthor_name().contains(key)){
+                    continue;
+                }
+                else{
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @PostMapping("/new_post")
