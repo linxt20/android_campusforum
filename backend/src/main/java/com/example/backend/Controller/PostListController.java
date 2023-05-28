@@ -42,6 +42,7 @@ public class PostListController {
             List<Post> rv=mongoTemplate.findAll(Post.class);
             System.out.println(rv);
             //根据用户id 设置用户名称及头像
+            // TODO 可能可删 如果修改密码部分没有bug的话
             for(Post post:rv){
                 Query query = new Query();
                 query.addCriteria(Criteria.where("userid").is(post.getAuthor_id()));
@@ -99,7 +100,7 @@ public class PostListController {
                            @RequestParam int resource_num,//资源的数量
                            @RequestParam String resource_type //资源类型 图片为jpg，视频为mp4
                            ) {
-        // TODO: 上传图片未整合
+
         /*
         功能：新建一个post
         输入：userid 用户id 唯一
@@ -286,6 +287,31 @@ public class PostListController {
             System.out.println("Error: "+e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public List<Post> preprocess_post(List<Post> post_list,String userid){
+        /*
+        * 功能：预处理post_list，将其中的like和star信息加入
+        * 输入：post_list
+        * 输出：post_list
+        * */
+        for(Post post:post_list){
+            //判断是否点赞
+            if(post.getLike_userid_list().contains(userid)){
+                post.setIf_like(1);
+            }
+            else{
+                post.setIf_like(0);
+            }
+            //判断是否收藏
+            if(post.getStar_userid_list().contains(userid)){
+                post.setIf_star(1);
+            }
+            else{
+                post.setIf_star(0);
+            }
+        }
+        return post_list;
     }
 
 

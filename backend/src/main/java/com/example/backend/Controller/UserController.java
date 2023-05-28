@@ -100,19 +100,18 @@ public class UserController {
         return ResponseEntity.ok().body(user);
     }
 
-    @PostMapping("/update_user_info")
-    public ResponseEntity<String> update_user_info(@RequestParam String userid, @RequestParam String username, @RequestParam String password, @RequestParam String introduction) {
+    @PostMapping("/update_username_and_description ")
+    public ResponseEntity<String> update_user_info(@RequestParam String userid, @RequestParam String username,  @RequestParam String description) {
         /*
          * 功能：更新用户个人信息
          * 传入参数：
          *  userid：用户id
          *  username：用户名
-         *  password：密码
-         *  introduction：个人简介
+         *  description：个人简介
          * 返回参数：
          *  String：success/fail
          * */
-        System.out.println("Received update_user_info message" + userid + " " + username + " " + password + " " + introduction);
+        System.out.println("Received update_user_info message" + userid + " " + username + " " + description);
         if(userid.equals("")) {
             System.out.println("用户id不能为空");
             return ResponseEntity.badRequest().body(null);
@@ -165,11 +164,43 @@ public class UserController {
 
         // 把字符串存到数据库里
         user.setUsername(username);
-        user.setPassword(password);
-        user.setDescription(introduction);
+        user.setDescription(description);
         mongoTemplate.save(user);
         return ResponseEntity.ok().body("success");
     }
+
+    @PostMapping("/update_user_password")
+    public ResponseEntity<String> update_user_password(@RequestParam String userid, @RequestParam String password) {
+        /*
+         * 功能：更新用户密码
+         * 传入参数：
+         *  userid：用户id
+         *  password：新密码
+         * 返回参数：
+         *  String：success/fail
+         * */
+        System.out.println("Received update_user_password message" + userid + " " + password);
+        if(userid.equals("")) {
+            System.out.println("用户id不能为空");
+            return ResponseEntity.badRequest().body("用户id不能为空");
+        }
+        //进行检查，如果用户名不存在，返回错误
+        Query query = new Query();
+        query.addCriteria(Criteria.where("userid").is(userid));
+        User user = mongoTemplate.findOne(query, User.class);
+        if(user == null) {
+            System.out.println("用户不存在");
+            return ResponseEntity.badRequest().body("用户不存在");
+        }
+        // 把字符串存到数据库里
+        user.setPassword(password);
+        // 之后可能会有 密码正确性检查
+
+        mongoTemplate.save(user);
+        return ResponseEntity.ok().body("success");
+    }
+
+
 
     @PostMapping("/update_user_avatar")
     public ResponseEntity<String> update_user_avatar(@RequestParam String userid) {
