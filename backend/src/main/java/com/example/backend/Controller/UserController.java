@@ -38,7 +38,7 @@ public class UserController {
         }
         // TODO 进行检查，如果用户名已经存在，返回错误
         Query query = new Query();
-        query.addCriteria(Criteria.where("userid").is(username)); // userID查重
+        query.addCriteria(Criteria.where("username").is(username)); // userID查重
         if(mongoTemplate.findOne(query, User.class) != null) {
             System.out.println("用户名已存在");
             return new ResponseEntity<>("用户名或密码不能为空", HttpStatus.BAD_REQUEST);
@@ -61,7 +61,7 @@ public class UserController {
         }
         // TODO 进行检查，如果用户名不存在，返回错误
         Query query = new Query();
-        query.addCriteria(Criteria.where("userid").is(username));
+        query.addCriteria(Criteria.where("username").is(username));
         User user = mongoTemplate.findOne(query, User.class);
         if(user == null) {
             System.out.println("用户名不存在");
@@ -97,6 +97,8 @@ public class UserController {
             System.out.println("用户不存在");
             return ResponseEntity.badRequest().body(null);
         }
+        // debug
+        System.out.println("star: " + user.getStar_post_list());
         return ResponseEntity.ok().body(user);
     }
 
@@ -199,8 +201,6 @@ public class UserController {
         mongoTemplate.save(user);
         return ResponseEntity.ok().body("success");
     }
-
-
 
     @PostMapping("/update_user_avatar")
     public ResponseEntity<String> update_user_avatar(@RequestParam String userid) {

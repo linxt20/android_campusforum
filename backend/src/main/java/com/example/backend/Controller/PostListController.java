@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -74,24 +76,27 @@ public class PostListController {
 
             //根据用户id 设置用户名称及头像
 
-            ///////////// 此处开始测试代码////////////
-            List<String> tmp=new ArrayList<>();
-            List<Comment> tmpComment = new ArrayList<>();
-            Comment comment = new Comment("1","2021-01-01 07:31:10","haha");
-            tmpComment.add(comment);
-            int resource_num = 1;
-            String[] resource_list=new String[resource_num];
-            resource_list[0]="1.jpg";
-            Post post_new = new Post("1",userid,"2020-01-01 07:31:00","title","content","tag",resource_num,"jpg",
-                    0,0,tmp,tmp,tmpComment.size(),resource_list,tmpComment);
-            String[] resource_list2=new String[resource_num];
-            resource_list2[0]="2.jpg";
-            Post post_new2 = new Post("2",userid,"2020-01-01 07:31:01","title22","content","tag",resource_num,"jpg",
-                    0,0,tmp,tmp,tmpComment.size(),resource_list2,tmpComment);
-            System.out.println("after new post: " + post_new.getComment_list().get(0).toString());
-            rv.add(post_new);
-            rv.add(post_new2);
-            ///////////// 此处结束测试代码////////////
+//            ///////////// 此处开始测试代码////////////
+//            List<String> tmp=new ArrayList<>();
+//            List<Comment> tmpComment = new ArrayList<>();
+//            String timeString = "2023-05-17 10:30:00"; // 时间字符串
+//            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//            Date date = dateFormat.parse(timeString);
+//            Comment comment = new Comment("1",date,"haha","name","giao.jpg");
+//            tmpComment.add(comment);
+//            int resource_num = 1;
+//            String[] resource_list=new String[resource_num];
+//            resource_list[0]="1.jpg";
+//            Post post_new = new Post("1",userid,"name","giao.jpg","2020-01-01 07:31:00","title","content","tag",resource_num,"jpg",
+//                    0,0,tmp,tmp,tmpComment.size(),resource_list,tmpComment);
+//            String[] resource_list2=new String[resource_num];
+//            resource_list2[0]="2.jpg";
+//            Post post_new2 = new Post("2",userid,"name2","giao.jpg","2020-01-01 07:31:01","title22","content","tag",resource_num,"jpg",
+//                    0,0,tmp,tmp,tmpComment.size(),resource_list2,tmpComment);
+//            System.out.println("after new post: " + post_new.getComment_list().get(0).toString());
+//            rv.add(post_new);
+//            rv.add(post_new2);
+//            ///////////// 此处结束测试代码////////////
 
             for(Post post:rv){
                 Query query = new Query();
@@ -102,13 +107,19 @@ public class PostListController {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
                 post.setAuthor_name(user.getUsername());
-                post.setAuthor_head("giao.jpg"); // TODO (user.getUser_head());
+                post.setAuthor_head(user.getUser_head());
             }
             
             //根据用户id设置Post的点赞、收藏状态，若userid在点赞列表中则设置为true，反之为false
+            System.out.println("Start set like and star");
+            //输出Post的like_userid_list和star_userid_list
+            System.out.println("Post like_userid_list: "+rv.get(0).getLike_userid_list());
+            System.out.println("Post star_userid_list: "+rv.get(0).getStar_userid_list());
+            System.out.println("userid: "+userid);
             for(Post post:rv){
                 if(post.getLike_userid_list()!=null){
                     if(post.getLike_userid_list().contains(userid)){
+                        System.out.println("haha");
                         post.setIf_like(1);
                     }
                     else{
@@ -130,6 +141,9 @@ public class PostListController {
                     post.setIf_star(0);
                 }
             }
+
+            System.out.println("End set like and star");
+            System.out.println(rv.get(0).getIf_like());
 
 
             return new ResponseEntity<>(rv, HttpStatus.OK);
@@ -206,7 +220,7 @@ public class PostListController {
              resource_num 资源数量
              resource_type 资源类型 图片为jpg，视频为mp4
         输出：
-            成功： List<String> img_id 每个图片的全局唯一id 用于之后的图片上传
+            成功： List<String> img_id A
             失败： badrequest
         */
 
@@ -241,6 +255,7 @@ public class PostListController {
             user.addMyPost(postid);
             //将post加入数据库，返回图片id
             mongoTemplate.insert(post_new);
+            mongoTemplate.save(user);
             String[] rv=post_new.getResource_list();
             return new ResponseEntity<>(rv, HttpStatus.OK);
         }catch (Exception e){
@@ -308,7 +323,9 @@ public class PostListController {
 //            System.out.println("haha3");
 //            System.out.println(post.getPostid());
 //            System.out.println(post.getLike_count());
+            System.out.println("postlist: " + user.getStar_post_list());
             mongoTemplate.save(post);
+            mongoTemplate.save(user);
             int rv;
             if(state==0){
                 rv=post.getLike_count();
@@ -421,7 +438,7 @@ public class PostListController {
     public ResponseEntity<Post> get_post (String postid, String userid){
         //根据postid获取post,并根据userid设置post的like和star信息
         try{
-            System.out.println("Start get post");
+            System.out.println("Start get pos， postid: " + postid);
             Query query = new Query();
             query.addCriteria(Criteria.where("postid").is(postid));
             Post post = mongoTemplate.findOne(query, Post.class);

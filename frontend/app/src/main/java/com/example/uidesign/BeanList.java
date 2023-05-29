@@ -21,8 +21,9 @@ public class BeanList {
                         int if_star,
                         String user_head,
                         String[] imagelist,
-                        Comment[] commentList) {
-        data.add(0,new Bean(Username,createAt,tag,title,content,comment_count,like_count,if_like,star_count,if_star,user_head,imagelist,commentList));
+                        Comment[] commentList,
+                        String postid) {
+        data.add(0,new Bean(Username,createAt,tag,title,content,comment_count,like_count,if_like,star_count,if_star,user_head,imagelist,commentList,postid));
     }
     public Bean get(int index) {
         return data.get(index);

@@ -15,7 +15,9 @@ public class User {
     List<String> star_post_list;//收藏的动态列表 记录post的id
     List<String> like_post_list;//点赞的动态列表 记录post的id
     List<String> my_post_list;//发表的动态列表 记录post的id
+    List<String> comment_post_list;//评论过的动态列表 记录post的id
     List<String> follow_list;//关注的用户列表 记录userid
+    List<String> fans_list;//粉丝列表 记录userid
 
 
     public User(String username,
@@ -25,7 +27,9 @@ public class User {
                 List<String> star_post_list,
                 List<String> like_post_list,
                 List<String> my_post_list,
-                List<String> follow_list
+                List<String> follow_list,
+                List<String> fans_list,
+                List<String> comment_post_list
     ) {
         this.username = username;
         this.password = password;
@@ -35,6 +39,8 @@ public class User {
         this.like_post_list = like_post_list;
         this.my_post_list = my_post_list;
         this.follow_list = follow_list;
+        this.fans_list = fans_list;
+        this.comment_post_list = comment_post_list;
     }
 
     public String getUsername() {
@@ -93,5 +99,53 @@ public class User {
 
     public void cancelLikePost(String postid){
         like_post_list.remove(postid);
+    }
+
+    public void addFollow(String userid){
+        follow_list.add(userid);
+    }
+
+    public void cancelFollow(String userid){
+        follow_list.remove(userid);
+    }
+
+    public void addFans(String userid){
+        fans_list.add(userid);
+    }
+
+    public void cancelFans(String userid){
+        fans_list.remove(userid);
+    }
+
+    public List<String> getFollow_list() {
+        return follow_list;
+    }
+
+    public List<String> getFans_list() {
+        return fans_list;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void toString(User user){
+        System.out.println("username:"+user.getUsername());
+        System.out.println("password:"+user.getPassword());
+        System.out.println("description:"+user.getDescription());
+        System.out.println("user_head:"+user.getUser_head());
+        System.out.println("star_post_list:"+user.getStar_post_list());
+        System.out.println("like_post_list:"+user.getLike_post_list());
+        System.out.println("my_post_list:"+user.getMy_post_list());
+        System.out.println("follow_list:"+user.getFollow_list());
+        System.out.println("fans_list:"+user.getFans_list());
+    }
+
+    public void addCommentPost(String postid){
+        comment_post_list.add(postid);
+    }
+
+    public List<String> getComment_post_list() {
+        return comment_post_list;
     }
 }

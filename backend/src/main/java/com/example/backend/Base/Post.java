@@ -86,12 +86,14 @@ public class Post {
     }
 
 
-
+    public int getIf_like() {
+        return if_like;
+    }
+    public int getIf_star(){
+        return if_star;
+    }
     public String getPostid(){
         return postid;
-    }
-    public List<Comment> getComment_list() {
-        return comment_list;
     }
 
     public String[] getResource_list() {
@@ -178,6 +180,7 @@ public class Post {
         if(this.star_userid_list==null){
             this.star_userid_list=new ArrayList<String>();
         }
+        System.out.println("Add star userid: " + userid);
         this.star_userid_list.add(userid);
     }
 

@@ -23,9 +23,9 @@ public class BoardItemList  {
     public BoardItemList() {
     }
 
-    public void insert(String Img, String title, String date) {
+    public void insert(String Img, String title, String date, String postid) {
 
-        data.add(new BoardItem(Img,title,date));
+        data.add(new BoardItem(Img,title,date, postid));
         // TODO 在加入的时候就进行排序
         count++;
     }

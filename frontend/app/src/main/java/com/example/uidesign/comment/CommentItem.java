@@ -15,7 +15,6 @@ public class CommentItem {
         this.username = username;
         this.dateTime = dateTime;
         this.content = content;
-        Log.d(this.getClass().getSimpleName(), "imaage: " + image + " username: " + username + " dateTime: " + dateTime + " content: " + content);
     }
 
     public String getImage() {

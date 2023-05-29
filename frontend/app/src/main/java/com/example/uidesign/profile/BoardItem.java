@@ -7,15 +7,19 @@ public class BoardItem {
     private String image;
     private String title;
 
+    private String postid;
+
     // TODO like_count, comment_count, star_count
     private String dateTime;
 
-    public BoardItem(String image, String title, String dateTime) {
+    public BoardItem(String image, String title, String dateTime, String postid) {
         this.image = image;
         this.title = title;
         this.dateTime = dateTime;
+        this.postid = postid;
     }
 
+    public String getPostid() {return postid;}
     public String getImage() {
         return image;
     }

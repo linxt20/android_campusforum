@@ -1,8 +1,11 @@
 package com.example.uidesign;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +25,11 @@ import com.example.uidesign.comment.CommentRecycleAdapter;
 import com.example.uidesign.model.Comment;
 import com.example.uidesign.utils.GlobalVariables;
 import com.example.uidesign.utils.ImageDownloader;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+
+import okhttp3.*;
 
 public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanViewHolder> {
     private final BeanList BeanList;
@@ -68,9 +76,11 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
         Comment[] comments = current.getcomment_list();
         Log.d("BeanListAdapter",  "comment count: " + current.getcomment_count());
         CommentItemList CommentList = new CommentItemList();
+        // Date to String
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (Comment comment: comments) {
             // TODO 这里通过id从后端获得user_head和username
-            CommentList.insert("giao.jpg","haha", comment.getCreate_time(), comment.getContent());
+            CommentList.insert(comment.getAuthor_head(),comment.getAuthor_name(), formatter.format(comment.getCreate_time()), comment.getContent());
         }
         adapter = new CommentRecycleAdapter(mContext, CommentList);
         holder.recyclerView.setAdapter(adapter);
@@ -107,27 +117,92 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
         else {
             holder.starimage.setImageResource(R.drawable.collect_red);
         }
+        SharedPreferences prefs = ((Activity)mContext).getSharedPreferences("com.example.android.myapp", MODE_PRIVATE);
         // 这是点赞和收藏按钮的点击函数，这里需要等待后端的api写好，然后传递信息
         holder.likearea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(current.getIf_like() == 0){
-                    holder.likeimage.setImageResource(R.drawable.love);
-                }
-                else {
-                    holder.likeimage.setImageResource(R.drawable.baseline_favorite_border_24);
-                }
+                // 调用后端
+                RequestBody body = new FormBody.Builder()
+                        .add("postid", current.getPostid())
+                        .add("userid", prefs.getString("userID", ""))
+                        .add("state", "0")  // 点赞
+                        .add("cancel", current.getIf_like() + "")
+                        .build();
+                Request request = new Request.Builder()
+                        .url(GlobalVariables.like_or_star_url)
+                        .post(body)
+                        .build();
+                OkHttpClient client = new OkHttpClient();
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                        Log.d("BeanListAdapter", "点赞失败");
+                    }
+
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                        String responseData = response.body().string();
+                        Log.d("BeanListAdapter， reponse: ", responseData);
+                        if(current.getIf_like() == 0){
+                            current.setIf_like(1);
+                        }
+                        else {
+                            current.setIf_like(0);
+                        }
+                        ((Activity) mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // 更新UI的代码放在这里
+                                holder.setLikeView(current, responseData);
+                            }
+                        });
+                        Log.d("BeanListAdapter", "点赞成功");
+                    }
+                });
             }
         });
         holder.stararea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(current.getIf_star() == 0){
-                    holder.starimage.setImageResource(R.drawable.collect_red);
-                }
-                else {
-                    holder.starimage.setImageResource(R.drawable.baseline_star_border_24);
-                }
+                // 调用后端
+                RequestBody body = new FormBody.Builder()
+                        .add("postid", current.getPostid())
+                        .add("userid", prefs.getString("userID", ""))
+                        .add("state", "1")  // 收藏
+                        .add("cancel", current.getIf_star() + "")
+                        .build();
+                Request request = new Request.Builder()
+                        .url(GlobalVariables.like_or_star_url)
+                        .post(body)
+                        .build();
+                OkHttpClient client = new OkHttpClient();
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                        Log.d("BeanListAdapter", "点赞失败");
+                    }
+
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                        String responseData = response.body().string();
+                        Log.d("BeanListAdapter， reponse: ", responseData);
+                        if(current.getIf_star() == 0){
+                            current.setIf_star(1);
+                        }
+                        else {
+                            current.setIf_star(0);
+                        }
+                        ((Activity) mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // 更新UI的代码放在这里
+                                holder.setStarView(current, responseData);
+                            }
+                        });
+                        Log.d("BeanListAdapter", "点赞成功");
+                    }
+                });
             }
         });
     }
@@ -161,7 +236,25 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
         public final TextView tagView;
         public RecyclerView recyclerView;
 
+        public void setLikeView(Bean current, String responseData){
+            liketext.setText(responseData);
+            if(current.getIf_like() == 0){
+                likeimage.setImageResource(R.drawable.baseline_favorite_border_24);
+            }
+            else {
+                likeimage.setImageResource(R.drawable.love);
+            }
+        }
 
+        public void setStarView(Bean current, String responseData){
+            startext.setText(responseData);
+            if(current.getIf_star() == 0){
+                starimage.setImageResource(R.drawable.baseline_star_border_24);
+            }
+            else {
+                starimage.setImageResource(R.drawable.collect_red);
+            }
+        }
 
         public BeanViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -21,7 +21,9 @@ import android.widget.Button;
 
 import com.example.uidesign.model.Comment;
 import com.example.uidesign.model.Post;
+import com.example.uidesign.model.User;
 import com.example.uidesign.utils.GlobalVariables;
+import com.example.uidesign.utils.ImageDownloader;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -41,16 +43,6 @@ public class NewPostsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    public String convertComments2String(Comment[] comments){
-        if(comments == null) return "";
-        // TODO 这个太随便了一定要改！！！
-        String result = "";
-        for(Comment comment: comments){
-            result += comment.getAuthor_id() + ",," + comment.getCreate_time() + ",," + comment.getContent() + ";;";
-        };
-        return result;
     }
 
     @Override
@@ -74,8 +66,17 @@ public class NewPostsFragment extends Fragment {
         prefs = getActivity().getSharedPreferences("com.example.android.myapp", 0);
         userID = prefs.getString("userID", "");
 
+        /*
+       @RequestParam String userid,
+       @RequestParam String search_key,
+       @RequestParam String tag,
+       @RequestParam String sort_by)
+       */
         RequestBody body = new FormBody.Builder()
                 .add("userid", userID)
+                .add("search_key", "")
+                .add("tag","")
+                .add("sort_by", "")
                 .build();
         Request request = new Request.Builder()
                 .url(GlobalVariables.get_posts_url)
@@ -103,9 +104,11 @@ public class NewPostsFragment extends Fragment {
                     for(int j = 0; j < myResponse.get(i).getComment_count(); j++){
                         comments[j] = myResponse.get(i).getComment_list().get(j);
                     }
+                    Log.d("NewPostFragment", "head: " + myResponse.get(i).getAuthor_head());
                     BeanList.insert(myResponse.get(i).getAuthor_name(), myResponse.get(i).getCreate_time(), myResponse.get(i).getTag(), myResponse.get(i).getTitle()
                     , myResponse.get(i).getContent(),myResponse.get(i).getComment_count(), myResponse.get(i).getLike_count(), myResponse.get(i).getIf_like()
-                    , myResponse.get(i).getStar_count(), myResponse.get(i).getIf_star(), myResponse.get(i).getAuthor_head(), myResponse.get(i).getResource_list(), comments);
+                    , myResponse.get(i).getStar_count(), myResponse.get(i).getIf_star(), myResponse.get(i).getAuthor_head(), myResponse.get(i).getResource_list()
+                            , comments, myResponse.get(i).getPostid());
                 }
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -116,33 +119,9 @@ public class NewPostsFragment extends Fragment {
                             @Override
                             public void onRecyclerItemClick(int position) {
                                 Bean current = BeanList.get(position);
-                                String Username = current.getUsername();
-                                String createAt = current.getcreateAt();
-                                String tag = current.gettag();
-                                String title = current.gettitle();
-                                String Content = current.getContent();
-                                int comment_count = current.getcomment_count();
-                                int like_count = current.getlike_count();
-                                int if_like = current.getIf_like();
-                                int star_count = current.getstar_count();
-                                int if_star = current.getIf_star();
-                                String user_head = current.getuser_head();
-                                String[] imagelist = current.getimagelist();
-                                Comment[] commentlist = current.getcomment_list();
+                                String postid = current.getPostid();
                                 Intent intent = new Intent(requireActivity(), DetailActivity.class);
-                                intent.putExtra("Username", Username);
-                                intent.putExtra("createAt", createAt);
-                                intent.putExtra("tag",tag);
-                                intent.putExtra("title", title);
-                                intent.putExtra("Content", Content);
-                                intent.putExtra("comment_count",comment_count);
-                                intent.putExtra("like_count",like_count);
-                                intent.putExtra("if_like",if_like);
-                                intent.putExtra("star_count",star_count);
-                                intent.putExtra("if_star",if_star);
-                                intent.putExtra("user_head", user_head);
-                                intent.putExtra("imagelist", imagelist);
-                                intent.putExtra("commentlist",convertComments2String(commentlist));
+                                intent.putExtra("postid", postid);
                                 activityLauncher.launch(intent);
                             }
                         });
@@ -162,13 +141,40 @@ public class NewPostsFragment extends Fragment {
                 // TODO 诶这个世界好像不对吧应该是发送的时间
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String currentDateTime = dateFormat.format(new Date());
-                // TODO 好像需要发送userID从后端获取用户名和头像
-                String username = "Zero"; // 替换为实际用户名
-                // 将时间和用户名作为额外数据添加到 Intent
-                intent.putExtra("currentTime", currentDateTime);
-                intent.putExtra("username", username);
-                intent.putExtra("user_head","giao.jpg");
-                startActivity(intent);
+                // TODO 从后端获得name 头像 关注被关注等信息
+                OkHttpClient client = new OkHttpClient();
+                RequestBody body = new FormBody.Builder()
+                        .add("userid", userID)
+                        .build();
+                Request request = new Request.Builder()
+                        .url(GlobalVariables.get_user_url)
+                        .post(body)
+                        .build();
+                client.newCall(request).enqueue(new okhttp3.Callback() {
+                    @Override
+                    public void onFailure(okhttp3.Call call, IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
+                        String responseText = response.body().string();
+                        Log.d("NewPostFragment", "responseText: " + responseText);
+                        // if(responseText == null) return;
+                        final User myResponse = new Gson().fromJson(responseText, new TypeToken<User>(){}.getType());
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // 将时间和用户名作为额外数据添加到 Intent
+                                intent.putExtra("currentTime", currentDateTime);
+                                intent.putExtra("username", myResponse.getUsername());
+                                intent.putExtra("user_head",myResponse.getUser_head());
+                                startActivity(intent);
+                            }
+                        });
+                    }
+                });
             }
         });
 

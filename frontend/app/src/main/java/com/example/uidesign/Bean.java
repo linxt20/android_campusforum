@@ -20,6 +20,7 @@ public class Bean {
     private int star_count = 0;
     private int if_star = 0;
     private String user_head;
+    private String postid;
 
     private String[] imagelist = new String[6];
 
@@ -35,7 +36,8 @@ public class Bean {
                  int if_star,
                  String user_head,
                  String[] imagelist,
-                 Comment[] commentList) {
+                 Comment[] commentList,
+                 String postid) {
         this.Username = Username;
         this.createAt = createAt;
         this.tag = tag;
@@ -49,8 +51,9 @@ public class Bean {
         this.user_head = user_head;
         this.imagelist = imagelist;
         this.comment_list = commentList;
-
+        this.postid = postid;
     }
+    public  String getPostid() {return postid;}
     public String getUsername() {
         return Username;
     }
@@ -68,6 +71,12 @@ public class Bean {
     public int getIf_like(){ return if_like;}
     public int getlike_count() {
         return like_count;
+    }
+    public void setIf_like(int if_like) {
+        this.if_like = if_like;
+    }
+    public void setIf_star(int if_star) {
+        this.if_star = if_star;
     }
     public int getIf_star(){ return if_star;}
     public int getstar_count() {

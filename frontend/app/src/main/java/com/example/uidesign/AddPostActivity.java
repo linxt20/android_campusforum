@@ -1,11 +1,14 @@
 package com.example.uidesign;
 
+import static java.lang.Thread.sleep;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.Manifest;
 import android.content.ClipData;
@@ -29,8 +32,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.uidesign.model.Comment;
+import com.example.uidesign.model.Post;
 import com.example.uidesign.utils.GlobalVariables;
 import com.example.uidesign.utils.ImageDownloader;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -39,9 +46,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -54,6 +63,7 @@ public class AddPostActivity extends AppCompatActivity {
     String username;
     String user_head;
     String currentTime;
+    String userID;
     public ImageView image_user;
     public TextView UsernameView;
     public TextView createTime;
@@ -98,9 +108,7 @@ public class AddPostActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_EXTERNAL_STORAGE_PERMISSION);
         }
 
-
-
-        sharedPreferences = getSharedPreferences("com.example.android.draft", MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("com.example.android.myapp", MODE_PRIVATE);
         loadDraft();
 
         selectImageButton.setOnClickListener(new View.OnClickListener() {
@@ -168,6 +176,7 @@ public class AddPostActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == RESULT_OK) {
             ClipData clipData = data.getClipData();
             if(clipData != null && clipData.getItemCount() > 0 && clipData.getItemCount() <= 6) {
@@ -261,6 +270,7 @@ public class AddPostActivity extends AppCompatActivity {
     public void goback(View view){
         saveDraft();
         onBackPressed();
+        //startActivity(new Intent(this, ContentAll.class));
     }
 
     public void reset(View view){
@@ -281,10 +291,98 @@ public class AddPostActivity extends AppCompatActivity {
     public void push(View view){
         // 这个insert是无效的，因为beanlist在addpostactivity文件的生命周期里面，活动结束了beanlist也无法存储，所以无法在动态那边显示，
         // TODO 这里等后续后端接口出来，调用后端的插入接口，再在动态那边调用后端的获取接口即可
-        BeanList.insert(username,currentTime,"标签", Titletext.getText().toString(),contenttext.getText().toString(),
-                0,0,0,0,0,user_head,stringlist,null);
-        reset(view);
-        goback(view);
+//        BeanList.insert(username,currentTime,"标签", Titletext.getText().toString(),contenttext.getText().toString(),
+//                0,0,0,0,0,user_head,stringlist,null);
+        OkHttpClient client = new OkHttpClient();
+        SharedPreferences prefs = getSharedPreferences("com.example.android.myapp", MODE_PRIVATE);
+        userID = prefs.getString("userID", "");
+
+        // get current time
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date(System.currentTimeMillis());
+        currentTime = simpleDateFormat.format(date);
+        // TODO 处理标签   这里因为只能上传string，于是上传的是count的string不知道会不会有问题
+        RequestBody body = new FormBody.Builder()
+                .add("userid", userID)
+                .add("createAt", currentTime)
+                .add("title", Titletext.getText().toString())
+                .add("content", contenttext.getText().toString())
+                .add("tag", "标签1")
+                .add("resource_num", count+"")
+                .add("resource_type", "jpg")
+                .build();
+        Request request = new Request.Builder()
+                .url(GlobalVariables.add_post_url)
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseText = response.body().string();
+                Log.d("AddPostActivity response: ", responseText);
+                final String myResponse[] = new Gson().fromJson(responseText, new TypeToken<String[]>(){}.getType());
+                for(int i = 0; i < myResponse.length; i++){
+                    Log.d("AddPostActivity", i + " image: " + myResponse[i]);
+                    sendImage(i, myResponse[i]);
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // TODO
+                        reset(view);
+                        goback(view);
+                    }
+                });
+            }
+        });
+        Toast.makeText(this, "PUSHED",Toast.LENGTH_SHORT).show();
+    }
+
+    public void sendImage(int position, String name){
+        Uri imageUri = urilist[position];
+        String mediaType = MediaType.parse(getContentResolver().getType(imageUri)).toString();
+        InputStream inputStream = null;
+        OkHttpClient client = new OkHttpClient();
+        try {
+            inputStream = getContentResolver().openInputStream(imageUri);
+            File tempFile = saveInputStreamToFile(inputStream); // 自定义方法，将输入流保存为临时文件
+            inputStream.close();
+            RequestBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("image", tempFile.getName(), RequestBody.create(MediaType.parse(mediaType), tempFile))
+                    .addFormDataPart("name", name)
+                    .build();
+
+            // RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpeg"), imageData); // 或者使用临时文件：RequestBody.create(MediaType.parse("image/jpeg"), tempFile);
+            Request request = new Request.Builder()
+                    .url(GlobalVariables.test_image_url)
+                    .post(requestBody)
+                    .build();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    // 处理响应
+                    Log.d("LOG_NAME", response.body().string());
+                }
+
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                    // 处理异常
+                }
+            });
+
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

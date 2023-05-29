@@ -54,16 +54,6 @@ public class ProfileMyPostsFragment extends Fragment {
 
     }
 
-    public String convertComments2String(Comment[] comments){
-        if(comments == null) return "";
-        // TODO 这个太随便了一定要改！！！
-        String result = "";
-        for(Comment comment: comments){
-            result += comment.getAuthor_id() + ",," + comment.getCreate_time() + ",," + comment.getContent() + ";;";
-        };
-        return result;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -86,9 +76,10 @@ public class ProfileMyPostsFragment extends Fragment {
 
         RequestBody body = new FormBody.Builder()
                 .add("userid", userID)
+                .add("type", "create")
                 .build();
         Request request = new Request.Builder()
-                .url(GlobalVariables.get_posts_url)
+                .url(GlobalVariables.get_user_posts_url)
                 .post(body)
                 .build();
 
@@ -107,7 +98,7 @@ public class ProfileMyPostsFragment extends Fragment {
                     Log.d("ProfileMyPostsFragment", myResponse.get(i).toString());
                     String[] images = myResponse.get(i).getResource_list();
                     if(images.length == 0) return;
-                    boardItemList.insert(images[0], myResponse.get(i).getTitle(), myResponse.get(i).getCreate_time());
+                    boardItemList.insert(images[0], myResponse.get(i).getTitle(), myResponse.get(i).getCreate_time(), myResponse.get(i).getPostid());
                 }
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -118,33 +109,8 @@ public class ProfileMyPostsFragment extends Fragment {
                             @Override
                             public void onRecyclerItemClick(int position) {
                                 BoardItem current = boardItemList.get(position);
-                                String Username ="TODO";
-                                String createAt = current.getDateTime();
-                                String tag = "TODO";
-                                String title = current.getTitle();
-                                String Content = "TODO";
-                                int comment_count = 0;
-                                int like_count = 0;
-                                int if_like = 0;
-                                int star_count = 0;
-                                int if_star = 0;
-                                String user_head =  "giao.jpg";
-                                String[] imagelist = {current.getImage()};
-                                Comment[] commentlist = null;//current.getcomment_list();
                                 Intent intent = new Intent(requireActivity(), DetailActivity.class);
-                                intent.putExtra("Username", Username);
-                                intent.putExtra("createAt", createAt);
-                                intent.putExtra("tag",tag);
-                                intent.putExtra("title", title);
-                                intent.putExtra("Content", Content);
-                                intent.putExtra("comment_count",comment_count);
-                                intent.putExtra("like_count",like_count);
-                                intent.putExtra("if_like",if_like);
-                                intent.putExtra("star_count",star_count);
-                                intent.putExtra("if_star",if_star);
-                                intent.putExtra("user_head", user_head);
-                                intent.putExtra("imagelist", imagelist);
-                                intent.putExtra("commentlist",convertComments2String(commentlist));
+                                intent.putExtra("postid", current.getPostid());
                                 startActivity(intent);
                             }
                         });

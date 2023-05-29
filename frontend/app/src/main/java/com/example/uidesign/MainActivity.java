@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
         // 检查用户是否已登录，如果未登录，则返回到登录页面
         prefs = getSharedPreferences("com.example.android.myapp", MODE_PRIVATE);
         boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
-        //isLoggedIn = false;
         if (isLoggedIn) {
             Intent intent = new Intent(this, ContentAll.class);
             startActivity(intent);
