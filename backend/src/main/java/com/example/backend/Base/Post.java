@@ -42,6 +42,8 @@ public class Post {
 
     public Post(String postid,
                 String author_id,
+                String author_name,
+                String author_head,
                 String create_time,
                 String title,
                 String content,
@@ -59,6 +61,8 @@ public class Post {
 
         System.out.println("Start new1 post");
         this.author_id=author_id;
+        this.author_name=author_name;
+        this.author_head=author_head;
         this.create_time=create_time;
         this.title=title;
         this.content=content;
@@ -187,4 +191,17 @@ public class Post {
         this.star_userid_list.remove(userid);
     }
 
+    public void add_comment(Comment comment){
+        this.comment_count++;
+        if(this.comment_list==null){
+            this.comment_list=new ArrayList<Comment>();
+        }
+        this.comment_list.add(comment);
+        //按评论的create_time进行倒序排序
+        this.comment_list.sort((o1, o2) -> Integer.compare(0, o1.getCreate_time().compareTo(o2.getCreate_time())));
+    }
+
+    public List<Comment> getComment_list() {
+        return comment_list;
+    }
 }
