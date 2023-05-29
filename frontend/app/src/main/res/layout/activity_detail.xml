@@ -19,13 +19,11 @@
             android:layout_height="60dp"
             android:gravity="center_vertical">
 
-            <ImageView
+            <com.example.uidesign.utils.CircleImageView
                 android:id="@+id/userhead"
-                android:src="@drawable/ring_user"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginEnd="10dp"
-                android:background="@drawable/man_1"
                 />
 
             <LinearLayout
@@ -229,7 +227,15 @@
 
             </LinearLayout>
         </GridLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/detailCommentList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
     </LinearLayout>
+
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="50dp"

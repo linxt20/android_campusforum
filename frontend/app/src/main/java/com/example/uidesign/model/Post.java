@@ -27,6 +27,7 @@ public class Post {
     String[] resource_list;//资源列表 记录其在static/images中的名称
 
     String tag;//标签仅一个
+    List<Comment> comment_list;//评论列表
 
     public Post(String postid,
                 String author_id,
@@ -41,31 +42,33 @@ public class Post {
                 List<String> like_userid_list,
                 List<String> star_userid_list,
                 int comment_count,
-                String[] resource_list){
+                String[] resource_list,
+                List<Comment> comment_list
+    ) {
 
         System.out.println("Start new1 post");
-        this.author_id=author_id;
-        this.create_time=create_time;
-        this.title=title;
-        this.content=content;
-        this.resource_num=resource_num;
-        this.resource_type=resource_type;
-        this.tag=tag;
-        this.postid=postid;
-        this.resource_list=resource_list;
+        this.author_id = author_id;
+        this.create_time = create_time;
+        this.title = title;
+        this.content = content;
+        this.resource_num = resource_num;
+        this.resource_type = resource_type;
+        this.tag = tag;
+        this.postid = postid;
+        this.resource_list = resource_list;
         //新建时，自动置为0
-        this.like_count=like_count;
-        this.comment_count=comment_count;
-        this.star_count=star_count;
-        this.if_like=0;
-        this.if_star=0;
-        this.like_userid_list=like_userid_list;
-        this.star_userid_list=star_userid_list;
+        this.like_count = like_count;
+        this.comment_count = comment_count;
+        this.star_count = star_count;
+        this.if_like = 0;
+        this.if_star = 0;
+        this.like_userid_list = like_userid_list;
+        this.star_userid_list = star_userid_list;
+        this.comment_list = comment_list;
     }
 
 
-
-    public String getPostid(){
+    public String getPostid() {
         return postid;
     }
 
@@ -73,12 +76,8 @@ public class Post {
         return resource_list;
     }
 
-    public int getIf_like() {
-        return if_like;
-    }
-
-    public int getIf_star() {
-        return if_star;
+    public List<Comment> getComment_list() {
+        return comment_list;
     }
 
     public String getId() {
@@ -144,35 +143,44 @@ public class Post {
     public void setIf_like(int if_like) {
         this.if_like = if_like;
     }
+
     public void setIf_star(int if_star) {
         this.if_star = if_star;
     }
 
-    public void add_like(String userid){
-        this.like_count=this.like_count+1;
-        if(this.like_userid_list==null){
-            this.like_userid_list=new ArrayList<String>();
+    public void add_like(String userid) {
+        this.like_count = this.like_count + 1;
+        if (this.like_userid_list == null) {
+            this.like_userid_list = new ArrayList<String>();
         }
         this.like_userid_list.add(userid);
     }
 
-    public void add_star(String userid){
-        this.star_count=this.star_count+1;
-        if(this.star_userid_list==null){
-            this.star_userid_list=new ArrayList<String>();
+    public void add_star(String userid) {
+        this.star_count = this.star_count + 1;
+        if (this.star_userid_list == null) {
+            this.star_userid_list = new ArrayList<String>();
         }
         this.star_userid_list.add(userid);
     }
 
-    public void cancel_like(String userid){
+    public void cancel_like(String userid) {
         this.like_count--;
         this.like_userid_list.remove(userid);
     }
 
-    public void cancel_star(String userid){
+    public void cancel_star(String userid) {
         this.star_count--;
         this.star_userid_list.remove(userid);
     }
 
-}
 
+    public int getIf_like() {
+        return if_like;
+    }
+
+    public int getIf_star() {
+        return if_star;
+    }
+
+}

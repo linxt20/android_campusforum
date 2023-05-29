@@ -76,12 +76,18 @@ public class Post {
         this.like_userid_list=like_userid_list;
         this.star_userid_list=star_userid_list;
         this.comment_list=comment_list;
+        for(int i=0;i<comment_list.size();i++){
+            System.out.println("Post comment sent by: " + comment_list.get(i).toString());
+        }
     }
 
 
 
     public String getPostid(){
         return postid;
+    }
+    public List<Comment> getComment_list() {
+        return comment_list;
     }
 
     public String[] getResource_list() {

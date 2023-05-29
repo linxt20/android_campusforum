@@ -1,16 +1,24 @@
 package com.example.uidesign;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.uidesign.comment.CommentItemList;
+import com.example.uidesign.comment.CommentRecycleAdapter;
+import com.example.uidesign.model.Comment;
 import com.example.uidesign.utils.GlobalVariables;
 import com.example.uidesign.utils.ImageDownloader;
 
@@ -32,7 +40,21 @@ public class DetailActivity extends AppCompatActivity {
     public ImageView likeimage;
     public ImageView starimage;
     public ImageView image_user;
+    CommentRecycleAdapter adapter;
     public final ImageView[] imageshow = new ImageView[6];
+
+    public CommentItemList convertString2Comments(String str){
+        // TODO 这个太随便了一定要改！！！
+        if(str.equals("") || str == null) return new CommentItemList();
+        String[] parts = str.split(";;");
+        CommentItemList comments = new CommentItemList();
+        for(int i = 0; i < parts.length; i++){
+            String[] comment_parts = parts[i].split(",,", 3);
+            comments.insert("giao.jpg", "test", comment_parts[1], comment_parts[2]);
+        }
+        return comments;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +73,11 @@ public class DetailActivity extends AppCompatActivity {
         int if_star = getIntent().getIntExtra("if_star",0);
         String user_head = getIntent().getStringExtra("user_head");
         String[] imagelist = getIntent().getStringArrayExtra("imagelist");
-
+        String commentlistString = getIntent().getStringExtra("commentlist");
+        adapter = new CommentRecycleAdapter(this, convertString2Comments(commentlistString));
+        RecyclerView recyclerView = findViewById(R.id.detailCommentList);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         UsernameView = findViewById(R.id.username);
         createTime = findViewById(R.id.createat);
         tagshow = findViewById(R.id.Tagshow);

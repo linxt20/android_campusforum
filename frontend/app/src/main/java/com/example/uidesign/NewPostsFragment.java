@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.widget.Button;
 
+import com.example.uidesign.model.Comment;
 import com.example.uidesign.model.Post;
 import com.example.uidesign.utils.GlobalVariables;
 import com.google.gson.Gson;
@@ -42,6 +43,16 @@ public class NewPostsFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    public String convertComments2String(Comment[] comments){
+        if(comments == null) return "";
+        // TODO 这个太随便了一定要改！！！
+        String result = "";
+        for(Comment comment: comments){
+            result += comment.getAuthor_id() + ",," + comment.getCreate_time() + ",," + comment.getContent() + ";;";
+        };
+        return result;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -58,14 +69,6 @@ public class NewPostsFragment extends Fragment {
         );
 
         //TODO 这里是插入了一个默认的动态，这里等后端的获取接口完成，调用获取接口就能获得所有的动态信息，然后在插入adapter
-//        String[] imagelist = new String[2];
-//        for (int i = 0; i < 2; i++) {
-//            imagelist[i] = (i+1) + ".jpg";
-//        }
-//
-//        BeanList.insert("Zero","2022-02-01 10:30:00","标签","我的新年计划",
-//                "今年我决定要更加健康地生活，所以我打算每天都去跑步和做瑜伽，同时控制饮食，希望能在年底达成我的目标。",
-//                0,0,0,0,0,"jyjjyyds.jpg",imagelist);
 
         OkHttpClient client = new OkHttpClient();
         prefs = getActivity().getSharedPreferences("com.example.android.myapp", 0);
@@ -94,11 +97,15 @@ public class NewPostsFragment extends Fragment {
                     Log.d("NewPostFragmentsFragment", myResponse.get(i).toString());
                     String[] images = myResponse.get(i).getResource_list();
                     if(images.length == 0) return;
-                    // TODO beanlist insert
+                    // TODO 这里将 List<Comment> 转换为 Comment[]有些繁琐，后续可能要修改
+                    Comment[] comments = new Comment[myResponse.get(i).getComment_count()];
+                    Log.d("NewPostFragment", "comments: " + myResponse.get(i).getComment_list());
+                    for(int j = 0; j < myResponse.get(i).getComment_count(); j++){
+                        comments[j] = myResponse.get(i).getComment_list().get(j);
+                    }
                     BeanList.insert(myResponse.get(i).getAuthor_name(), myResponse.get(i).getCreate_time(), myResponse.get(i).getTag(), myResponse.get(i).getTitle()
                     , myResponse.get(i).getContent(),myResponse.get(i).getComment_count(), myResponse.get(i).getLike_count(), myResponse.get(i).getIf_like()
-                    , myResponse.get(i).getStar_count(), myResponse.get(i).getIf_star(), myResponse.get(i).getAuthor_head(), myResponse.get(i).getResource_list());
-                    // boardItemList.insert(GlobalVariables.name2url(images[0]), myResponse.get(i).getTitle(), myResponse.get(i).getCreate_time());
+                    , myResponse.get(i).getStar_count(), myResponse.get(i).getIf_star(), myResponse.get(i).getAuthor_head(), myResponse.get(i).getResource_list(), comments);
                 }
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -121,6 +128,7 @@ public class NewPostsFragment extends Fragment {
                                 int if_star = current.getIf_star();
                                 String user_head = current.getuser_head();
                                 String[] imagelist = current.getimagelist();
+                                Comment[] commentlist = current.getcomment_list();
                                 Intent intent = new Intent(requireActivity(), DetailActivity.class);
                                 intent.putExtra("Username", Username);
                                 intent.putExtra("createAt", createAt);
@@ -134,6 +142,7 @@ public class NewPostsFragment extends Fragment {
                                 intent.putExtra("if_star",if_star);
                                 intent.putExtra("user_head", user_head);
                                 intent.putExtra("imagelist", imagelist);
+                                intent.putExtra("commentlist",convertComments2String(commentlist));
                                 activityLauncher.launch(intent);
                             }
                         });
@@ -158,7 +167,7 @@ public class NewPostsFragment extends Fragment {
                 // 将时间和用户名作为额外数据添加到 Intent
                 intent.putExtra("currentTime", currentDateTime);
                 intent.putExtra("username", username);
-                intent.putExtra("user_head","jyjjyyds.jpg");
+                intent.putExtra("user_head","giao.jpg");
                 startActivity(intent);
             }
         });

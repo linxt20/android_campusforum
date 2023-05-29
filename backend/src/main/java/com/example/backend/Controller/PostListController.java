@@ -44,18 +44,23 @@ public class PostListController {
 
             ///////////// 此处开始测试代码////////////
             List<String> tmp=new ArrayList<>();
+            List<Comment> tmpComment = new ArrayList<>();
+            Comment comment = new Comment("1","2021-01-01 07:31:10","haha");
+            tmpComment.add(comment);
             int resource_num = 1;
             String[] resource_list=new String[resource_num];
             resource_list[0]="1.jpg";
             Post post_new = new Post("1",userid,"2020-01-01 07:31:00","title","content","tag",resource_num,"jpg",
-                    0,0,tmp,tmp,0,resource_list);
+                    0,0,tmp,tmp,tmpComment.size(),resource_list,tmpComment);
             String[] resource_list2=new String[resource_num];
             resource_list2[0]="2.jpg";
             Post post_new2 = new Post("2",userid,"2020-01-01 07:31:01","title22","content","tag",resource_num,"jpg",
-                    0,0,tmp,tmp,0,resource_list2);
+                    0,0,tmp,tmp,tmpComment.size(),resource_list2,tmpComment);
+            System.out.println("after new post: " + post_new.getComment_list().get(0).toString());
             rv.add(post_new);
             rv.add(post_new2);
             ///////////// 此处结束测试代码////////////
+
             for(Post post:rv){
                 Query query = new Query();
                 query.addCriteria(Criteria.where("userid").is(post.getAuthor_id()));
@@ -65,7 +70,7 @@ public class PostListController {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
                 post.setAuthor_name(user.getUsername());
-                post.setAuthor_head(user.getUser_head());
+                post.setAuthor_head("giao.jpg"); // TODO (user.getUser_head());
             }
             //System.out.println(rv.get(0).getAuthor_name());
             //System.out.println("haha1");
@@ -94,7 +99,8 @@ public class PostListController {
                     post.setIf_star(0);
                 }
             }
-            //System.out.println("haha3");
+
+
             return new ResponseEntity<>(rv, HttpStatus.OK);
 
         }

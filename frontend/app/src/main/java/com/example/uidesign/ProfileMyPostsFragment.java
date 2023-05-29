@@ -1,5 +1,6 @@
 package com.example.uidesign;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -12,7 +13,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.uidesign.model.Comment;
 import com.example.uidesign.model.Post;
+import com.example.uidesign.profile.BoardItem;
 import com.example.uidesign.profile.BoardItemList;
 import com.example.uidesign.profile.RecycleAdapter;
 import com.example.uidesign.utils.GlobalVariables;
@@ -49,6 +52,16 @@ public class ProfileMyPostsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+    }
+
+    public String convertComments2String(Comment[] comments){
+        if(comments == null) return "";
+        // TODO 这个太随便了一定要改！！！
+        String result = "";
+        for(Comment comment: comments){
+            result += comment.getAuthor_id() + ",," + comment.getCreate_time() + ",," + comment.getContent() + ";;";
+        };
+        return result;
     }
 
     @Override
@@ -94,13 +107,47 @@ public class ProfileMyPostsFragment extends Fragment {
                     Log.d("ProfileMyPostsFragment", myResponse.get(i).toString());
                     String[] images = myResponse.get(i).getResource_list();
                     if(images.length == 0) return;
-                    boardItemList.insert(GlobalVariables.name2url(images[0]), myResponse.get(i).getTitle(), myResponse.get(i).getCreate_time());
+                    boardItemList.insert(images[0], myResponse.get(i).getTitle(), myResponse.get(i).getCreate_time());
                 }
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        // TODO set adapter
                         adapter = new RecycleAdapter(getActivity(), boardItemList);
+                        // TODO 可能有点慢，目前还不知道怎么改。。
+                        adapter.setRecyclerItemClickListener(new RecycleAdapter.OnRecyclerItemClickListener() {
+                            @Override
+                            public void onRecyclerItemClick(int position) {
+                                BoardItem current = boardItemList.get(position);
+                                String Username ="TODO";
+                                String createAt = current.getDateTime();
+                                String tag = "TODO";
+                                String title = current.getTitle();
+                                String Content = "TODO";
+                                int comment_count = 0;
+                                int like_count = 0;
+                                int if_like = 0;
+                                int star_count = 0;
+                                int if_star = 0;
+                                String user_head =  "giao.jpg";
+                                String[] imagelist = {current.getImage()};
+                                Comment[] commentlist = null;//current.getcomment_list();
+                                Intent intent = new Intent(requireActivity(), DetailActivity.class);
+                                intent.putExtra("Username", Username);
+                                intent.putExtra("createAt", createAt);
+                                intent.putExtra("tag",tag);
+                                intent.putExtra("title", title);
+                                intent.putExtra("Content", Content);
+                                intent.putExtra("comment_count",comment_count);
+                                intent.putExtra("like_count",like_count);
+                                intent.putExtra("if_like",if_like);
+                                intent.putExtra("star_count",star_count);
+                                intent.putExtra("if_star",if_star);
+                                intent.putExtra("user_head", user_head);
+                                intent.putExtra("imagelist", imagelist);
+                                intent.putExtra("commentlist",convertComments2String(commentlist));
+                                startActivity(intent);
+                            }
+                        });
                         recyclerView.setAdapter(adapter);
                         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                     }

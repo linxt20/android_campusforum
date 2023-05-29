@@ -1,5 +1,7 @@
 package com.example.uidesign;
 
+import com.example.uidesign.model.Comment;
+
 import java.util.ArrayList;
 
 public class BeanList {
@@ -18,8 +20,9 @@ public class BeanList {
                         int star_count,
                         int if_star,
                         String user_head,
-                        String[] imagelist) {
-        data.add(0,new Bean(Username,createAt,tag,title,content,comment_count,like_count,if_like,star_count,if_star,user_head,imagelist));
+                        String[] imagelist,
+                        Comment[] commentList) {
+        data.add(0,new Bean(Username,createAt,tag,title,content,comment_count,like_count,if_like,star_count,if_star,user_head,imagelist,commentList));
     }
     public Bean get(int index) {
         return data.get(index);

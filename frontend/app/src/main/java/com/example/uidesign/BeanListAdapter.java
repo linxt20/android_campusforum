@@ -1,20 +1,31 @@
 package com.example.uidesign;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.uidesign.comment.CommentItemList;
+import com.example.uidesign.comment.CommentRecycleAdapter;
+import com.example.uidesign.model.Comment;
 import com.example.uidesign.utils.GlobalVariables;
 import com.example.uidesign.utils.ImageDownloader;
 
 public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanViewHolder> {
     private final BeanList BeanList;
+    CommentRecycleAdapter adapter;
     private final LayoutInflater inflater;
     private Context mContext;
     public BeanListAdapter(Context context, BeanList BeanList) {
@@ -54,6 +65,16 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
         holder.liketext.setText(String.valueOf(like_count));
         holder.startext.setText(String.valueOf(star_count));
         holder.tagView.setText(current.gettag());
+        Comment[] comments = current.getcomment_list();
+        Log.d("BeanListAdapter",  "comment count: " + current.getcomment_count());
+        CommentItemList CommentList = new CommentItemList();
+        for (Comment comment: comments) {
+            // TODO 这里通过id从后端获得user_head和username
+            CommentList.insert("giao.jpg","haha", comment.getCreate_time(), comment.getContent());
+        }
+        adapter = new CommentRecycleAdapter(mContext, CommentList);
+        holder.recyclerView.setAdapter(adapter);
+        holder.recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         ImageDownloader headDownloader = new ImageDownloader(holder.image_user);
         headDownloader.execute(GlobalVariables.name2url(user_head));
         // 这里是六个图片的显示逻辑
@@ -129,7 +150,6 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
         public final TextView commenttext;
         public final TextView liketext;
         public final TextView startext;
-
         public final ImageView image_user;
         public final ImageView[] imageshow = new ImageView[6];
         public final LinearLayout getdetailarea;
@@ -139,6 +159,7 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
         public final ImageView likeimage;
         public final ImageView starimage;
         public final TextView tagView;
+        public RecyclerView recyclerView;
 
 
 
@@ -158,12 +179,12 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
             likeimage = itemView.findViewById(R.id.likeimage);
             starimage = itemView.findViewById(R.id.starimage);
             tagView = itemView.findViewById(R.id.Tagshow);
+            recyclerView = itemView.findViewById(R.id.commentlist);
 
             int[] imageViewIds = {R.id.imageView1, R.id.imageView2, R.id.imageView3, R.id.imageView4, R.id.imageView5,R.id.imageView6};
 
             for (int i = 0; i < 6; i++) {
                 imageshow[i] = itemView.findViewById(imageViewIds[i]);
-                //imageshow[i].setBackground(null);
             }
 
             getdetailarea.setOnClickListener(new View.OnClickListener() {

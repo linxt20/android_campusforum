@@ -1,33 +1,39 @@
-package com.example.uidesign.profile;
+package com.example.uidesign.comment;
 
-import android.graphics.Bitmap;
+import android.util.Log;
 
-public class BoardItem {
+public class CommentItem {
 
-    private String image;
-    private String title;
+    private String imageUser;
+    private String username;
 
-    // TODO like_count, comment_count, star_count
+    private String content;
     private String dateTime;
 
-    public BoardItem(String image, String title, String dateTime) {
-        this.image = image;
-        this.title = title;
+    public CommentItem(String image, String username, String dateTime, String content) {
+        this.imageUser = image;
+        this.username = username;
         this.dateTime = dateTime;
+        this.content = content;
+        Log.d(this.getClass().getSimpleName(), "imaage: " + image + " username: " + username + " dateTime: " + dateTime + " content: " + content);
     }
 
     public String getImage() {
-        return image;
+        return imageUser;
     }
 
 
-    public String getTitle() {
-        return title;
+    public String getUsername() {
+        return username;
     }
 
     public String getDateTime() {
         return dateTime;
     }
+    
+    public String getContent() {
+        return content;
+    }    
 
     // 用于排序形如 yyyy-mm-dd HH:MM:SS 的时间
     public int convertTime2Num() {

@@ -1,4 +1,4 @@
-package com.example.backend.Base;
+package com.example.uidesign.model;
 
 public class Comment {
     String comment_id;
@@ -8,12 +8,11 @@ public class Comment {
     String create_time;//评论创建时间
     String content;//评论内容
 
-    public Comment(String author_id,String create_time,String content){
+    Comment(String author_id,String create_time,String content){
         this.author_id=author_id;
         this.create_time=create_time;
         this.content=content;
     }
-
 
     public String getAuthor_id() {
         return author_id;
@@ -25,3 +24,4 @@ public class Comment {
         return create_time;
     }
 }
+

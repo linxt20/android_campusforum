@@ -2,6 +2,10 @@ package com.example.uidesign;
 
 import android.net.Uri;
 
+import com.example.uidesign.model.Comment;
+
+import java.util.List;
+
 public class Bean {
     private String Username = "";
     private String createAt = "";
@@ -10,6 +14,7 @@ public class Bean {
     private String content = "";
 
     private int comment_count = 0;
+    private Comment[] comment_list;
     private int like_count = 0;
     private int if_like = 0;
     private int star_count = 0;
@@ -29,7 +34,8 @@ public class Bean {
                  int star_count,
                  int if_star,
                  String user_head,
-                 String[] imagelist) {
+                 String[] imagelist,
+                 Comment[] commentList) {
         this.Username = Username;
         this.createAt = createAt;
         this.tag = tag;
@@ -42,6 +48,8 @@ public class Bean {
         this.if_star = if_star;
         this.user_head = user_head;
         this.imagelist = imagelist;
+        this.comment_list = commentList;
+
     }
     public String getUsername() {
         return Username;
@@ -69,4 +77,6 @@ public class Bean {
     public String getuser_head() { return user_head;}
 
     public String[] getimagelist() { return imagelist; }
+
+    public Comment[] getcomment_list() { return comment_list;}
 }

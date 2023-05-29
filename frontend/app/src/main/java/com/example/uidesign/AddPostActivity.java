@@ -281,8 +281,8 @@ public class AddPostActivity extends AppCompatActivity {
     public void push(View view){
         // 这个insert是无效的，因为beanlist在addpostactivity文件的生命周期里面，活动结束了beanlist也无法存储，所以无法在动态那边显示，
         // TODO 这里等后续后端接口出来，调用后端的插入接口，再在动态那边调用后端的获取接口即可
-        BeanList.insert(username,currentTime,"显示标签", Titletext.getText().toString(),contenttext.getText().toString(),
-                0,0,0,0,0,user_head,stringlist);
+        BeanList.insert(username,currentTime,"标签", Titletext.getText().toString(),contenttext.getText().toString(),
+                0,0,0,0,0,user_head,stringlist,null);
         reset(view);
         goback(view);
     }

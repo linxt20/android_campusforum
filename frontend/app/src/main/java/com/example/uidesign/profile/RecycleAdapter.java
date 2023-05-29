@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.uidesign.BeanListAdapter;
 import com.example.uidesign.DetailActivity;
 import com.example.uidesign.utils.GlobalVariables;
 import com.example.uidesign.utils.ImageDownloader;
@@ -21,6 +22,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<BoardItemViewHolder> {
 
     private final BoardItemList boardItemList;
     private final LayoutInflater inflater;
+
 
     public RecycleAdapter(Context context, BoardItemList bItemList) {
         inflater = LayoutInflater.from(context);
@@ -38,6 +40,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<BoardItemViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull BoardItemViewHolder holder, int position) {
+
         // Retrieve the data for that position.
         String title = boardItemList.get(position).getTitle();
         String dateTime = boardItemList.get(position).getDateTime();
@@ -52,8 +55,25 @@ public class RecycleAdapter extends RecyclerView.Adapter<BoardItemViewHolder> {
         //holder.imgView.setImageResource(id);
 
         ImageDownloader imageDownloader = new ImageDownloader(holder.imgView);
-        imageDownloader.execute(image);
+        imageDownloader.execute(GlobalVariables.name2url(image));
         holder.timeView.setText(dateTime);
+        holder.item.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mOnItemClickListener!=null){
+                    mOnItemClickListener.onRecyclerItemClick(holder.getAdapterPosition());
+                }
+            }
+        });
+    }
+    public OnRecyclerItemClickListener mOnItemClickListener;
+
+    public void setRecyclerItemClickListener(OnRecyclerItemClickListener listener){
+        mOnItemClickListener = listener;
+    }
+
+    public interface OnRecyclerItemClickListener{
+        void onRecyclerItemClick(int position);
     }
 
     @Override
@@ -76,30 +96,5 @@ class BoardItemViewHolder extends RecyclerView.ViewHolder{
         this.timeView = itemView.findViewById(R.id.text_date_time);
         this.item =itemView.findViewById(R.id.clickable_post_item);
 
-        this.item.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 跳转到Details页面
-                int position = getAdapterPosition(); // 获取点击的项目的索引
-                Intent intent = new Intent(v.getContext(), DetailActivity.class);
-                String title = titleView.getText().toString();
-                String time = timeView.getText().toString();
-                // TODO 还是得搞到这些数据
-                intent.putExtra("title", title);
-                intent.putExtra("text", "This is a text");
-                intent.putExtra("Username", "小绿薯");
-                intent.putExtra("Content", "This is a content");
-                intent.putExtra("tag", "tag1");
-                intent.putExtra("createAt", time);
-                intent.putExtra("comment_count",0);
-                intent.putExtra("like_count",0);
-                intent.putExtra("if_like", 0);
-                intent.putExtra("star_count",0);
-                intent.putExtra("user_head", GlobalVariables.name2url("jyjjyyds.jpg"));
-                String[] list =  {GlobalVariables.name2url("1.jpg"), GlobalVariables.name2url("1.jpg")};
-                intent.putExtra("imageList", list);
-                v.getContext().startActivity(intent);
-                }
-            });
     }
 }
