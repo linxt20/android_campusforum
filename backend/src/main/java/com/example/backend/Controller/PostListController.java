@@ -72,9 +72,30 @@ public class PostListController {
                 rv=tmp;
             }
 
+            //根据用户的屏蔽名单block_list筛选帖子,若作者id在block_list中则不保留
+            //获取用户屏蔽名单
+            Query query = new Query();
+            query.addCriteria(Criteria.where("userid").is(userid));
+            User user = mongoTemplate.findOne(query, User.class);
+            //确认用户存在
+            if(user==null){
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            List<String> block_list = user.getBlock_list();
+            //根据用户屏蔽名单筛选帖子
+            if(block_list!=null){
+                List<Post> tmp=new ArrayList<>();
+                for(Post post:rv){
+                    if(!block_list.contains(post.getAuthor_id())){
+                        tmp.add(post);
+                    }
+                }
+                rv=tmp;
+            }
+
             //TODO 根据sortby排序帖子
 
-            //根据用户id 设置用户名称及头像
+
 
 //            ///////////// 此处开始测试代码////////////
 //            List<String> tmp=new ArrayList<>();
@@ -98,17 +119,18 @@ public class PostListController {
 //            rv.add(post_new2);
 //            ///////////// 此处结束测试代码////////////
 
-            for(Post post:rv){
-                Query query = new Query();
-                query.addCriteria(Criteria.where("userid").is(post.getAuthor_id()));
-                User user = mongoTemplate.findOne(query, User.class);
-                if(user==null){
-                    System.out.println("Error: user not found");
-                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-                }
-                post.setAuthor_name(user.getUsername());
-                post.setAuthor_head(user.getUser_head());
-            }
+//            //根据用户id 设置用户名称及头像 若修改用户名、头像没有bug，可删
+//            for(Post post:rv){
+//                query = new Query();
+//                query.addCriteria(Criteria.where("userid").is(post.getAuthor_id()));
+//                User user_author = mongoTemplate.findOne(query, User.class);
+//                if(user_author==null){
+//                    System.out.println("Error: user not found");
+//                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//                }
+//                post.setAuthor_name(user_author.getUsername());
+//                post.setAuthor_head(user_author.getUser_head());
+//            }
             
             //根据用户id设置Post的点赞、收藏状态，若userid在点赞列表中则设置为true，反之为false
             System.out.println("Start set like and star");
@@ -158,46 +180,66 @@ public class PostListController {
     public boolean if_contain_serchkey_list(Post post, List<String> key_list){
         //判断post中是否包含key_list中的每一个值
         if(post.getTitle()!=null){
+            Boolean not_contain=false;
             for(String key:key_list){
                 if(post.getTitle().contains(key)){
                     continue;
                 }
                 else{
-                    return false;
+                    not_contain = true;
+                    break;
                 }
+            }
+            if(!not_contain){
+                return true;
             }
         }
         if(post.getContent()!=null){
+            Boolean not_contain=false;
             for(String key:key_list){
                 if(post.getContent().contains(key)){
                     continue;
                 }
                 else{
-                    return false;
+                    not_contain = true;
+                    break;
                 }
+            }
+            if(!not_contain){
+                return true;
             }
         }
         if(post.getTag()!=null){
+            Boolean not_contain=false;
             for(String key:key_list){
                 if(post.getTag().contains(key)){
                     continue;
                 }
                 else{
-                    return false;
+                    not_contain = true;
+                    break;
                 }
+            }
+            if(!not_contain){
+                return true;
             }
         }
         if(post.getAuthor_name()!=null){
+            Boolean not_contain=false;
             for(String key:key_list){
                 if(post.getAuthor_name().contains(key)){
                     continue;
                 }
                 else{
-                    return false;
+                    not_contain = true;
+                    break;
                 }
             }
+            if(!not_contain){
+                return true;
+            }
         }
-        return true;
+        return false;
     }
 
     @PostMapping("/new_post")
