@@ -43,8 +43,8 @@ public class ProfileMyPostsFragment extends Fragment {
 
     public BoardItemList boardItemList = new BoardItemList();
 
-    public ProfileMyPostsFragment() {
-        // Required empty public constructor
+    public ProfileMyPostsFragment(String userID) {
+        this.userID = userID;
     }
 
 
@@ -71,8 +71,6 @@ public class ProfileMyPostsFragment extends Fragment {
 
         // TODO 从后端获得数据Post的List并展示在Recyclerview上
         OkHttpClient client = new OkHttpClient();
-        prefs = getActivity().getSharedPreferences("com.example.android.myapp", 0);
-        userID = prefs.getString("userID", "");
 
         RequestBody body = new FormBody.Builder()
                 .add("userid", userID)
@@ -97,8 +95,13 @@ public class ProfileMyPostsFragment extends Fragment {
                 for(int i = 0; i < myResponse.size(); i++){
                     Log.d("ProfileMyPostsFragment", myResponse.get(i).toString());
                     String[] images = myResponse.get(i).getResource_list();
-                    if(images.length == 0) return;
-                    boardItemList.insert(images[0], myResponse.get(i).getTitle(), myResponse.get(i).getCreate_time(), myResponse.get(i).getPostid());
+                    if(images.length == 0) {
+                        // TODO 处理以下没有图片的情况。。(改成无图片)
+                        boardItemList.insert("nopic.jpg", myResponse.get(i).getTitle(), myResponse.get(i).getCreate_time(), myResponse.get(i).getPostid());
+                    }
+                    else {
+                        boardItemList.insert(images[0], myResponse.get(i).getTitle(), myResponse.get(i).getCreate_time(), myResponse.get(i).getPostid());
+                    }
                 }
                 getActivity().runOnUiThread(new Runnable() {
                     @Override

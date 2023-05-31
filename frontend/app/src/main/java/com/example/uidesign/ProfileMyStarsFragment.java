@@ -37,14 +37,13 @@ public class ProfileMyStarsFragment extends Fragment {
 
     private RecyclerView recyclerView;//声明RecyclerView
     private RecycleAdapter adapter;//声明适配器
-    SharedPreferences prefs;
 
     private String userID;
 
     public BoardItemList boardItemList = new BoardItemList();
 
-    public ProfileMyStarsFragment() {
-        // Required empty public constructor
+    public ProfileMyStarsFragment(String userID) {
+        this.userID = userID;
     }
 
     @Override
@@ -69,8 +68,6 @@ public class ProfileMyStarsFragment extends Fragment {
 
         // TODO 从后端获得数据Post的List并展示在Recyclerview上
         OkHttpClient client = new OkHttpClient();
-        prefs = getActivity().getSharedPreferences("com.example.android.myapp", 0);
-        userID = prefs.getString("userID", "");
 
         RequestBody body = new FormBody.Builder()
                 .add("userid", userID)
@@ -95,8 +92,13 @@ public class ProfileMyStarsFragment extends Fragment {
                 for(int i = 0; i < myResponse.size(); i++){
                     Log.d("ProfileStarPostsFragment", myResponse.get(i).toString());
                     String[] images = myResponse.get(i).getResource_list();
-                    if(images.length == 0) return;
-                    boardItemList.insert(images[0], myResponse.get(i).getTitle(), myResponse.get(i).getCreate_time(), myResponse.get(i).getPostid());
+                    if(images.length == 0) {
+                        // TODO 处理以下没有图片的情况。。(改成无图片)
+                        boardItemList.insert("nopic.jpg", myResponse.get(i).getTitle(), myResponse.get(i).getCreate_time(), myResponse.get(i).getPostid());
+                    }
+                    else {
+                        boardItemList.insert(images[0], myResponse.get(i).getTitle(), myResponse.get(i).getCreate_time(), myResponse.get(i).getPostid());
+                    }
                 }
                 getActivity().runOnUiThread(new Runnable() {
                     @Override

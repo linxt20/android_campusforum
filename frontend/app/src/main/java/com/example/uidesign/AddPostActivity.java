@@ -284,7 +284,11 @@ public class AddPostActivity extends AppCompatActivity {
         }
         count = 0;
         SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
+        Boolean tmpIsLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+        String tmpUserID = sharedPreferences.getString("userID", "");
         preferencesEditor.clear();
+        preferencesEditor.putBoolean("isLoggedIn", tmpIsLoggedIn);
+        preferencesEditor.putString("userID", tmpUserID);
         preferencesEditor.apply();
     }
 

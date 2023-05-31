@@ -22,8 +22,9 @@ public class BeanList {
                         String user_head,
                         String[] imagelist,
                         Comment[] commentList,
-                        String postid) {
-        data.add(0,new Bean(Username,createAt,tag,title,content,comment_count,like_count,if_like,star_count,if_star,user_head,imagelist,commentList,postid));
+                        String postid,
+                        String userid) {
+        data.add(0,new Bean(Username,createAt,tag,title,content,comment_count,like_count,if_like,star_count,if_star,user_head,imagelist,commentList,postid, userid));
     }
     public Bean get(int index) {
         return data.get(index);
@@ -31,5 +32,9 @@ public class BeanList {
 
     public int size() {
         return data.size();
+    }
+
+    public void clear() {
+        data.clear();
     }
 }

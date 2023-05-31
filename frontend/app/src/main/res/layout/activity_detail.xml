@@ -14,7 +14,9 @@
         android:layout_marginStart="10dp"
         android:layout_marginEnd="20dp"
         />
-
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -102,7 +104,7 @@
             android:columnCount="3"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
             >
 
@@ -173,6 +175,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_columnWeight="1"
+                android:id="@+id/commentButton"
+                android:clickable="true"
                 android:gravity="center">
 
                 <ImageView
@@ -239,11 +243,37 @@
             </LinearLayout>
         </GridLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/commentLinearLayout"
+            android:layout_weight="1">
+
+
+            <EditText
+                android:id="@+id/editTextComment"
+                android:layout_width="0dp"
+                android:layout_weight="0.8"
+                android:layout_height="40dp"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:hint="发送评论～" />
+
+            <Button
+                android:id="@+id/sendCommentButton"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="0.2"
+                android:text="发送" />
+        </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/detailCommentList"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
     </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

@@ -51,6 +51,7 @@
                 android:layout_marginTop="20dp"/>
 
             <TextView
+                android:id="@+id/descriptionTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="这个人很懒，还没有个性签名"
@@ -101,7 +102,7 @@
                     android:layout_weight="0.8"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    android:text="小绿薯" />
+                    android:hint="请输入新的用户名" />
             </LinearLayout>
 
             <LinearLayout
@@ -126,7 +127,7 @@
                     android:ems="10"
                     android:textSize="15sp"
                     android:inputType="textPersonName"
-                    android:text="这个人很懒，还没有个性签名" />
+                    android:hint="请输入新的个性签名" />
             </LinearLayout>
 
             <Button
@@ -198,7 +199,7 @@
             </LinearLayout>
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/submitPasswordButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

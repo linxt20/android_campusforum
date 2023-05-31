@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 
 import com.example.uidesign.model.Post;
 import com.example.uidesign.utils.GlobalVariables;
+import com.example.uidesign.utils.ImageDownloader;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -51,6 +53,8 @@ public class SettingsActivity extends AppCompatActivity {
 
     private TextView logoutView;
     private TextView editPersonalInfoButton, editPasswordButton;
+    private EditText editTextUsername, editTextDescription, editTextPassword, editTextConfirmPassword;
+    private Button submitPersonalInfoButton, submitPasswordButton;
     private LinearLayout expandableLayoutInfo;
     private LinearLayout expandableLayoutPassword;
     private static final int REQUEST_READ_EXTERNAL_STORAGE_PERMISSION = 100;
@@ -104,6 +108,115 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        editTextUsername = findViewById(R.id.editTextUsername);
+        editTextDescription = findViewById(R.id.editTextDescription);
+        submitPersonalInfoButton = findViewById(R.id.submitPersonalInfoButton);
+        submitPersonalInfoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String username = editTextUsername.getText().toString();
+                String description = editTextDescription.getText().toString();
+                if (username.equals("") || description.equals("")) {
+                    Toast.makeText(SettingsActivity.this, "Please fill in all the blanks", Toast.LENGTH_LONG).show();
+                } else {
+                    OkHttpClient client = new OkHttpClient();
+                    RequestBody body = new FormBody.Builder()
+                            .add("userid",  sharedPreferences.getString("userID", ""))
+                            .add("username", username)
+                            .add("description", description)
+                            .build();
+
+                    Request request = new Request.Builder()
+                            .url(GlobalVariables.update_user_info_url)
+                            .post(body)
+                            .build();
+                    client.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            if (response.isSuccessful()) {
+                                String res = response.body().string();
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        TextView nameView = findViewById(R.id.usernameTextView);
+                                        nameView.setText(username);
+                                        TextView descriptionView = findViewById(R.id.descriptionTextView);
+                                        descriptionView.setText(description);
+                                        Toast.makeText(SettingsActivity.this, "Successfully updated user info",
+                                                Toast.LENGTH_LONG).show();
+                                        isVisibleInfo = false;
+                                        expandableLayoutInfo.setVisibility(View.GONE);
+                                    }
+                                });
+                            }
+                            else{
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(SettingsActivity.this, "用户名已存在",
+                                                Toast.LENGTH_LONG).show();
+                                    }
+                                });
+
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
+        editTextPassword = findViewById(R.id.editTextPassword);
+        editTextConfirmPassword = findViewById(R.id.editTextPasswordConfirm);
+        submitPasswordButton = findViewById(R.id.submitPasswordButton);
+        submitPasswordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String password = editTextPassword.getText().toString();
+                String passwordConfirm = editTextConfirmPassword.getText().toString();
+                if (password.equals(passwordConfirm)) {
+                    OkHttpClient client = new OkHttpClient();
+                    RequestBody body = new FormBody.Builder()
+                            .add("userid",  sharedPreferences.getString("userID", ""))
+                            .add("password", password)
+                            .build();
+
+                    Request request = new Request.Builder()
+                            .url(GlobalVariables.update_password_url)
+                            .post(body)
+                            .build();
+                    client.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            if (response.isSuccessful()) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(SettingsActivity.this, "修改密码成功！",
+                                                Toast.LENGTH_LONG).show();
+                                        isVisiblePassword = false;
+                                        expandableLayoutPassword.setVisibility(View.GONE);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+                else{
+                    Toast.makeText(SettingsActivity.this, "两次输入密码不一致", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
         editPasswordButton = findViewById(R.id.editPasswordTextView);
         editPasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,6 +230,12 @@ public class SettingsActivity extends AppCompatActivity {
                 }
             }
         });
+        Intent intent = getIntent();
+        ImageView imageUser = findViewById(R.id.profileCircleImageView);
+        ImageDownloader headDownloader = new ImageDownloader(imageUser);
+        headDownloader.execute(GlobalVariables.name2url(intent.getStringExtra("imageName")));
+        TextView nameView = findViewById(R.id.usernameTextView);
+        nameView.setText(intent.getStringExtra("username"));
 
         beforeView.setOnClickListener(new View.OnClickListener() {
             @Override

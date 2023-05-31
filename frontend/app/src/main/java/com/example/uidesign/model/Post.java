@@ -95,7 +95,6 @@ public class Post {
     public String getId() {
         return postid;
     }
-
     public String getAuthor_id() {
         return author_id;
     }

@@ -347,7 +347,7 @@ public class PostListController {
     public ResponseEntity<String> new_comment(
             @RequestParam String postid,
             @RequestParam String userid,
-            @RequestParam Date createAt,
+            @RequestParam String createAt,
             @RequestParam String content
     ){
         /*
@@ -373,9 +373,13 @@ public class PostListController {
                 System.out.println("Error: user not found");
                 return ResponseEntity.badRequest().body("user not found");
             }
+            System.out.println("received comment: " + content);
             String username=user.getUsername();
             String userhead=user.getUser_head();
-            Comment comment = new Comment(userid,createAt,content,username,userhead);
+            // convert string to date
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date tmp = format.parse(createAt);
+            Comment comment = new Comment(userid,tmp,content,username,userhead);
             //将postid加入user的comment_post_list
             user.addCommentPost(postid);
 

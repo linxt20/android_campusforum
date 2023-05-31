@@ -102,7 +102,7 @@ public class UserController {
         return ResponseEntity.ok().body(user);
     }
 
-    @PostMapping("/update_username_and_description ")
+    @PostMapping("/update_username_and_description")
     public ResponseEntity<String> update_user_info(@RequestParam String userid, @RequestParam String username,  @RequestParam String description) {
         /*
          * 功能：更新用户个人信息

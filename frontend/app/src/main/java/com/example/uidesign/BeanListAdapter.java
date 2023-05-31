@@ -97,6 +97,12 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
                 throw new RuntimeException(e);
             }
         }
+        if(i == 0){
+            while(i<6){
+                holder.imageshow[i].setVisibility(View.GONE);
+                i++;
+            }
+        }
         while (i<3){
             holder.imageshow[i].setVisibility(View.INVISIBLE);
             i++;
@@ -118,6 +124,17 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
             holder.starimage.setImageResource(R.drawable.collect_red);
         }
         SharedPreferences prefs = ((Activity)mContext).getSharedPreferences("com.example.android.myapp", MODE_PRIVATE);
+        holder.image_user.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // 如果点击的是自己的头像，则不做任何处理 TODO：或者进入个人主页？
+                if(current.getUserid().equals(prefs.getString("userID", "")))
+                    return;
+                Intent intent = new Intent(mContext, OthersProfileActivity.class);
+                intent.putExtra("userID", current.getUserid());
+                mContext.startActivity(intent);
+            }
+        });
         // 这是点赞和收藏按钮的点击函数，这里需要等待后端的api写好，然后传递信息
         holder.likearea.setOnClickListener(new View.OnClickListener() {
             @Override

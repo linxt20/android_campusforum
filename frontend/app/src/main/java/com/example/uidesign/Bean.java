@@ -20,7 +20,7 @@ public class Bean {
     private int star_count = 0;
     private int if_star = 0;
     private String user_head;
-    private String postid;
+    private String postid, userid;
 
     private String[] imagelist = new String[6];
 
@@ -37,7 +37,8 @@ public class Bean {
                  String user_head,
                  String[] imagelist,
                  Comment[] commentList,
-                 String postid) {
+                 String postid,
+                 String userid) {
         this.Username = Username;
         this.createAt = createAt;
         this.tag = tag;
@@ -52,7 +53,9 @@ public class Bean {
         this.imagelist = imagelist;
         this.comment_list = commentList;
         this.postid = postid;
+        this.userid = userid;
     }
+    public String getUserid() {return userid;}
     public  String getPostid() {return postid;}
     public String getUsername() {
         return Username;

@@ -60,8 +60,6 @@ public class NewPostsFragment extends Fragment {
                 }
         );
 
-        //TODO 这里是插入了一个默认的动态，这里等后端的获取接口完成，调用获取接口就能获得所有的动态信息，然后在插入adapter
-
         OkHttpClient client = new OkHttpClient();
         prefs = getActivity().getSharedPreferences("com.example.android.myapp", 0);
         userID = prefs.getString("userID", "");
@@ -94,10 +92,12 @@ public class NewPostsFragment extends Fragment {
                 String responseText = response.body().string();
                 Log.d("NewPostFragment response: ", responseText);
                 final List<Post> myResponse = new Gson().fromJson(responseText, new TypeToken<List<Post>>(){}.getType());
+                if(myResponse == null) return;
+                BeanList.clear();
                 for(int i = 0; i < myResponse.size(); i++){
                     Log.d("NewPostFragmentsFragment", myResponse.get(i).toString());
                     String[] images = myResponse.get(i).getResource_list();
-                    if(images.length == 0) return;
+                    // if(images.length == 0) return;
                     // TODO 这里将 List<Comment> 转换为 Comment[]有些繁琐，后续可能要修改
                     Comment[] comments = new Comment[myResponse.get(i).getComment_count()];
                     Log.d("NewPostFragment", "comments: " + myResponse.get(i).getComment_list());
@@ -108,7 +108,7 @@ public class NewPostsFragment extends Fragment {
                     BeanList.insert(myResponse.get(i).getAuthor_name(), myResponse.get(i).getCreate_time(), myResponse.get(i).getTag(), myResponse.get(i).getTitle()
                     , myResponse.get(i).getContent(),myResponse.get(i).getComment_count(), myResponse.get(i).getLike_count(), myResponse.get(i).getIf_like()
                     , myResponse.get(i).getStar_count(), myResponse.get(i).getIf_star(), myResponse.get(i).getAuthor_head(), myResponse.get(i).getResource_list()
-                            , comments, myResponse.get(i).getPostid());
+                            , comments, myResponse.get(i).getPostid(), myResponse.get(i).getAuthor_id());
                 }
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -131,7 +131,6 @@ public class NewPostsFragment extends Fragment {
                 });
             }
         });
-
 
         Button btn = view.findViewById(R.id.add_button);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -179,5 +178,68 @@ public class NewPostsFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        OkHttpClient client = new OkHttpClient();
+        prefs = getActivity().getSharedPreferences("com.example.android.myapp", 0);
+        userID = prefs.getString("userID", "");
+
+        /*
+       @RequestParam String userid,
+       @RequestParam String search_key,
+       @RequestParam String tag,
+       @RequestParam String sort_by)
+       */
+        RequestBody body = new FormBody.Builder()
+                .add("userid", userID)
+                .add("search_key", "")
+                .add("tag","")
+                .add("sort_by", "")
+                .build();
+        Request request = new Request.Builder()
+                .url(GlobalVariables.get_posts_url)
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseText = response.body().string();
+                Log.d("NewPostFragment response: ", responseText);
+                final List<Post> myResponse = new Gson().fromJson(responseText, new TypeToken<List<Post>>(){}.getType());
+                if(myResponse == null) return;
+                BeanList.clear();
+                for(int i = 0; i < myResponse.size(); i++){
+                    Log.d("NewPostFragmentsFragment", myResponse.get(i).toString());
+                    String[] images = myResponse.get(i).getResource_list();
+                    // if(images.length == 0) return;
+                    // TODO 这里将 List<Comment> 转换为 Comment[]有些繁琐，后续可能要修改
+                    Comment[] comments = new Comment[myResponse.get(i).getComment_count()];
+                    Log.d("NewPostFragment", "comments: " + myResponse.get(i).getComment_list());
+                    for(int j = 0; j < myResponse.get(i).getComment_count(); j++){
+                        comments[j] = myResponse.get(i).getComment_list().get(j);
+                    }
+                    Log.d("NewPostFragment", "head: " + myResponse.get(i).getAuthor_head());
+                    BeanList.insert(myResponse.get(i).getAuthor_name(), myResponse.get(i).getCreate_time(), myResponse.get(i).getTag(), myResponse.get(i).getTitle()
+                            , myResponse.get(i).getContent(),myResponse.get(i).getComment_count(), myResponse.get(i).getLike_count(), myResponse.get(i).getIf_like()
+                            , myResponse.get(i).getStar_count(), myResponse.get(i).getIf_star(), myResponse.get(i).getAuthor_head(), myResponse.get(i).getResource_list()
+                            , comments, myResponse.get(i).getPostid(), myResponse.get(i).getAuthor_id());
+                }
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        });
     }
 }
