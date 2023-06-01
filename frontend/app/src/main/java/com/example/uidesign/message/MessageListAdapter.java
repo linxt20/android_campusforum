@@ -1,7 +1,9 @@
 package com.example.uidesign.message;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Context;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +12,6 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.uidesign.MessageActivity;
 import com.example.uidesign.R;
 import com.example.uidesign.utils.ImageDownloader;
 
@@ -22,13 +23,13 @@ public class MessageListAdapter extends RecyclerView.Adapter {
     private String myId;
 
     private Context mContext;
-    private List<Message> mMessageList;
+    public List<MessageItem> mMessageList;
 
-    public MessageListAdapter(Context context, List<Message> messageList) {
+    public MessageListAdapter(Context context, List<MessageItem> messageList) {
         mContext = context;
         mMessageList = messageList;
-        Intent intent = ((MessageActivity) context).getIntent();
-        myId = intent.getStringExtra("userID");
+        SharedPreferences sharedPreferences = context.getSharedPreferences("com.example.android.myapp", MODE_PRIVATE);
+        myId = sharedPreferences.getString("userID", "");
     }
 
     @Override
@@ -39,9 +40,9 @@ public class MessageListAdapter extends RecyclerView.Adapter {
     // Determines the appropriate ViewType according to the sender of the message.
     @Override
     public int getItemViewType(int position) {
-        Message message = (Message) mMessageList.get(position);
+        MessageItem message = (MessageItem) mMessageList.get(position);
 
-        if (message.getSender().getId().equals(myId)) {
+        if (message.getSenderid().equals(myId)) {
             // If the current user is the sender of the message
             return VIEW_TYPE_MESSAGE_SENT;
         } else {
@@ -70,7 +71,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
     // Passes the message object to a ViewHolder so that the contents can be bound to UI.
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        Message message = (Message) mMessageList.get(position);
+        MessageItem message = (MessageItem) mMessageList.get(position);
 
         switch (holder.getItemViewType()) {
             case VIEW_TYPE_MESSAGE_SENT:
@@ -91,7 +92,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
             timeText = (TextView) itemView.findViewById(R.id.text_gchat_timestamp_me);
         }
 
-        void bind(Message message) {
+        void bind(MessageItem message) {
             messageText.setText(message.getMessage());
 
             // Format the stored timestamp into a readable String using method.
@@ -111,17 +112,17 @@ public class MessageListAdapter extends RecyclerView.Adapter {
             profileImage = (ImageView) itemView.findViewById(R.id.image_gchat_profile_other);
         }
 
-        void bind(Message message) {
+        void bind(MessageItem message) {
             messageText.setText(message.getMessage());
 
             // Format the stored timestamp into a readable String using method.
             timeText.setText(message.getCreatedAt());
-            nameText.setText(message.getSender().getUsername());
+            nameText.setText(message.getSenderName());
 
             // Insert the profile image from the URL into the ImageView.
             //Utils.displayRoundImageFromUrl(mContext, message.getSender().getProfileUrl(), profileImage);
             ImageDownloader imageDownloader = new ImageDownloader(profileImage);
-            imageDownloader.execute(message.getSender().getUser_head());
+            imageDownloader.execute(message.getSenderImg());
         }
     }
 }

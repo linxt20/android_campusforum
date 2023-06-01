@@ -112,6 +112,10 @@ public class Post {
         return postid;
     }
 
+    public String getLocation() {
+        return location;
+    }
+
     public String getAuthor_id() {
         return author_id;
     }

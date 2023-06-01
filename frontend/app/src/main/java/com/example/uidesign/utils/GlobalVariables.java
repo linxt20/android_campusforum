@@ -4,6 +4,7 @@ public class GlobalVariables  {
     public static String host = "10.0.2.2";
     public static String login_url = "http://" + host + ":8080/user/login";
     public static String register_url = "http://" + host + ":8080/user/register";
+    public static String get_chat_url = "http://" + host + ":8080/user/get_chat";
     public static String update_user_info_url = "http://" + host + ":8080/user/update_username_and_description";
     public static String update_password_url = "http://" + host + ":8080/user/update_user_password";
     public static String user_follow_url = "http://" + host + ":8080/user/get_follow_or_fans_list";

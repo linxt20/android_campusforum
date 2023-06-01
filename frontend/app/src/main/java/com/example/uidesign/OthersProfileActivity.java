@@ -179,14 +179,15 @@ public class OthersProfileActivity extends AppCompatActivity {
         });
 
         message = findViewById(R.id.messageButton);
-//        message.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                // Changed!!!!!
-//                Intent intent = new Intent(OthersProfileActivity.this, TestActivity.class);
-//                startActivity(intent);
-//            }
-//        });
+        message.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Changed!!!!!
+                Intent intent = new Intent(OthersProfileActivity.this, MessageActivity.class);
+                intent.putExtra("otherUserID", userID);
+                startActivity(intent);
+            }
+        });
 
         TabLayout tabLayout = findViewById(R.id.tabsInProfile2);
         ViewPager2 viewPager = findViewById(R.id.viewPagerInProfile2);
