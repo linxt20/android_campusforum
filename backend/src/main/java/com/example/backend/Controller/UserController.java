@@ -1,9 +1,6 @@
 package com.example.backend.Controller;
 
-import com.example.backend.Base.Comment;
-import com.example.backend.Base.Message;
-import com.example.backend.Base.Post;
-import com.example.backend.Base.User;
+import com.example.backend.Base.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -16,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -45,7 +45,9 @@ public class UserController {
         }
         // 把字符串存到数据库里
         List<String> tmp=new ArrayList<>();
-        User user_tmp = new User(username, password, "默认简介", "9.jpg", tmp,tmp, tmp,tmp, tmp,tmp);
+        List<Message> tmp2=new ArrayList<>();
+        List<Chat> tmp3=new ArrayList<>();
+        User user_tmp = new User(username, password, "默认简介", "9.jpg", tmp,tmp, tmp,tmp, tmp,tmp, tmp,tmp2,tmp3);
         String rv = user_tmp.getId();
         System.out.println(rv);
         mongoTemplate.insert(user_tmp);
@@ -422,6 +424,261 @@ public class UserController {
         mongoTemplate.save(follow_user);
         return ResponseEntity.ok().body("success");
     }
+
+    @PostMapping("/block_user")
+    public ResponseEntity<String> block_user(@RequestParam String userid, @RequestParam String block_userid) {
+        /*
+         * 功能：屏蔽用户
+         * 传入参数：
+         *  userid：用户id
+         *  block_userid：被屏蔽的用户id
+         * 返回参数：
+         *  String：success
+         * */
+        System.out.println("Received block_user message" + userid + " " + block_userid);
+        if(userid.equals("") || block_userid.equals("")) {
+            System.out.println("用户id不能为空");
+            return ResponseEntity.badRequest().body("用户id不能为空");
+        }
+        //进行检查，如果用户名不存在，返回错误
+        Query query = new Query();
+        query.addCriteria(Criteria.where("userid").is(userid));
+        User user = mongoTemplate.findOne(query, User.class);
+        if(user == null) {
+            System.out.println("用户不存在");
+            return ResponseEntity.badRequest().body("用户不存在");
+        }
+        query = new Query();
+        query.addCriteria(Criteria.where("userid").is(block_userid));
+        User block_user = mongoTemplate.findOne(query, User.class);
+        if(block_user == null) {
+            System.out.println("被屏蔽用户不存在");
+            return ResponseEntity.badRequest().body("被屏蔽用户不存在");
+        }
+        //如果已经屏蔽了，返回错误
+        if(user.getBlock_list().contains(block_userid)) {
+            System.out.println("已经屏蔽了");
+            return ResponseEntity.badRequest().body("已经屏蔽了");
+        }
+        user.addBlock(block_userid);
+        mongoTemplate.save(user);
+        return ResponseEntity.ok().body("success");
+    }
+
+    @PostMapping("/unblock_user")
+    public ResponseEntity<String> unblock_user(@RequestParam String userid, @RequestParam String unblock_userid) {
+        /*
+         * 功能：取消屏蔽用户
+         * 传入参数：
+         *  userid：用户id
+         *  unblock_userid：被取消屏蔽的用户id
+         * 返回参数：
+         *  String：success
+         * */
+        System.out.println("Received unblock_user message" + userid + " " + unblock_userid);
+        if(userid.equals("") || unblock_userid.equals("")) {
+            System.out.println("用户id不能为空");
+            return ResponseEntity.badRequest().body("用户id不能为空");
+        }
+        //进行检查，如果用户名不存在，返回错误
+        Query query = new Query();
+        query.addCriteria(Criteria.where("userid").is(userid));
+        User user = mongoTemplate.findOne(query, User.class);
+        if(user == null) {
+            System.out.println("用户不存在");
+            return ResponseEntity.badRequest().body("用户不存在");
+        }
+        query = new Query();
+        query.addCriteria(Criteria.where("userid").is(unblock_userid));
+        User unblock_user = mongoTemplate.findOne(query, User.class);
+        if(unblock_user == null) {
+            System.out.println("被取消屏蔽用户不存在");
+            return ResponseEntity.badRequest().body("被取消屏蔽用户不存在");
+        }
+        //如果没有屏蔽，返回错误
+        if(!user.getBlock_list().contains(unblock_userid)) {
+            System.out.println("本来没有屏蔽");
+            return ResponseEntity.badRequest().body("本来没有屏蔽");
+        }
+        user.cancelBlock(unblock_userid);
+        mongoTemplate.save(user);
+        return ResponseEntity.ok().body("success");
+    }
+
+    @PostMapping("/get_message")
+    public ResponseEntity<List<Message>> get_message(@RequestParam String userid) {
+        /*
+         * 功能：获取用户的消息
+         * 传入参数：
+         *  userid：用户id
+         * 返回参数：
+         *  List<Message>：消息列表
+         * */
+        System.out.println("Received get_message message" + userid);
+        if(userid.equals("")) {
+            System.out.println("用户id不能为空");
+            return ResponseEntity.badRequest().body(null);
+        }
+        //进行检查，如果用户名不存在，返回错误
+        Query query = new Query();
+        query.addCriteria(Criteria.where("userid").is(userid));
+        User user = mongoTemplate.findOne(query, User.class);
+        if(user == null) {
+            System.out.println("用户不存在");
+            return ResponseEntity.badRequest().body(null);
+        }
+        List<Message> message_list = user.getMessage_list();
+        return ResponseEntity.ok().body(message_list);
+    }
+
+    @PostMapping("/add_sentence")
+    public ResponseEntity<String> add_sentence(@RequestParam String sender_id,
+                                               @RequestParam String receiver_id,
+                                               @RequestParam String content,
+                                               @RequestParam String date){
+        /*
+            * 功能：添加一条私信
+            * 传入参数：
+            * sender_id：发送者id
+            * receiver_id：接收者id
+            * content：私信内容
+            * date：发送时间
+            * 返回参数：
+            * String：success/失败原因
+         */
+        System.out.println("Received add_sentence message" + sender_id + " " + receiver_id + " " + content + " " + date);
+        if(sender_id.equals("") || receiver_id.equals("") || content.equals("") || date.equals("")) {
+            System.out.println("参数不能为空");
+            return ResponseEntity.badRequest().body("参数不能为空");
+        }
+        //进行检查，如果用户名不存在，返回错误
+        Query query = new Query();
+        query.addCriteria(Criteria.where("userid").is(sender_id));
+        User sender = mongoTemplate.findOne(query, User.class);
+        if(sender == null) {
+            System.out.println("发送者不存在");
+            return ResponseEntity.badRequest().body("发送者不存在");
+        }
+        query = new Query();
+        query.addCriteria(Criteria.where("userid").is(receiver_id));
+        User receiver = mongoTemplate.findOne(query, User.class);
+        if(receiver == null) {
+            System.out.println("接收者不存在");
+            return ResponseEntity.badRequest().body("接收者不存在");
+        }
+        //创建sentence
+        //将date转换为date模式
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date_tmp = null;
+        try {
+            date_tmp = format.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Sentence sentence = new Sentence(content,date_tmp,sender_id,receiver_id);
+        //若chat_list中不存在两人的私信，则创建一个新的chat
+        Chat chat = null;
+        for(Chat c : sender.getChat_list()) {
+            //如果chat中user1_id、user2_id能和两人id对应，顺序无所谓，则存在chat
+            if((c.getUser1_id().equals(sender_id) && c.getUser2_id().equals(receiver_id)) ||
+                    (c.getUser1_id().equals(receiver_id) && c.getUser2_id().equals(sender_id))) {
+                chat = c;
+                break;
+            }
+        }
+        if(chat == null) {
+            //创建一个新的chat
+            List<Sentence> sentence_list = new ArrayList<>();
+            sentence_list.add(sentence);
+            ObjectId id = new ObjectId();
+            String chat_id = id.toString();
+            chat = new Chat(sender_id,sender.getUsername(),sender.getUser_head(),
+                    receiver_id,receiver.getUsername(),receiver.getUser_head(),sentence_list,chat_id,date_tmp);
+            sender.addChat(chat);
+            receiver.addChat(chat);
+        }
+        else {
+            //将sentence加入两用户的chat
+            String chat_id=chat.getChat_id();
+            sender.addChat_sentence(chat_id,sentence);
+            receiver.addChat_sentence(chat_id,sentence);
+        }
+        //给receiver添加一条message
+        String msg_title = "您收到一条私信";
+        String msg_content = "来自用户" + sender.getUsername() + "的私信";
+        Date msg_date = date_tmp;
+        String msg_type = "chat";
+        Message message = new Message(msg_title,msg_content,msg_date,msg_type,sender_id);
+        receiver.addMessage(message); 
+        mongoTemplate.save(sender);
+        mongoTemplate.save(receiver);
+        return ResponseEntity.ok().body("success");
+    }
+
+
+    @PostMapping("/get_chat")
+    public ResponseEntity<Chat> get_chat(@RequestParam String user1_id,@RequestParam String user2_id){
+        /*
+         * 功能：获取两人的聊天记录
+         * 传入参数：
+         *  user1_id：用户1id
+         *  user2_id：用户2id
+         * 返回参数：
+         *  Chat：聊天记录
+         * */
+        System.out.println("Received get_chat message" + user1_id + " " + user2_id);
+        if(user1_id.equals("") || user2_id.equals("")) {
+            System.out.println("参数不能为空");
+            return ResponseEntity.badRequest().body(null);
+        }
+        //进行检查，如果用户名不存在，返回错误
+        Query query = new Query();
+        query.addCriteria(Criteria.where("userid").is(user1_id));
+        User user1 = mongoTemplate.findOne(query, User.class);
+        if(user1 == null) {
+            System.out.println("用户1不存在");
+            return ResponseEntity.badRequest().body(null);
+        }
+        query = new Query();
+        query.addCriteria(Criteria.where("userid").is(user2_id));
+        User user2 = mongoTemplate.findOne(query, User.class);
+        if(user2 == null) {
+            System.out.println("用户2不存在");
+            return ResponseEntity.badRequest().body(null);
+        }
+        //获取chat
+        Chat chat = null;
+        for(Chat c : user1.getChat_list()) {
+            //如果chat中user1_id、user2_id能和两人id对应，顺序无所谓，则存在chat
+            if((c.getUser1_id().equals(user1_id) && c.getUser2_id().equals(user2_id)) ||
+                    (c.getUser1_id().equals(user2_id) && c.getUser2_id().equals(user1_id))) {
+                chat = c;
+                break;
+            }
+        }
+        if(chat == null) {
+            System.out.println("两人没有聊天记录");
+            return ResponseEntity.badRequest().body(null);
+        }
+        //根据二人的userid重置用户名和头像 为防头像修改
+        chat.setUser1_name(user1.getUsername());
+        chat.setUser1_head(user1.getUser_head());
+        chat.setUser2_name(user2.getUsername());
+        chat.setUser2_head(user2.getUser_head());
+        return ResponseEntity.ok().body(chat);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }
