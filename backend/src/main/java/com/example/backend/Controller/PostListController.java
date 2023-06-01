@@ -62,14 +62,17 @@ public class PostListController {
             }
             //根据关键词筛选帖子，若帖子标题、内容、tag、用户名中包含关键词则保留，无需一样
             if(!search_key.equals("")){
+                System.out.println("search key is not null, is: " + search_key);
                 List<String> key_list=Arrays.asList(search_key.split(" "));
                 List<Post> tmp=new ArrayList<>();
                 for(Post post:rv){
                     if(if_contain_serchkey_list(post,key_list)){
+                        System.out.println("add post: " + post.getTitle());
                         tmp.add(post);
                     }
                 }
                 rv=tmp;
+                System.out.println("rv: " + rv.get(0).getTitle());
             }
 
             //TODO 根据sortby排序帖子
@@ -82,20 +85,15 @@ public class PostListController {
 //            String timeString = "2023-05-17 10:30:00"; // 时间字符串
 //            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //            Date date = dateFormat.parse(timeString);
-//            Comment comment = new Comment("1",date,"haha","name","giao.jpg");
+//            Comment comment = new Comment(userid,date,"haha","name","giao.jpg");
 //            tmpComment.add(comment);
 //            int resource_num = 1;
 //            String[] resource_list=new String[resource_num];
-//            resource_list[0]="1.jpg";
-//            Post post_new = new Post("1",userid,"name","giao.jpg","2020-01-01 07:31:00","title","content","tag",resource_num,"jpg",
+//            resource_list[0]="1.mp4";
+//            Post post_new = new Post("1",userid,"name","giao.jpg","2020-01-01 07:31:00","title","content","tag",resource_num,"mp4",
 //                    0,0,tmp,tmp,tmpComment.size(),resource_list,tmpComment);
-//            String[] resource_list2=new String[resource_num];
-//            resource_list2[0]="2.jpg";
-//            Post post_new2 = new Post("2",userid,"name2","giao.jpg","2020-01-01 07:31:01","title22","content","tag",resource_num,"jpg",
-//                    0,0,tmp,tmp,tmpComment.size(),resource_list2,tmpComment);
-//            System.out.println("after new post: " + post_new.getComment_list().get(0).toString());
 //            rv.add(post_new);
-//            rv.add(post_new2);
+
 //            ///////////// 此处结束测试代码////////////
 
             for(Post post:rv){
@@ -119,7 +117,6 @@ public class PostListController {
             for(Post post:rv){
                 if(post.getLike_userid_list()!=null){
                     if(post.getLike_userid_list().contains(userid)){
-                        System.out.println("haha");
                         post.setIf_like(1);
                     }
                     else{
@@ -141,8 +138,6 @@ public class PostListController {
                     post.setIf_star(0);
                 }
             }
-
-            System.out.println("End set like and star");
             System.out.println(rv.get(0).getIf_like());
 
 
@@ -158,46 +153,66 @@ public class PostListController {
     public boolean if_contain_serchkey_list(Post post, List<String> key_list){
         //判断post中是否包含key_list中的每一个值
         if(post.getTitle()!=null){
+            Boolean not_contain=false;
             for(String key:key_list){
                 if(post.getTitle().contains(key)){
                     continue;
                 }
                 else{
-                    return false;
+                    not_contain = true;
+                    break;
                 }
+            }
+            if(!not_contain){
+                return true;
             }
         }
         if(post.getContent()!=null){
+            Boolean not_contain=false;
             for(String key:key_list){
                 if(post.getContent().contains(key)){
                     continue;
                 }
                 else{
-                    return false;
+                    not_contain = true;
+                    break;
                 }
+            }
+            if(!not_contain){
+                return true;
             }
         }
         if(post.getTag()!=null){
+            Boolean not_contain=false;
             for(String key:key_list){
                 if(post.getTag().contains(key)){
                     continue;
                 }
                 else{
-                    return false;
+                    not_contain = true;
+                    break;
                 }
+            }
+            if(!not_contain){
+                return true;
             }
         }
         if(post.getAuthor_name()!=null){
+            Boolean not_contain=false;
             for(String key:key_list){
                 if(post.getAuthor_name().contains(key)){
                     continue;
                 }
                 else{
-                    return false;
+                    not_contain = true;
+                    break;
                 }
             }
+            if(!not_contain){
+                return true;
+            }
         }
-        return true;
+        return false;
     }
 
     @PostMapping("/new_post")

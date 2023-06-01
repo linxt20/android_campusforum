@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/background"
-    android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background"
+        android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -113,10 +116,11 @@
                 android:textStyle="bold"
                 android:textColor="#96ffffff"
                 android:textSize="16sp"/>
+
             <Button
                 android:id="@+id/selectVideoButton"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginStart="16dp"
                 android:background="@drawable/rectangle_circle"
                 android:fontFamily="@font/calibri"
@@ -190,7 +194,14 @@
                 android:background="@drawable/man_1"
                 android:layout_margin="2dp"/>
         </GridLayout>
+
+        <VideoView
+            android:id="@+id/videoView"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_margin="10dp"/>
     </LinearLayout>
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -220,4 +231,5 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         />
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

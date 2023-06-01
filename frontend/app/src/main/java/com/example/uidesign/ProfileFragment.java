@@ -62,7 +62,7 @@ public class ProfileFragment extends Fragment {
     SharedPreferences sharedPreferences;
     String userID;
     View view;
-    String imageName;
+    String imageName, description;
 
     private static final int REQUEST_CODE_SELECT_IMAGE = 233;
     @Override
@@ -77,6 +77,16 @@ public class ProfileFragment extends Fragment {
         textUsername = (TextView)view.findViewById(R.id.text_user_name);
         textFollowersAndFollowings = (TextView)view.findViewById(R.id.text_followers_following_count);
         imageUser = (ImageView)view.findViewById(R.id.image_user);
+
+        textFollowersAndFollowings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), FollowListActivity.class);
+                intent.putExtra("userid", userID);
+                intent.putExtra("type", "me");
+                startActivity(intent);
+            }
+        });
 
 
         OkHttpClient client = new OkHttpClient();
@@ -104,9 +114,11 @@ public class ProfileFragment extends Fragment {
                     @Override
                     public void run() {
                         imageName = myResponse.getUser_head();
+                        description = myResponse.getDescription();
                         textUsername.setText(myResponse.getUsername());
-                        // TODO set followers and following count
-                        textFollowersAndFollowings.setText(myResponse.getFans_list().size() + " followers • " + myResponse.getFans_list().size() + " following");
+                        TextView textBio = (TextView) view.findViewById(R.id.description);
+                        textBio.setText(myResponse.getDescription());
+                        textFollowersAndFollowings.setText(myResponse.getFans_list().size() + " followers • " + myResponse.getFollow_list().size() + " following");
                         ImageDownloader headDownloader = new ImageDownloader(imageUser);
                         headDownloader.execute(GlobalVariables.name2url(myResponse.getUser_head()));
                     }
@@ -133,6 +145,7 @@ public class ProfileFragment extends Fragment {
                 // Changed!!!!!
                 Intent intent = new Intent(getContext(),SettingsActivity.class);
                 intent.putExtra("imageName", imageName);
+                intent.putExtra("description", description);
                 intent.putExtra("username", textUsername.getText().toString());
                 // TODO 传递个性签名
                 startActivity(intent);

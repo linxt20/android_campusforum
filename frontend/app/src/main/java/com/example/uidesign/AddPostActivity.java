@@ -18,6 +18,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -31,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.example.uidesign.model.Comment;
 import com.example.uidesign.model.Post;
@@ -64,14 +66,17 @@ public class AddPostActivity extends AppCompatActivity {
     String user_head;
     String currentTime;
     String userID;
+    Boolean isVideo = false;
     public ImageView image_user;
     public TextView UsernameView;
     public TextView createTime;
-    private static final int REQUEST_CODE_PICK_IMAGE = 1;
+    private static final int REQUEST_CODE_PICK_IMAGE = 1, REQUEST_CODE_PICK_VIDEO = 2;
     private static final int REQUEST_READ_EXTERNAL_STORAGE_PERMISSION = 100;
     private EditText Titletext;
     private EditText contenttext;
     public final ImageView[] imageshow = new ImageView[6];
+    public VideoView videoView;
+    public Uri videoUri;
     public int[] imageViewIds = {R.id.imageV1, R.id.imageV2, R.id.imageV3, R.id.imageV4, R.id.imageV5,R.id.imageV6};
     public Uri[] urilist = new Uri[6];
     public String[] stringlist = new String[6];
@@ -96,6 +101,9 @@ public class AddPostActivity extends AppCompatActivity {
         Titletext = findViewById(R.id.biaoti);
         contenttext = findViewById(R.id.neirong);
         Button selectImageButton = findViewById(R.id.selectImageButton);
+        Button selectVideoButton = findViewById(R.id.selectVideoButton);
+        videoView = findViewById(R.id.videoView);
+        videoView.setVisibility(View.GONE);
         for (int i = 0; i < 6; i++) {
             imageshow[i] = findViewById(imageViewIds[i]);
             imageshow[i].setVisibility(View.GONE);
@@ -114,6 +122,7 @@ public class AddPostActivity extends AppCompatActivity {
         selectImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                videoView.setVisibility(View.GONE);
                 if(count<6){
                     imageshow[count].setBackground(null);
                     selectImageFromGallery();
@@ -136,6 +145,17 @@ public class AddPostActivity extends AppCompatActivity {
 //                        }
 //                    }
                 }
+            }
+        });
+
+        selectVideoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                videoView.setVisibility(View.VISIBLE);
+                for (int i = 0; i < 6; i++) {
+                    imageshow[i].setVisibility(View.GONE);
+                }
+                selectVideoFromGallery();
             }
         });
         linearLayout = findViewById(R.id.linear_layout);
@@ -161,6 +181,15 @@ public class AddPostActivity extends AppCompatActivity {
             linearLayout.addView(button);
         }
     }
+
+    private void selectVideoFromGallery() {
+        //Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        // get multiple images (no more than 9) from imagepicker
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        //intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("video/*");
+        startActivityForResult(intent, REQUEST_CODE_PICK_VIDEO);
+    }
     private void selectImageFromGallery() {
         //Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         // get multiple images (no more than 9) from imagepicker
@@ -178,6 +207,7 @@ public class AddPostActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == RESULT_OK) {
+            isVideo = false;
             ClipData clipData = data.getClipData();
             if(clipData != null && clipData.getItemCount() > 0 && clipData.getItemCount() <= 6) {
                 // get multiple images
@@ -237,7 +267,29 @@ public class AddPostActivity extends AppCompatActivity {
 //            }
 //            count++;
         }
-        // TODO else if (requestCode == REQUEST_CODE_PICK_VIDEO && resultCode == RESULT_OK && data!= null)
+        else if (requestCode == REQUEST_CODE_PICK_VIDEO && resultCode == RESULT_OK && data!= null){
+            isVideo = true;
+            videoUri = data.getData();
+            Log.d("LOG_NAME", "uri: " + videoUri);
+            try {
+                videoView.setVideoURI(videoUri);
+                videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        Log.d("AddPostAdapter", "mp4: " + videoUri.toString());
+                        videoView.start();
+                    }
+                });
+            } catch (RuntimeException e) {
+                throw new RuntimeException(e);
+            }
+            for(int i = 1; i < 3; i++) {
+                imageshow[i].setVisibility(View.INVISIBLE);
+            }
+            for(int i = 3; i < 6; i++) {
+                imageshow[i].setVisibility(View.GONE);
+            }
+        }
     }
 
     private File saveInputStreamToFile(InputStream inputStream) throws IOException {
@@ -280,6 +332,9 @@ public class AddPostActivity extends AppCompatActivity {
             imageshow[i].setBackground(null);
             imageshow[i].setVisibility(View.GONE);
             urilist[i]=null;
+            videoView.setVisibility(View.GONE);
+            videoUri = null;
+            isVideo = false;
             stringlist[i]="";
         }
         count = 0;
@@ -305,15 +360,15 @@ public class AddPostActivity extends AppCompatActivity {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date(System.currentTimeMillis());
         currentTime = simpleDateFormat.format(date);
-        // TODO 处理标签   这里因为只能上传string，于是上传的是count的string不知道会不会有问题
+        // TODO 处理标签
         RequestBody body = new FormBody.Builder()
                 .add("userid", userID)
                 .add("createAt", currentTime)
                 .add("title", Titletext.getText().toString())
                 .add("content", contenttext.getText().toString())
                 .add("tag", "标签1")
-                .add("resource_num", count+"")
-                .add("resource_type", "jpg")
+                .add("resource_num", isVideo? "1" : count+"")
+                .add("resource_type", isVideo? "mp4" : "jpg")
                 .build();
         Request request = new Request.Builder()
                 .url(GlobalVariables.add_post_url)
@@ -333,6 +388,10 @@ public class AddPostActivity extends AppCompatActivity {
                 final String myResponse[] = new Gson().fromJson(responseText, new TypeToken<String[]>(){}.getType());
                 for(int i = 0; i < myResponse.length; i++){
                     Log.d("AddPostActivity", i + " image: " + myResponse[i]);
+                    if(isVideo){
+                        sendVideo(myResponse[i]);
+                        break;
+                    }
                     sendImage(i, myResponse[i]);
                 }
                 runOnUiThread(new Runnable() {
@@ -346,6 +405,46 @@ public class AddPostActivity extends AppCompatActivity {
             }
         });
         Toast.makeText(this, "PUSHED",Toast.LENGTH_SHORT).show();
+    }
+
+    public void sendVideo(String name){
+        String mediaType = MediaType.parse(getContentResolver().getType(videoUri)).toString();
+        InputStream inputStream = null;
+        OkHttpClient client = new OkHttpClient();
+        try {
+            inputStream = getContentResolver().openInputStream(videoUri);
+            File tempFile = saveInputStreamToFile(inputStream); // 自定义方法，将输入流保存为临时文件
+            inputStream.close();
+            RequestBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("image", tempFile.getName(), RequestBody.create(MediaType.parse(mediaType), tempFile))
+                    .addFormDataPart("name", name)
+                    .build();
+
+            // RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpeg"), imageData); // 或者使用临时文件：RequestBody.create(MediaType.parse("image/jpeg"), tempFile);
+            Request request = new Request.Builder()
+                    .url(GlobalVariables.test_image_url)
+                    .post(requestBody)
+                    .build();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    // 处理响应
+                    Log.d("LOG_NAME", response.body().string());
+                }
+
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                    // 处理异常
+                }
+            });
+
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void sendImage(int position, String name){

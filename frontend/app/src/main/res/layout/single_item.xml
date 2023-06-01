@@ -89,6 +89,7 @@
     </LinearLayout>
 
     <GridLayout
+        android:id="@+id/grid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:columnCount="3"
@@ -152,6 +153,13 @@
             
             android:layout_margin="2dp"/>
     </GridLayout>
+
+    <VideoView
+        android:id="@+id/videoView"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_margin="10dp"/>
+
 
     <GridLayout
         android:layout_width="match_parent"

@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +27,9 @@ public class HomeFragment extends Fragment {
 
     private LinearLayout linearLayout;
     private Button currentSelectedButton;
+
+    private EditText searchText;
+    private ImageView searchButton;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +44,9 @@ public class HomeFragment extends Fragment {
         ViewPager2 viewPager = view.findViewById(R.id.view_pager);
 
         linearLayout = view.findViewById(R.id.linear_layout);
+        searchText = view.findViewById(R.id.tv_search);
+        searchButton = view.findViewById(R.id.IV_serach);
+
 
         for (int i = 1; i <= 10; i++) {
             Button button = new Button(getContext());
@@ -63,11 +71,27 @@ public class HomeFragment extends Fragment {
         }
 
         List<String> tabTitles = Arrays.asList("新发表","热门", "关注");
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getActivity(), tabTitles);
+        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getActivity(), tabTitles, "");
         viewPager.setAdapter(sectionsPagerAdapter);
 
         TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(tabTitles.get(position)));
         tabLayoutMediator.attach();
+
+        searchButton.setOnClickListener(v -> {
+            String text = searchText.getText().toString();
+            if (text.length() == 0) {
+                Toast.makeText(getContext(), "请输入要查找的内容!",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Toast.makeText(getContext(), "Searching...",
+                    Toast.LENGTH_SHORT).show();
+            SectionsPagerAdapter sectionsPagerAdapter2 = new SectionsPagerAdapter(getActivity(), tabTitles, text);
+            viewPager.setAdapter(sectionsPagerAdapter2);
+            viewPager.setCurrentItem(0);
+            TabLayoutMediator tabLayoutMediator2 = new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(tabTitles.get(position)));
+            tabLayoutMediator2.attach();
+        });
         return view;
     }
 }

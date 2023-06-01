@@ -100,6 +100,10 @@ public class Post {
         return resource_list;
     }
 
+    public String getResource_type() {
+        return resource_type;
+    }
+
     public String getId() {
         return postid;
     }

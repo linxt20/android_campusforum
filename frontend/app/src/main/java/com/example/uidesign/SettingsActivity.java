@@ -236,6 +236,8 @@ public class SettingsActivity extends AppCompatActivity {
         headDownloader.execute(GlobalVariables.name2url(intent.getStringExtra("imageName")));
         TextView nameView = findViewById(R.id.usernameTextView);
         nameView.setText(intent.getStringExtra("username"));
+        TextView descriptionTextView = findViewById(R.id.descriptionTextView);
+        descriptionTextView.setText(intent.getStringExtra("description"));
 
         beforeView.setOnClickListener(new View.OnClickListener() {
             @Override

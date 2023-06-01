@@ -10,10 +10,12 @@ import java.util.List;
 public class SectionsPagerAdapter extends FragmentStateAdapter {
 
     private final List<String> tabTitles;
+    private String search_key;
 
-    public SectionsPagerAdapter(FragmentActivity fragmentActivity, List<String> tabTitles) {
+    public SectionsPagerAdapter(FragmentActivity fragmentActivity, List<String> tabTitles, String search_key) {
         super(fragmentActivity);
         this.tabTitles = tabTitles;
+        this.search_key = search_key;
     }
 
     @NonNull
@@ -21,7 +23,7 @@ public class SectionsPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 0:
-                return new NewPostsFragment();
+                return new NewPostsFragment(search_key);
             case 1:
                 return new HotFragment();
             case 2:

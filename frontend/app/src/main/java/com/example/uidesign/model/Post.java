@@ -115,6 +115,10 @@ public class Post {
         return title;
     }
 
+    public String getResource_type() {
+        return resource_type;
+    }
+
     public String getCreate_time() {
         return create_time;
     }

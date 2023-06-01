@@ -39,6 +39,11 @@ public class NewPostsFragment extends Fragment {
     SharedPreferences prefs;
     String userID;
     BeanListAdapter adapter;
+    String search_key;
+
+    public NewPostsFragment(String search_key) {
+        this.search_key = search_key;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,9 +75,10 @@ public class NewPostsFragment extends Fragment {
        @RequestParam String tag,
        @RequestParam String sort_by)
        */
+        Log.d("NewPost", "search: " + search_key + "====================x");
         RequestBody body = new FormBody.Builder()
                 .add("userid", userID)
-                .add("search_key", "")
+                .add("search_key", search_key)
                 .add("tag","")
                 .add("sort_by", "")
                 .build();
@@ -90,7 +96,7 @@ public class NewPostsFragment extends Fragment {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String responseText = response.body().string();
-                Log.d("NewPostFragment response: ", responseText);
+                Log.d("NewPostFragment response", responseText);
                 final List<Post> myResponse = new Gson().fromJson(responseText, new TypeToken<List<Post>>(){}.getType());
                 if(myResponse == null) return;
                 BeanList.clear();
@@ -108,7 +114,7 @@ public class NewPostsFragment extends Fragment {
                     BeanList.insert(myResponse.get(i).getAuthor_name(), myResponse.get(i).getCreate_time(), myResponse.get(i).getTag(), myResponse.get(i).getTitle()
                     , myResponse.get(i).getContent(),myResponse.get(i).getComment_count(), myResponse.get(i).getLike_count(), myResponse.get(i).getIf_like()
                     , myResponse.get(i).getStar_count(), myResponse.get(i).getIf_star(), myResponse.get(i).getAuthor_head(), myResponse.get(i).getResource_list()
-                            , comments, myResponse.get(i).getPostid(), myResponse.get(i).getAuthor_id());
+                            , comments, myResponse.get(i).getPostid(), myResponse.get(i).getAuthor_id(), myResponse.get(i).getResource_type());
                 }
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -179,7 +185,7 @@ public class NewPostsFragment extends Fragment {
 
         return view;
     }
-
+    /*
     @Override
     public void onResume(){
         super.onResume();
@@ -192,7 +198,7 @@ public class NewPostsFragment extends Fragment {
        @RequestParam String search_key,
        @RequestParam String tag,
        @RequestParam String sort_by)
-       */
+
         RequestBody body = new FormBody.Builder()
                 .add("userid", userID)
                 .add("search_key", "")
@@ -242,4 +248,5 @@ public class NewPostsFragment extends Fragment {
             }
         });
     }
+    */
 }

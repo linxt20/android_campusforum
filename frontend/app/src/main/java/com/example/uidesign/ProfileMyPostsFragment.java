@@ -62,12 +62,6 @@ public class ProfileMyPostsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile_my_posts, container, false);
         recyclerView = (RecyclerView)view.findViewById(R.id.recycler_view);
 
-        // Create an adapter and supply the data to be displayed.
-//        String imageUrl = GlobalVariables.get_image_url + 8 + ".jpg";
-//        Request request = new Request.Builder()
-//                .url(imageUrl)  // 替换为实际的Spring Boot应用程序URL和图片文件名
-//                .build();
-//        OkHttpClient client = new OkHttpClient();
 
         // TODO 从后端获得数据Post的List并展示在Recyclerview上
         OkHttpClient client = new OkHttpClient();
@@ -95,7 +89,7 @@ public class ProfileMyPostsFragment extends Fragment {
                 for(int i = 0; i < myResponse.size(); i++){
                     Log.d("ProfileMyPostsFragment", myResponse.get(i).toString());
                     String[] images = myResponse.get(i).getResource_list();
-                    if(images.length == 0) {
+                    if(images.length == 0 || myResponse.get(i).getResource_type().equals("mp4")) {
                         // TODO 处理以下没有图片的情况。。(改成无图片)
                         boardItemList.insert("nopic.jpg", myResponse.get(i).getTitle(), myResponse.get(i).getCreate_time(), myResponse.get(i).getPostid());
                     }

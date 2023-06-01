@@ -36,6 +36,7 @@
                 android:id="@+id/IV_serach"
                 android:layout_width="0dp"
                 android:layout_height="30dp"
+                android:clickable="true"
                 android:layout_marginRight="2dp"
                 android:layout_weight="0.1"
                 android:background="@drawable/search" />

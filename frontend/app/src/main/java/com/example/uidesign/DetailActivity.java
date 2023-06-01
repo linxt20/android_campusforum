@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -15,10 +16,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.example.uidesign.comment.CommentItem;
 import com.example.uidesign.comment.CommentItemList;
@@ -52,6 +55,7 @@ public class DetailActivity extends AppCompatActivity {
     public TextView startext;
     public LinearLayout likearea;
     public LinearLayout stararea;
+    public GridLayout gridLayout;
     String postid;
 
     public ImageView likeimage;
@@ -60,6 +64,7 @@ public class DetailActivity extends AppCompatActivity {
     public Button sendCommentButton;
     public EditText editTextComment;
     public ImageView image_user;
+    public VideoView videoView;
     CommentRecycleAdapter adapter;
     Boolean showCommentLayout = false;
 
@@ -89,7 +94,9 @@ public class DetailActivity extends AppCompatActivity {
         commentButton = findViewById(R.id.commentButton);
         sendCommentButton = findViewById(R.id.sendCommentButton);
         editTextComment = findViewById(R.id.editTextComment);
+        videoView = findViewById(R.id.videoView);
         commentArea.setVisibility(View.GONE);
+        gridLayout = findViewById(R.id.grid);
         commentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -238,8 +245,9 @@ public class DetailActivity extends AppCompatActivity {
                                 starimage.setImageResource(R.drawable.collect_red);
                             }
                             CommentItemList commentItemList = new CommentItemList();
+                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                             for(Comment comment:comments){
-                                commentItemList.insert(comment.getAuthor_head(), comment.getAuthor_name(), comment.getCreate_time().toString(), comment.getContent());
+                                commentItemList.insert(comment.getAuthor_head(), comment.getAuthor_name(), formatter.format(comment.getCreate_time()), comment.getContent());
                             }
                             // TODO 这里getBaseContext()可能会有问题
                             adapter = new CommentRecycleAdapter(getBaseContext(), commentItemList);
@@ -249,22 +257,39 @@ public class DetailActivity extends AppCompatActivity {
 
                             ImageDownloader headDownloader = new ImageDownloader(image_user);
                             headDownloader.execute(GlobalVariables.name2url(myResponse.getAuthor_head()));
-                            int i = 0;
-                            for(i = 0; i < myResponse.getResource_list().length; i++){
-                                try {
-                                    ImageDownloader imageDownloader = new ImageDownloader(imageshow[i]);
-                                    imageDownloader.execute(GlobalVariables.name2url(myResponse.getResource_list()[i]));
-                                } catch (Exception e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-                            while (i<3){
-                                imageshow[i].setVisibility(View.INVISIBLE);
-                                i++;
-                            }
-                            while(i<6){
+                            for(int i = 0; i < 6; i++){
                                 imageshow[i].setVisibility(View.GONE);
                                 i++;
+                            }
+                            if(myResponse.getResource_type().equals("jpg")){
+                                videoView.setVisibility(View.GONE);
+                                int i = 0;
+                                for(i = 0; i < myResponse.getResource_list().length; i++){
+                                    try {
+                                        imageshow[i].setVisibility(View.VISIBLE);
+                                        ImageDownloader imageDownloader = new ImageDownloader(imageshow[i]);
+                                        imageDownloader.execute(GlobalVariables.name2url(myResponse.getResource_list()[i]));
+                                    } catch (Exception e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }
+                                while (i<3){
+                                    imageshow[i].setVisibility(View.INVISIBLE);
+                                    i++;
+                                }
+                            }
+                            else{
+                                gridLayout.setVisibility(View.GONE);
+                                videoView.setVisibility(View.VISIBLE);
+                                Uri  uri = Uri.parse(GlobalVariables.name2url(myResponse.getResource_list()[0]));
+                                videoView.setVideoURI(uri);
+                                videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                    @Override
+                                    public void onPrepared(MediaPlayer mp) {
+                                        Log.d("DetailActivity", "mp4: " + uri.toString());
+                                        videoView.start();
+                                    }
+                                });
                             }
                         }
                     });

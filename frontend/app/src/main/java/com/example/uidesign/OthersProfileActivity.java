@@ -96,6 +96,8 @@ public class OthersProfileActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         textUsername.setText(myResponse.getUsername());
+                        TextView textBio = findViewById(R.id.description);
+                        textBio.setText(myResponse.getDescription());
                         // TODO set followers and following count
                         followersCount = myResponse.getFans_list().size();
                         textFollowersAndFollowings.setText(followersCount + " followers • " + myResponse.getFollow_list().size() + " following");
@@ -110,6 +112,16 @@ public class OthersProfileActivity extends AppCompatActivity {
                         headDownloader.execute(GlobalVariables.name2url(myResponse.getUser_head()));
                     }
                 });
+            }
+        });
+
+        textFollowersAndFollowings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(OthersProfileActivity.this, FollowListActivity.class);
+                intent.putExtra("userid", userID);
+                intent.putExtra("type", "others");
+                startActivity(intent);
             }
         });
 

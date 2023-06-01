@@ -1,11 +1,13 @@
 package com.example.uidesign.model;
 
 
+import android.util.Log;
+
 import java.util.List;
 
 public class User {
     // mongodb唯一id
-    String userid;
+    String id;
     //用户名
     String username;
     // 密码
@@ -29,7 +31,8 @@ public class User {
                 List<String> my_post_list,
                 List<String> follow_list,
                 List<String> fans_list,
-                List<String> comment_post_list
+                List<String> comment_post_list,
+                String id
     ) {
         this.username = username;
         this.password = password;
@@ -41,6 +44,7 @@ public class User {
         this.follow_list = follow_list;
         this.fans_list = fans_list;
         this.comment_post_list = comment_post_list;
+        this.id = id;
     }
 
     public String getUsername() {
@@ -60,7 +64,9 @@ public class User {
         return password;
     }
     public void setPassword(String password) { this.password = password; }
-    public String getId() { return userid; }
+    public String getId() {
+        Log.d("User.java", "getId: " + id);
+        return id; }
 
     public void setUsername(String username) {
         this.username = username;
