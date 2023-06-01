@@ -1,6 +1,7 @@
 package com.example.backend.Controller;
 
 import com.example.backend.Base.Comment;
+import com.example.backend.Base.Message;
 import com.example.backend.Base.Post;
 import com.example.backend.Base.User;
 import org.bson.types.ObjectId;
@@ -249,7 +250,8 @@ public class PostListController {
                            @RequestParam String content,
                            @RequestParam String tag,
                            @RequestParam int resource_num,//资源的数量
-                           @RequestParam String resource_type //资源类型 图片为jpg，视频为mp4
+                           @RequestParam String resource_type, //资源类型 图片为jpg，视频为mp4
+                           @RequestParam String location//地点
                            ) {
 
         /*
@@ -290,7 +292,7 @@ public class PostListController {
             }
             String user_head=user.getUser_head();
             String user_name=user.getUsername();
-            Post post_new = new Post(postid,userid,user_name,user_head,createAt,title,content,tag,resource_num,resource_type,
+            Post post_new = new Post(postid,userid,user_name,user_head,createAt,title,content,tag,location,resource_num,resource_type,
                     0,0,tmp,tmp,0,resource_list,tmp_comment);
 
             //将post加入user的my_post_list
@@ -298,6 +300,22 @@ public class PostListController {
             //将post加入数据库，返回图片id
             mongoTemplate.insert(post_new);
             mongoTemplate.save(user);
+            //给作者每一个粉丝发一条通知，通知他们关注的人发了新的动态
+            String msg_title="关注的人发了新的动态";
+            String msg_content="你关注的用户"+user_name+"发了新的动态："+title+"，快去看看吧！";
+            String msg_type="post";
+            Date date = new Date();
+            List<String> fans_list=user.getFans_list();
+            for(String fans_id:fans_list){
+                Query query1 = new Query();
+                query1.addCriteria(Criteria.where("userid").is(fans_id));
+                User fans = mongoTemplate.findOne(query1, User.class);
+                if(fans!=null){
+                    Message message=new Message(msg_title,msg_content,date,msg_type,fans_id);
+                    fans.addMessage(message);
+                    mongoTemplate.save(fans);
+                }
+            }
             String[] rv=post_new.getResource_list();
             return new ResponseEntity<>(rv, HttpStatus.OK);
         }catch (Exception e){
@@ -343,6 +361,16 @@ public class PostListController {
                 if(cancel==0){
                     post.add_like(userid);
                     user.addLikePost(postid);
+                    //给帖子的作者发一个通知，通知他有人点赞了他的帖子
+                    String authorid=post.getAuthor_id();
+                    String msg_type="like";
+                    String msg_title="有人点赞了你的帖子";
+                    String msg_content=userid+"点赞了你的帖子 "+post.getTitle();
+                    //获取date类型的当前时间
+                    Date date = new Date();
+                    System.out.println("msg_follow_new_post_date: "+date);
+                    Message msg=new Message(msg_title,msg_content,date,msg_type,userid);
+                    user.addMessage(msg);
                 }
                 else{
                     post.cancel_like(userid);
@@ -439,6 +467,23 @@ public class PostListController {
             mongoTemplate.save(user);
             mongoTemplate.save(post);
             System.out.println("New comment success");
+
+            //给作者发送一条通知，提醒该用户评论了他的帖子
+            String authorid = post.getAuthor_id();
+            Query query3 = new Query();
+            query3.addCriteria(Criteria.where("userid").is(authorid));
+            User author = mongoTemplate.findOne(query3, User.class);
+            if(author==null){
+                System.out.println("Error: author not found");
+                return ResponseEntity.badRequest().body("author not found");
+            }
+            String msg_title = "您的帖子有新的评论";
+            String msg_content=username+"评论了您的帖子: "+content;
+            String msg_type = "comment";
+            Message msg = new Message(msg_title,msg_content, tmp,msg_type,userid);
+            author.addMessage(msg);
+            mongoTemplate.save(author);
+            System.out.println("Send message success");
             return ResponseEntity.ok().body("success");
         }
         catch(Exception e){

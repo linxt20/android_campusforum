@@ -590,8 +590,10 @@ public class UserController {
             //创建一个新的chat
             List<Sentence> sentence_list = new ArrayList<>();
             sentence_list.add(sentence);
+            ObjectId id = new ObjectId();
+            String chat_id = id.toString();
             chat = new Chat(sender_id,sender.getUsername(),sender.getUser_head(),
-                    receiver_id,receiver.getUsername(),receiver.getUser_head(),sentence_list,date_tmp);
+                    receiver_id,receiver.getUsername(),receiver.getUser_head(),sentence_list,chat_id,date_tmp);
             sender.addChat(chat);
             receiver.addChat(chat);
         }
@@ -601,12 +603,75 @@ public class UserController {
             sender.addChat_sentence(chat_id,sentence);
             receiver.addChat_sentence(chat_id,sentence);
         }
+        //给receiver添加一条message
+        String msg_title = "您收到一条私信";
+        String msg_content = "来自用户" + sender.getUsername() + "的私信";
+        Date msg_date = date_tmp;
+        String msg_type = "chat";
+        Message message = new Message(msg_title,msg_content,msg_date,msg_type,sender_id);
+        receiver.addMessage(message); 
         mongoTemplate.save(sender);
         mongoTemplate.save(receiver);
         return ResponseEntity.ok().body("success");
     }
 
-    
+
+    @PostMapping("/get_chat")
+    public ResponseEntity<Chat> get_chat(@RequestParam String user1_id,@RequestParam String user2_id){
+        /*
+         * 功能：获取两人的聊天记录
+         * 传入参数：
+         *  user1_id：用户1id
+         *  user2_id：用户2id
+         * 返回参数：
+         *  Chat：聊天记录
+         * */
+        System.out.println("Received get_chat message" + user1_id + " " + user2_id);
+        if(user1_id.equals("") || user2_id.equals("")) {
+            System.out.println("参数不能为空");
+            return ResponseEntity.badRequest().body(null);
+        }
+        //进行检查，如果用户名不存在，返回错误
+        Query query = new Query();
+        query.addCriteria(Criteria.where("userid").is(user1_id));
+        User user1 = mongoTemplate.findOne(query, User.class);
+        if(user1 == null) {
+            System.out.println("用户1不存在");
+            return ResponseEntity.badRequest().body(null);
+        }
+        query = new Query();
+        query.addCriteria(Criteria.where("userid").is(user2_id));
+        User user2 = mongoTemplate.findOne(query, User.class);
+        if(user2 == null) {
+            System.out.println("用户2不存在");
+            return ResponseEntity.badRequest().body(null);
+        }
+        //获取chat
+        Chat chat = null;
+        for(Chat c : user1.getChat_list()) {
+            //如果chat中user1_id、user2_id能和两人id对应，顺序无所谓，则存在chat
+            if((c.getUser1_id().equals(user1_id) && c.getUser2_id().equals(user2_id)) ||
+                    (c.getUser1_id().equals(user2_id) && c.getUser2_id().equals(user1_id))) {
+                chat = c;
+                break;
+            }
+        }
+        if(chat == null) {
+            System.out.println("两人没有聊天记录");
+            return ResponseEntity.badRequest().body(null);
+        }
+        //根据二人的userid重置用户名和头像 为防头像修改
+        chat.setUser1_name(user1.getUsername());
+        chat.setUser1_head(user1.getUser_head());
+        chat.setUser2_name(user2.getUsername());
+        chat.setUser2_head(user2.getUser_head());
+        return ResponseEntity.ok().body(chat);
+    }
+
+
+
+
+
 
 
 

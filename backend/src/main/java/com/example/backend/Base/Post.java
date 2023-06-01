@@ -23,6 +23,8 @@ public class Post {
     String create_time;//创建时间 前端接口为createAt
     String title;//标题
     String content;//内容  !!支持md，可能需要修改
+
+    String location;//地点
     int comment_count;//评论量
     int like_count;//点赞量
     List<String> like_userid_list;//点赞用户id列表
@@ -48,6 +50,7 @@ public class Post {
                 String title,
                 String content,
                 String tag,
+                String location,
                 int resource_num,
                 String resource_type,
                 int like_count,
@@ -69,6 +72,7 @@ public class Post {
         this.resource_num=resource_num;
         this.resource_type=resource_type;
         this.tag=tag;
+        this.location=location;
         this.postid=postid;
         this.resource_list=resource_list;
         //新建时，自动置为0

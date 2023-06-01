@@ -27,6 +27,7 @@ public class Chat {
                 String user2_name,
                 String user2_head,
                 List<Sentence> sentence_list,
+                String chat_id,
                 Date last_time){
         this.user1_id=user1_id;
         this.user1_name=user1_name;
@@ -36,9 +37,7 @@ public class Chat {
         this.user2_head=user2_head;
         this.sentence_list=sentence_list;
         this.last_time=last_time;
-        //利用objectid设置chat_id
-        ObjectId tmp_id = new ObjectId();
-        this.chat_id=tmp_id.toString();
+        this.chat_id=chat_id;
     }
 
     public String getChat_id() {
@@ -82,6 +81,19 @@ public class Chat {
         this.last_time=sentence.getCreate_time();
     }
 
+    public void setUser1_head(String user1_head) {
+        this.user1_head = user1_head;
+    }
 
+    public void setUser1_name(String user1_name) {
+        this.user1_name = user1_name;
+    }
 
+    public void setUser2_name(String user2_name) {
+        this.user2_name = user2_name;
+    }
+
+    public void setUser2_head(String user2_head) {
+        this.user2_head = user2_head;
+    }
 }

@@ -199,5 +199,9 @@ public class User {
         }
     }
 
+    public void addMessage(Message message){
+        message_list.add(message);
+    }
+
 
 }
