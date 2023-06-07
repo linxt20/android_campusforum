@@ -247,63 +247,29 @@ public class PostListController {
 
     public boolean if_contain_serchkey_list(Post post, List<String> key_list){
         //判断post中是否包含key_list中的每一个值
+        //但不要求key_list中的值必须全部包含在用户名或内容或标题或标签的一个之中
+        List<String> key_list_tmp = key_list;
         if(post.getTitle()!=null){
-            Boolean not_contain=false;
-            for(String key:key_list){
-                if(post.getTitle().contains(key)){
-                    continue;
-                }
-                else{
-                    not_contain = true;
-                    break;
-                }
-            }
-            if(!not_contain){
+            key_list_tmp.removeIf(key -> post.getTitle().contains(key));
+            if(key_list_tmp.size()==0){
                 return true;
             }
         }
         if(post.getContent()!=null){
-            Boolean not_contain=false;
-            for(String key:key_list){
-                if(post.getContent().contains(key)){
-                    continue;
-                }
-                else{
-                    not_contain = true;
-                    break;
-                }
-            }
-            if(!not_contain){
+            key_list_tmp.removeIf(key -> post.getContent().contains(key));
+            if(key_list_tmp.size()==0){
                 return true;
             }
         }
         if(post.getTag()!=null){
-            Boolean not_contain=false;
-            for(String key:key_list){
-                if(post.getTag().contains(key)){
-                    continue;
-                }
-                else{
-                    not_contain = true;
-                    break;
-                }
-            }
-            if(!not_contain){
+            key_list_tmp.removeIf(key -> post.getTag().contains(key));
+            if(key_list_tmp.size()==0){
                 return true;
             }
         }
         if(post.getAuthor_name()!=null){
-            Boolean not_contain=false;
-            for(String key:key_list){
-                if(post.getAuthor_name().contains(key)){
-                    continue;
-                }
-                else{
-                    not_contain = true;
-                    break;
-                }
-            }
-            if(!not_contain){
+            key_list_tmp.removeIf(key -> post.getAuthor_name().contains(key));
+            if(key_list_tmp.size()==0){
                 return true;
             }
         }
