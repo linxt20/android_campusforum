@@ -40,7 +40,7 @@ public class PostListController {
         * userid: 用户id
         * search_key: 搜索关键词 和帖子的标题、内容、tag、用户名匹配；支持多关键词，按逻辑与进行匹配，关键词之间用空格分隔
         * tag: 标签
-        * type: 帖子类型 //hot 热门  follow 关注的人发的帖子
+        * type: 帖子类型 //hot 热门  follow 关注的人发的帖子 all 所有帖子
         * sort_by: 排序依据 //"time" 时间倒序排序 "like" 点赞数降序排序 "comment" 评论数降序排序
         * if_follow: 是否只返回关注的人发布的帖子
         * 输出： List<Post> 所有帖子
@@ -123,6 +123,9 @@ public class PostListController {
                 }
                 rv=tmp;
                 rv.sort((o1, o2) -> (o2.getLike_count() + o2.getComment_count()) - (o1.getLike_count() + o1.getComment_count()));
+            }
+            else if(type.equals("all")){
+                //do nothing
             }
             else{
                 System.out.println("type is wrong");
