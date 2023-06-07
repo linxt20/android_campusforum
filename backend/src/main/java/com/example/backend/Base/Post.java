@@ -24,6 +24,8 @@ public class Post {
     String title;//标题
     String content;//内容  !!支持md，可能需要修改
 
+    int if_following;//对于目前浏览的用户，是否关注该post的作者 0没有，1有
+
     String location;//地点
     int comment_count;//评论量
     int like_count;//点赞量
@@ -218,5 +220,13 @@ public class Post {
 
     public List<Comment> getComment_list() {
         return comment_list;
+    }
+
+    public int getIf_following() {
+        return if_following;
+    }
+
+    public void setIf_following(int if_following) {
+        this.if_following = if_following;
     }
 }
