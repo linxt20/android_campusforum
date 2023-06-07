@@ -21,6 +21,9 @@ public class Bean {
     private int if_star = 0;
     private String user_head;
     private String postid, userid, type;
+    private Boolean isFollowing;
+
+    private String location;
 
     private String[] imagelist = new String[6];
 
@@ -39,7 +42,9 @@ public class Bean {
                  Comment[] commentList,
                  String postid,
                  String userid,
-                 String type) {
+                 String type,
+                 Boolean isFollowing,
+                 String location){
         this.Username = Username;
         this.createAt = createAt;
         this.tag = tag;
@@ -56,7 +61,10 @@ public class Bean {
         this.postid = postid;
         this.userid = userid;
         this.type = type;
+        this.isFollowing = isFollowing;
+        this.location = location;
     }
+    public String getLocation() {return location;}
     public  String getType() {return type;}
     public String getUserid() {return userid;}
     public  String getPostid() {return postid;}
@@ -88,7 +96,7 @@ public class Bean {
     public int getstar_count() {
         return star_count;
     }
-
+    public Boolean getIsFollowing() { return isFollowing; }
     public String getuser_head() { return user_head;}
 
     public String[] getimagelist() { return imagelist; }

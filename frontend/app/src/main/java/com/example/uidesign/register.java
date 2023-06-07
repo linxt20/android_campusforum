@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.uidesign.utils.GlobalVariables;
 
@@ -72,10 +73,15 @@ public class register extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            registermessage.setText(responseText);
-                            if(responseText.equals("saved")){
-                                finish();
-                            }
+                            finish();
+                        }
+                    });
+                }
+                else{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(register.this, "用户名已存在",Toast.LENGTH_SHORT).show();
                         }
                     });
                 }

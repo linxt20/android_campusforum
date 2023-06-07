@@ -52,14 +52,13 @@ public class SettingsActivity extends AppCompatActivity {
     final int REQUEST_CODE_SELECT_IMAGE = 1001;
 
     private TextView logoutView;
-    private TextView editPersonalInfoButton, editPasswordButton;
+    private TextView editPersonalInfoButton, editPasswordButton, blockListButton;
     private EditText editTextUsername, editTextDescription, editTextPassword, editTextConfirmPassword;
     private Button submitPersonalInfoButton, submitPasswordButton;
     private LinearLayout expandableLayoutInfo;
     private LinearLayout expandableLayoutPassword;
     private static final int REQUEST_READ_EXTERNAL_STORAGE_PERMISSION = 100;
     private ImageButton beforeView;
-    private Button submitButton;
     private boolean isVisibleInfo = false, isVisiblePassword = false;
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -93,6 +92,14 @@ public class SettingsActivity extends AppCompatActivity {
         expandableLayoutInfo.setVisibility(View.GONE);
         expandableLayoutPassword = findViewById(R.id.expandableLayoutPassword);
         expandableLayoutPassword.setVisibility(View.GONE);
+        blockListButton = findViewById(R.id.blockTextView);
+        blockListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(SettingsActivity.this, BlockActivity.class);
+                startActivity(intent);
+            }
+        });
 
         editPersonalInfoButton = findViewById(R.id.editPersonalInfoTextView);
         editPersonalInfoButton.setOnClickListener(new View.OnClickListener() {
@@ -243,17 +250,6 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 onBackPressed();
-            }
-        });
-
-
-        submitButton = findViewById(R.id.submitButton);
-        submitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //sendMessage(1);
-                sendImage();
-                //receiveImage();
             }
         });
     }

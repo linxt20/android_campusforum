@@ -83,13 +83,14 @@ public class MessageListAdapter extends RecyclerView.Adapter {
     }
 
     public class SentMessageHolder extends RecyclerView.ViewHolder {
-        TextView messageText, timeText;
+        TextView messageText, timeText, dateText;
 
         SentMessageHolder(View itemView) {
             super(itemView);
 
             messageText = (TextView) itemView.findViewById(R.id.text_gchat_message_me);
             timeText = (TextView) itemView.findViewById(R.id.text_gchat_timestamp_me);
+            dateText = (TextView) itemView.findViewById(R.id.text_gchat_date_me);
         }
 
         void bind(MessageItem message) {
@@ -97,19 +98,21 @@ public class MessageListAdapter extends RecyclerView.Adapter {
 
             // Format the stored timestamp into a readable String using method.
             timeText.setText(message.getCreatedAt());
+            dateText.setText(message.getDate());
         }
     }
 
     public class ReceivedMessageHolder extends RecyclerView.ViewHolder {
-        TextView messageText, timeText, nameText;
+        TextView messageText, timeText, nameText, dateText;
         ImageView profileImage;
 
         ReceivedMessageHolder(View itemView) {
             super(itemView);
-            messageText = (TextView) itemView.findViewById(R.id.text_gchat_user_other);
+            nameText = (TextView) itemView.findViewById(R.id.text_gchat_user_other);
             timeText = (TextView) itemView.findViewById(R.id.text_gchat_timestamp_other);
-            nameText = (TextView) itemView.findViewById(R.id.text_gchat_message_other);
+            messageText = (TextView) itemView.findViewById(R.id.text_gchat_message_other);
             profileImage = (ImageView) itemView.findViewById(R.id.image_gchat_profile_other);
+            dateText = (TextView) itemView.findViewById(R.id.text_gchat_date_other);
         }
 
         void bind(MessageItem message) {
@@ -118,6 +121,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
             // Format the stored timestamp into a readable String using method.
             timeText.setText(message.getCreatedAt());
             nameText.setText(message.getSenderName());
+            dateText.setText(message.getDate());
 
             // Insert the profile image from the URL into the ImageView.
             //Utils.displayRoundImageFromUrl(mContext, message.getSender().getProfileUrl(), profileImage);

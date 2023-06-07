@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,8 +56,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ProfileFragment extends Fragment {
-    Button settings;
-    Button message;
+    ImageButton settings;
     TextView textUsername, textFollowersAndFollowings;
     ImageView imageUser;
     SharedPreferences sharedPreferences;
@@ -148,15 +148,6 @@ public class ProfileFragment extends Fragment {
                 intent.putExtra("description", description);
                 intent.putExtra("username", textUsername.getText().toString());
                 // TODO 传递个性签名
-                startActivity(intent);
-            }
-        });
-        message = view.findViewById(R.id.messageButton);
-       message.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Changed!!!!!
-                Intent intent = new Intent(getContext(),TestActivity.class);
                 startActivity(intent);
             }
         });

@@ -41,7 +41,7 @@ public class UserController {
         query.addCriteria(Criteria.where("username").is(username)); // userID查重
         if(mongoTemplate.findOne(query, User.class) != null) {
             System.out.println("用户名已存在");
-            return new ResponseEntity<>("用户名或密码不能为空", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("用户名已存在", HttpStatus.BAD_REQUEST);
         }
         // 把字符串存到数据库里
         List<String> tmp=new ArrayList<>();
@@ -358,6 +358,40 @@ public class UserController {
         }
         List<User> user_list = new ArrayList<>();
         for (String s : follow_list) {
+            query = new Query();
+            query.addCriteria(Criteria.where("userid").is(s));
+            User tmp_user = mongoTemplate.findOne(query, User.class);
+            user_list.add(tmp_user);
+        }
+        return ResponseEntity.ok().body(user_list);
+    }
+
+    @PostMapping("/get_block_list")
+    public ResponseEntity<List<User>> get_block_list(@RequestParam String userid) {
+        /*
+         * 功能：返回用户关注或粉丝列表
+         * 传入参数：
+         *  userid：用户id
+         * 返回参数：
+         *  List<User>：用户关注或粉丝列表
+         * */
+        System.out.println("Received get_block_list message" + userid);
+        if(userid.equals("")) {
+            System.out.println("用户id不能为空");
+            return ResponseEntity.badRequest().body(null);
+        }
+        //进行检查，如果用户名不存在，返回错误
+        Query query = new Query();
+        query.addCriteria(Criteria.where("userid").is(userid));
+        User user = mongoTemplate.findOne(query, User.class);
+        if(user == null) {
+            System.out.println("用户不存在");
+            return ResponseEntity.badRequest().body(null);
+        }
+        //根据传入的type，返回用户关注或粉丝列表
+        List<String> block_list = user.getBlock_list();
+        List<User> user_list = new ArrayList<>();
+        for (String s : block_list) {
             query = new Query();
             query.addCriteria(Criteria.where("userid").is(s));
             User tmp_user = mongoTemplate.findOne(query, User.class);

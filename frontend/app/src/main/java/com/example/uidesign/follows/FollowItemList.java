@@ -21,25 +21,12 @@ public class FollowItemList {
     public FollowItemList() {
     }
 
-    public void insert(String Img, String username, String date, String content, String userid) {
-        data.add(new FollowItem(Img,username,date, content, userid));
+    public void insert(String Img, String username, String content, String userid) {
+        data.add(new FollowItem(Img,username, content, userid));
         // TODO 在加入的时候就进行排序
         count++;
     }
 
-    public  void sort() {
-        Collections.sort(data, new Comparator<FollowItem>() {
-            @Override
-            public int compare(FollowItem o1, FollowItem o2) {
-                return o2.convertTime2Num() - (o1.convertTime2Num());
-            }
-        });
-    }
-
-    public void delete(int number) {
-        data.remove(number);
-        count--;
-    }
 
     public FollowItem get(int index) {
         return data.get(index);

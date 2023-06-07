@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.example.uidesign.ContentAll;
 import com.example.uidesign.FollowListFragment;
 import com.example.uidesign.ProfileMyPostsFragment;
 import com.example.uidesign.ProfileMyStarsFragment;
@@ -18,6 +19,12 @@ public class FollowPagerAdapter extends FragmentStateAdapter {
 
     public FollowPagerAdapter(FragmentActivity fragmentActivity, List<String> tabTitles, String userid) {
         super(fragmentActivity);
+        this.tabTitles = tabTitles;
+        this.userid = userid;
+    }
+
+    public FollowPagerAdapter(Fragment fragment, List<String> tabTitles, String userid) {
+        super(fragment);
         this.tabTitles = tabTitles;
         this.userid = userid;
     }

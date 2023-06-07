@@ -92,7 +92,7 @@ public class ProfileMyStarsFragment extends Fragment {
                 for(int i = 0; i < myResponse.size(); i++){
                     Log.d("ProfileStarPostsFragment", myResponse.get(i).toString());
                     String[] images = myResponse.get(i).getResource_list();
-                    if(images.length == 0) {
+                    if(images.length == 0 || myResponse.get(i).getResource_type().equals("mp4")) {
                         // TODO 处理以下没有图片的情况。。(改成无图片)
                         boardItemList.insert("nopic.jpg", myResponse.get(i).getTitle(), myResponse.get(i).getCreate_time(), myResponse.get(i).getPostid());
                     }

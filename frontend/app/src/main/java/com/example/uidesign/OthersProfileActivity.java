@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,8 +50,8 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class OthersProfileActivity extends AppCompatActivity {
-    Button message, follow;
-    Boolean  isFollowing =false;
+    ImageButton message, follow, block;
+    Boolean  isFollowing =false, isBlocked =false;
     TextView textUsername, textFollowersAndFollowings;
     ImageView imageUser;
     int followersCount;
@@ -68,6 +69,7 @@ public class OthersProfileActivity extends AppCompatActivity {
         textFollowersAndFollowings = findViewById(R.id.text_followers_following_count);
         imageUser = findViewById(R.id.image_user);
         follow = findViewById(R.id.followButton);
+        block = findViewById(R.id.blockButton);
         prefs = getSharedPreferences("com.example.android.myapp", MODE_PRIVATE);
 
 
@@ -104,9 +106,18 @@ public class OthersProfileActivity extends AppCompatActivity {
                         // if I am in the following list, set the button to "following"
                         if (myResponse.getFans_list().contains(prefs.getString("userID", ""))){
                             isFollowing = true;
-                            follow.setText("取消关注");
-                            follow.setBackgroundColor(Color.parseColor("#F44336"));
-
+                            block.setVisibility(View.GONE);
+//                            follow.setText("取消关注");
+//                            follow.setBackgroundColor(Color.parseColor("#F44336"));
+                            follow.setBackground(getDrawable(R.drawable.followed));
+                        }
+                        if(myResponse.getBlock_list().contains(prefs.getString("userID", ""))){
+                            isBlocked = true;
+                            follow.setVisibility(View.GONE);
+                            message.setVisibility(View.GONE);
+//                            block.setText("取消屏蔽");
+//                            block.setBackgroundColor(Color.parseColor("#F44336"));
+                            block.setBackground(getDrawable(R.drawable.unblock));
                         }
                         ImageDownloader headDownloader = new ImageDownloader(imageUser);
                         headDownloader.execute(GlobalVariables.name2url(myResponse.getUser_head()));
@@ -158,17 +169,69 @@ public class OthersProfileActivity extends AppCompatActivity {
                                 public void run() {
                                     if(isFollowing){
                                         Toast.makeText(OthersProfileActivity.this, "关注成功", Toast.LENGTH_SHORT).show();
-                                        follow.setText("取消关注");
-                                        follow.setBackgroundColor(Color.parseColor("#F44336"));
+//                                        follow.setText("取消关注");
+//                                        follow.setBackgroundColor(Color.parseColor("#F44336"));
+                                        follow.setBackground(getDrawable(R.drawable.followed));
                                         followersCount++;
                                         textFollowersAndFollowings.setText(followersCount+ " followers •" + tmp[1]);
+                                        block.setVisibility(View.GONE);
                                     }
                                     else{
                                         Toast.makeText(OthersProfileActivity.this, "取消关注成功", Toast.LENGTH_SHORT).show();
-                                        follow.setText("关注");
-                                        follow.setBackgroundColor(Color.parseColor("#03A9F4"));
+//                                        follow.setText("关注");
+//                                        follow.setBackgroundColor(Color.parseColor("#03A9F4"));
+                                        follow.setBackground(getDrawable(R.drawable.follow));
                                         followersCount--;
                                         textFollowersAndFollowings.setText(followersCount + " followers •" + tmp[1]);
+                                        block.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+
+        block.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OkHttpClient client = new OkHttpClient();
+                RequestBody body = new FormBody.Builder()
+                        .add(isBlocked? "unblock_userid":"block_userid", userID)
+                        .add("userid", prefs.getString("userID", ""))
+                        .build();
+                Request request = new Request.Builder()
+                        .url(isBlocked? GlobalVariables.user_unblock_url:GlobalVariables.user_block_url)
+                        .post(body)
+                        .build();
+                client.newCall(request).enqueue(new okhttp3.Callback() {
+                    @Override
+                    public void onFailure(okhttp3.Call call, IOException e) {
+                        e.printStackTrace();
+                    }
+                    @Override
+                    public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
+                        final String responseText = response.body().string();
+                        if(responseText.equals("success")){
+                            isBlocked = !isBlocked;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(isBlocked){
+                                        Toast.makeText(OthersProfileActivity.this, "屏蔽成功", Toast.LENGTH_SHORT).show();
+//                                        block.setText("取消屏蔽");
+//                                        block.setBackgroundColor(Color.parseColor("#F44336"));
+                                        block.setBackground(getDrawable(R.drawable.unblock));
+                                        follow.setVisibility(View.GONE);
+                                    }
+                                    else{
+                                        Toast.makeText(OthersProfileActivity.this, "取消屏蔽成功", Toast.LENGTH_SHORT).show();
+//                                        block.setText("屏蔽");
+//                                        block.setBackgroundColor(Color.parseColor("#03A9F4"));
+                                        block.setBackground(getDrawable(R.drawable.block));
+                                        follow.setVisibility(View.VISIBLE);
+                                        message.setVisibility(View.VISIBLE);
                                     }
                                 }
                             });
@@ -197,5 +260,9 @@ public class OthersProfileActivity extends AppCompatActivity {
         viewPager.setAdapter(sectionsPagerAdapter);
         TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(tabTitles.get(position)));
         tabLayoutMediator.attach();
+    }
+
+    public void goBack(View view){
+        finish();
     }
 }

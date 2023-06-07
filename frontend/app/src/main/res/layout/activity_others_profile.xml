@@ -7,6 +7,16 @@
     android:layout_width="match_parent"
     android:orientation="vertical" >
 
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="goBack"
+        android:background="@drawable/ic_before"
+
+        android:layout_marginEnd="20dp"
+        app:layout_constraintTop_toTopOf="@+id/layout_group_chat"
+        app:layout_constraintStart_toStartOf="@+id/layout_group_chat"
+        />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -19,7 +29,7 @@
             style="@style/TextViewHeaderStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="4dp"
             android:text=""
             android:textColor="@color/black"
             android:textSize="36sp"
@@ -67,19 +77,27 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text_followers_following_count">
 
-            <Button
+            <ImageButton
+                android:background="@drawable/follow"
                 android:id="@+id/followButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="关注" />
+                android:layout_marginEnd="8dp" />
 
-            <Button
+            <ImageButton
+                android:background="@drawable/message"
                 android:id="@+id/messageButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp" />
+
+            <ImageButton
+                android:id="@+id/blockButton"
+                android:background="@drawable/block"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:text="私信" />
+                android:text="屏蔽" />
 
 
         </LinearLayout>

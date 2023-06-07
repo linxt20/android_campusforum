@@ -26,6 +26,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -42,6 +43,14 @@ public class FollowFragment extends Fragment {
     SharedPreferences prefs;
     String userID;
     BeanListAdapter adapter;
+    String search_key, tag;
+
+    public List<String> following = new ArrayList<>();
+
+    public FollowFragment(String search_key, String tag) {
+        this.search_key = search_key;
+        this.tag = tag;
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,26 +71,51 @@ public class FollowFragment extends Fragment {
                 }
         );
 
-        OkHttpClient client = new OkHttpClient();
         prefs = getActivity().getSharedPreferences("com.example.android.myapp", 0);
         userID = prefs.getString("userID", "");
 
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = new FormBody.Builder()
+                .add("userid", userID)
+                .build();
+        Request request = new Request.Builder()
+                .url(GlobalVariables.get_user_url)
+                .post(body)
+                .build();
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(okhttp3.Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
+                String responseText = response.body().string();
+                Log.d("AddPost", "responseText: " + responseText);
+                // if(responseText == null) return;
+                final User myResponse = new Gson().fromJson(responseText, new TypeToken<User>(){}.getType());
+                following = myResponse.getFollow_list();
+            }
+        });
+        client = new OkHttpClient();
         /*
        @RequestParam String userid,
        @RequestParam String search_key,
        @RequestParam String tag,
        @RequestParam String sort_by)
        */
-        RequestBody body = new FormBody.Builder()
+        body = new FormBody.Builder()
                 .add("userid", userID)
-                .add("search_key", "")
-                .add("tag","")
-                .add("sort_by", "")
+                .add("search_key", search_key)
+                .add("tag",tag)
+                .add("sort_by", "time")
+                .add("if_follow", "true")
                 .build();
-        Request request = new Request.Builder()
+        request = new Request.Builder()
                 .url(GlobalVariables.get_posts_url)
                 .post(body)
                 .build();
+
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -106,11 +140,15 @@ public class FollowFragment extends Fragment {
                     for(int j = 0; j < myResponse.get(i).getComment_count(); j++){
                         comments[j] = myResponse.get(i).getComment_list().get(j);
                     }
+                    Boolean isFollowing = false;
+                    if(following.contains(myResponse.get(i).getAuthor_id())){
+                        isFollowing = true;
+                    }
                     Log.d("FollowFragment", "head: " + myResponse.get(i).getAuthor_head());
                     BeanList.insert(myResponse.get(i).getAuthor_name(), myResponse.get(i).getCreate_time(), myResponse.get(i).getTag(), myResponse.get(i).getTitle()
                             , myResponse.get(i).getContent(),myResponse.get(i).getComment_count(), myResponse.get(i).getLike_count(), myResponse.get(i).getIf_like()
                             , myResponse.get(i).getStar_count(), myResponse.get(i).getIf_star(), myResponse.get(i).getAuthor_head(), myResponse.get(i).getResource_list()
-                            , comments, myResponse.get(i).getPostid(), myResponse.get(i).getAuthor_id(),myResponse.get(i).getResource_type());
+                            , comments, myResponse.get(i).getPostid(), myResponse.get(i).getAuthor_id(),myResponse.get(i).getResource_type(),isFollowing, myResponse.get(i).getLocation());
                 }
                 getActivity().runOnUiThread(new Runnable() {
                     @Override

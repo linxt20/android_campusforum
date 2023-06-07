@@ -1,6 +1,24 @@
 # android大作业
 
+## 后端运行方法
+
+修改application.properties里面的静态文件夹路径（改为自己的backend文件夹路径下的/target/static![Screenshot 2023-06-07 at 19.02.04](/Users/janet/Library/Application Support/typora-user-images/Screenshot 2023-06-07 at 19.02.04.png)
+
+修改ResourceController.java中的这个变量，（改为自己的backend文件夹路径下的/target/static/static
+
+![Screenshot 2023-06-07 at 19.02.04](/Users/janet/Library/Application Support/typora-user-images/Screenshot 2023-06-07 at 19.03.05.png)
+
+在backend文件夹中打开终端，运行`mvn install`会在target中生成打包后的.jar文件，在终端通过:
+
+```shell
+cd target
+java -cp static -jar backend-0.0.1-SNAPSHOT.jar
+```
+
+方式运行后端 
+
 ## 预设置
+
 - 加入github
 - 设置手机模拟器版本：Android 虚拟机 Pixel XL，屏幕分辨率 1440*2560，系统版本：Android 11.0
 
@@ -48,5 +66,4 @@ https://modao.cc/app/1Jj3Dyt3rt0do85bEFvrNp
 - 林欣涛:前端
 - 张雨恬:后端
 - 汪静雅:前端
-
 

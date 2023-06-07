@@ -78,7 +78,7 @@
         android:id="@+id/loginmessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="message"
+        android:text="登录"
         android:textSize="30dp"/>
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"

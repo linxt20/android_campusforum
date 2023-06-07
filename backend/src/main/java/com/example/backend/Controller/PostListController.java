@@ -31,7 +31,8 @@ public class PostListController {
     public ResponseEntity<List<Post>> post_get(@RequestParam String userid,
                                                @RequestParam String search_key,
                                                @RequestParam String tag,
-                                               @RequestParam String sort_by) {
+                                               @RequestParam String sort_by,
+                                               @RequestParam String if_follow) {
         //之后会增加search key，返回固定的帖子
         /*
         * 功能：返回所有帖子
@@ -39,7 +40,8 @@ public class PostListController {
         * userid: 用户id
         * search_key: 搜索关键词 和帖子的标题、内容、tag、用户名匹配；支持多关键词，按逻辑与进行匹配，关键词之间用空格分隔
         * tag: 标签
-        * sort_by: 排序依据 //热度怎么计算？
+        * sort_by: 排序依据 //"time" 时间倒序排序 “hot” 评论+点赞
+        * if_follow: 是否只返回关注的人发布的帖子
         * 输出： List<Post> 所有帖子
         * */
 
@@ -96,8 +98,43 @@ public class PostListController {
                 }
                 rv=tmp;
             }
+            //根据if_follow,从用户的关注列表筛选帖子
+            if(if_follow.equals("true")){
+                List<String> follow_list = user.getFollow_list();
+                if(follow_list!=null){
+                    List<Post> tmp=new ArrayList<>();
+                    for(Post post:rv){
+                        if(follow_list.contains(post.getAuthor_id())){
+                            tmp.add(post);
+                        }
+                    }
+                    rv=tmp;
+                }
+            }
 
             //TODO 根据sortby排序帖子
+            if(sort_by.equals("time")){
+            //将create_time转化为Date类型进行倒序排序
+                rv.sort((o1, o2) -> {
+                    try{
+                        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        Date date1 = dateFormat.parse(o1.getCreate_time());
+                        Date date2 = dateFormat.parse(o2.getCreate_time());
+                        return date2.compareTo(date1);
+                    }
+                    catch (Exception e){
+                        return 0;
+                    }
+                });
+
+            }
+            else if(sort_by.equals("hot")){
+                rv.sort((o1, o2) -> (o2.getLike_count() + o2.getComment_count()) - (o1.getLike_count() + o1.getComment_count()));
+            }
+            else{
+                System.out.println("sort by is wrong");
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
 
 
 

@@ -1,9 +1,14 @@
 package com.example.uidesign;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
@@ -41,13 +46,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import io.noties.markwon.Markwon;
 import okhttp3.*;
 
 public class DetailActivity extends AppCompatActivity {
     public TextView UsernameView;
     public TextView createTime;
     public TextView tagshow;
-    public TextView Titletext;
+    public TextView Titletext, locationView;
     public TextView Contenttext;
 
     public TextView commenttext;
@@ -65,6 +71,7 @@ public class DetailActivity extends AppCompatActivity {
     public EditText editTextComment;
     public ImageView image_user;
     public VideoView videoView;
+    public int isLiked = 0, isStarred = 0;
     CommentRecycleAdapter adapter;
     Boolean showCommentLayout = false;
 
@@ -97,6 +104,7 @@ public class DetailActivity extends AppCompatActivity {
         videoView = findViewById(R.id.videoView);
         commentArea.setVisibility(View.GONE);
         gridLayout = findViewById(R.id.grid);
+        locationView = findViewById(R.id.locationTextView);
         commentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -173,25 +181,89 @@ public class DetailActivity extends AppCompatActivity {
         likearea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO
-//                if(if_like == 0){
-//                    likeimage.setImageResource(R.drawable.love);
-//                }
-//                else {
-//                    likeimage.setImageResource(R.drawable.baseline_favorite_border_24);
-//                }
+                // 调用后端
+                RequestBody body = new FormBody.Builder()
+                        .add("postid", postid)
+                        .add("userid", prefs.getString("userID", ""))
+                        .add("state", "0")  // 点赞
+                        .add("cancel", isLiked + "")
+                        .build();
+                Request request = new Request.Builder()
+                        .url(GlobalVariables.like_or_star_url)
+                        .post(body)
+                        .build();
+                OkHttpClient client = new OkHttpClient();
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                        Log.d("DetailActivity", "点赞失败");
+                    }
+
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                        String responseData = response.body().string();
+                        Log.d("DetailActivity， reponse: ", responseData);
+                        isLiked = 1 - isLiked;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // 更新UI的代码放在这里
+                                if(isLiked == 0){
+                                    likeimage.setImageResource(R.drawable.baseline_favorite_border_24);
+                                }
+                                else {
+                                    likeimage.setImageResource(R.drawable.love);
+                                }
+                                liketext.setText(responseData);
+                            }
+                        });
+                        Log.d("DetailActivity", "点赞成功");
+                    }
+                });
             }
         });
         stararea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO
-//                if(if_star == 0){
-//                    starimage.setImageResource(R.drawable.collect_red);
-//                }
-//                else {
-//                    starimage.setImageResource(R.drawable.baseline_star_border_24);
-//                }
+                // 调用后端
+                RequestBody body = new FormBody.Builder()
+                        .add("postid", postid)
+                        .add("userid", prefs.getString("userID", ""))
+                        .add("state", "1")  // 点赞
+                        .add("cancel", isStarred + "")
+                        .build();
+                Request request = new Request.Builder()
+                        .url(GlobalVariables.like_or_star_url)
+                        .post(body)
+                        .build();
+                OkHttpClient client = new OkHttpClient();
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                        Log.d("DetailActivity", "收藏失败");
+                    }
+
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                        String responseData = response.body().string();
+                        Log.d("DetailActivity， reponse: ", responseData);
+                        isStarred = 1 - isStarred;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // 更新UI的代码放在这里
+                                if(isStarred == 0){
+                                    starimage.setImageResource(R.drawable.baseline_star_border_24);
+                                }
+                                else {
+                                    starimage.setImageResource(R.drawable.collect_red);
+                                }
+                                startext.setText(responseData);
+                            }
+                        });
+                        Log.d("DetailActivity", "收藏成功");
+                    }
+                });
             }
         });
 
@@ -223,22 +295,37 @@ public class DetailActivity extends AppCompatActivity {
                         public void run() {
                             UsernameView.setText(myResponse.getAuthor_name());
                             createTime.setText(myResponse.getCreate_time());
-                            tagshow.setText(myResponse.getTag());
+                            if(myResponse.getLocation().equals("")){
+                                locationView.setVisibility(View.GONE);
+                            }
+                            else {
+                                locationView.setText(myResponse.getLocation());
+                            }
+                            if(myResponse.getTag().equals("")){
+                                tagshow.setVisibility(View.GONE);
+                            }
+                            else {
+                                tagshow.setText(myResponse.getTag());
+                            }
                             Titletext.setText(myResponse.getTitle());
-                            Contenttext.setText(myResponse.getContent());
+                            final Markwon markwon = Markwon.builder(DetailActivity.this)
+                                    .build();
+                            markwon.setMarkdown(Contenttext, myResponse.getContent());
                             List<Comment> comments = myResponse.getComment_list();
                             Log.d("DetailActivity", "comments: " + comments.toString());
                             if(comments.toString().equals("[]")) commenttext.setText("0");
                             else commenttext.setText(comments.size() + "");
                             liketext.setText(myResponse.getLike_count() + "");
                             startext.setText(myResponse.getStar_count() + "");
-                            if(myResponse.getIf_like() == 0){
+                            isLiked = myResponse.getIf_like();
+                            isStarred = myResponse.getIf_star();
+                            if(isLiked == 0){
                                 likeimage.setImageResource(R.drawable.baseline_favorite_border_24);
                             }
                             else {
                                 likeimage.setImageResource(R.drawable.love);
                             }
-                            if(myResponse.getIf_star() == 0){
+                            if(isStarred == 0){
                                 starimage.setImageResource(R.drawable.baseline_star_border_24);
                             }
                             else {
@@ -261,10 +348,12 @@ public class DetailActivity extends AppCompatActivity {
                                 imageshow[i].setVisibility(View.GONE);
                                 i++;
                             }
+                            gridLayout.setVisibility(View.GONE);
                             if(myResponse.getResource_type().equals("jpg")){
                                 videoView.setVisibility(View.GONE);
                                 int i = 0;
                                 for(i = 0; i < myResponse.getResource_list().length; i++){
+                                    gridLayout.setVisibility(View.VISIBLE);
                                     try {
                                         imageshow[i].setVisibility(View.VISIBLE);
                                         ImageDownloader imageDownloader = new ImageDownloader(imageshow[i]);
@@ -286,7 +375,15 @@ public class DetailActivity extends AppCompatActivity {
                                 videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                                     @Override
                                     public void onPrepared(MediaPlayer mp) {
-                                        Log.d("DetailActivity", "mp4: " + uri.toString());
+                                        Log.d("AddPostAdapter", "mp4: " + uri.toString());
+                                        videoView.start();
+                                        mp.setLooping(true); // 将MediaPlayer设置为循环播放
+                                    }
+                                });
+                                videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        // 视频播放完成时重新开始播放
                                         videoView.start();
                                     }
                                 });
@@ -299,7 +396,26 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     public void getback(View view) {
-        setResult(RESULT_CANCELED);
+        Intent intent = new Intent(this, ContentAll.class);
+        startActivity(intent);
         finish();
+    }
+
+    public void copy(View view) {
+        // 获取需要转发的帖子内容
+        String postContent = Contenttext.getText().toString();
+
+        // 创建剪贴板管理器
+        ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+
+         // 创建ClipData对象，将帖子内容添加到剪贴板数据中
+        ClipData clipData = ClipData.newPlainText("PostContent", postContent);
+
+         // 将ClipData对象设置到剪贴板
+        clipboardManager.setPrimaryClip(clipData);
+
+        // 提示用户已成功复制到剪贴板
+        Toast.makeText(this, "帖子已复制到剪贴板", Toast.LENGTH_SHORT).show();
+
     }
 }

@@ -36,7 +36,6 @@ public class Message {
     public String getContent() {
         return content;
     }
-
     @NonNull
     public Date getCreate_time() {
         return create_time;

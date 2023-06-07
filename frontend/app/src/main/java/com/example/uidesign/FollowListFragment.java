@@ -60,7 +60,6 @@ public class FollowListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_follow_list, container, false);
         recyclerView = (RecyclerView)view.findViewById(R.id.followListRecyclerview);
 
-        // TODO 从后端获得数据Follower的List并展示在Recyclerview上
         OkHttpClient client = new OkHttpClient();
 
         RequestBody body = new FormBody.Builder()
@@ -85,12 +84,13 @@ public class FollowListFragment extends Fragment {
                 final List<User> myResponse = new Gson().fromJson(responseText, new TypeToken<List<User>>(){}.getType());
                 for(int i = 0; i < myResponse.size(); i++){
                     Log.d("FollowListFragment", myResponse.get(i).toString());
-                    followItemList.insert(myResponse.get(i).getUser_head(), myResponse.get(i).getUsername(), "最后私信时间", "最新私信", myResponse.get(i).getId());
+                    followItemList.insert(myResponse.get(i).getUser_head(), myResponse.get(i).getUsername(), myResponse.get(i).getDescription(), myResponse.get(i).getId());
                 }
+                Log.d("followList" , getActivity().getClass().toString());
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        adapter = new FollowRecycleAdapter(getActivity(), followItemList);
+                        adapter = new FollowRecycleAdapter(getActivity(), followItemList, false);
                         recyclerView.setAdapter(adapter);
                         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                     }

@@ -12,6 +12,8 @@ public class Post {
     String create_time;//创建时间 前端接口为createAt
     String title;//标题
     String content;//内容  !!支持md，可能需要修改
+
+    String location;//地点
     int comment_count;//评论量
     int like_count;//点赞量
     List<String> like_userid_list;//点赞用户id列表
@@ -20,14 +22,6 @@ public class Post {
 
     int if_like;//对于目前浏览的用户，是否点赞 0没有，1有
     int if_star;//对于目前浏览的用户，是否收藏 0没有，1有
-
-    public int getIf_like() {
-        return if_like;
-    }
-
-    public int getIf_star() {
-        return if_star;
-    }
 
     int resource_num;//图片或视频的数量
 
@@ -45,6 +39,7 @@ public class Post {
                 String title,
                 String content,
                 String tag,
+                String location,
                 int resource_num,
                 String resource_type,
                 int like_count,
@@ -66,6 +61,7 @@ public class Post {
         this.resource_num=resource_num;
         this.resource_type=resource_type;
         this.tag=tag;
+        this.location=location;
         this.postid=postid;
         this.resource_list=resource_list;
         //新建时，自动置为0
@@ -83,7 +79,12 @@ public class Post {
     }
 
 
-
+    public int getIf_like() {
+        return if_like;
+    }
+    public int getIf_star(){
+        return if_star;
+    }
     public String getPostid(){
         return postid;
     }
@@ -92,9 +93,18 @@ public class Post {
         return resource_list;
     }
 
+    public String getResource_type() {
+        return resource_type;
+    }
+
     public String getId() {
         return postid;
     }
+
+    public String getLocation() {
+        return location;
+    }
+
     public String getAuthor_id() {
         return author_id;
     }
@@ -113,10 +123,6 @@ public class Post {
 
     public String getTitle() {
         return title;
-    }
-
-    public String getResource_type() {
-        return resource_type;
     }
 
     public String getCreate_time() {
@@ -175,6 +181,7 @@ public class Post {
         if(this.star_userid_list==null){
             this.star_userid_list=new ArrayList<String>();
         }
+        System.out.println("Add star userid: " + userid);
         this.star_userid_list.add(userid);
     }
 

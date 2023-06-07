@@ -10,12 +10,14 @@ import java.util.List;
 public class SectionsPagerAdapter extends FragmentStateAdapter {
 
     private final List<String> tabTitles;
-    private String search_key;
+    private String search_key, tag;
 
-    public SectionsPagerAdapter(FragmentActivity fragmentActivity, List<String> tabTitles, String search_key) {
+    public SectionsPagerAdapter(FragmentActivity fragmentActivity, List<String> tabTitles, String search_key, String tag) {
         super(fragmentActivity);
         this.tabTitles = tabTitles;
         this.search_key = search_key;
+        this.tag = tag;
+
     }
 
     @NonNull
@@ -23,11 +25,11 @@ public class SectionsPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 0:
-                return new NewPostsFragment(search_key);
+                return new NewPostsFragment(search_key, tag);
             case 1:
-                return new HotFragment();
+                return new HotFragment(search_key, tag);
             case 2:
-                return new FollowFragment();
+                return new FollowFragment(search_key, tag);
             default:
                 throw new IllegalStateException("Invalid position: " + position);
         }

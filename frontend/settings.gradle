@@ -1,6 +1,10 @@
 pluginManagement {
     repositories {
+        jcenter()
         google()
+        // this one 👇
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' } // 👈 this one
+        // this one 👆
         mavenCentral()
         gradlePluginPortal()
     }

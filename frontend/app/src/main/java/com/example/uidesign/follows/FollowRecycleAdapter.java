@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,11 +28,13 @@ public class FollowRecycleAdapter extends RecyclerView.Adapter<com.example.uides
     private final FollowItemList followItemList;
     private final LayoutInflater inflater;
     private Context mContext;
+    private Boolean isBlock;
 
-    public FollowRecycleAdapter(Context context, FollowItemList cItemList) {
+    public FollowRecycleAdapter(Context context, FollowItemList cItemList, Boolean isBlock) {
         inflater = LayoutInflater.from(context);
         this.followItemList = cItemList;
         this.mContext = context;
+        this.isBlock = isBlock;
     }
 
     @NonNull
@@ -47,7 +50,6 @@ public class FollowRecycleAdapter extends RecyclerView.Adapter<com.example.uides
     public void onBindViewHolder(@NonNull FollowItemViewHolder holder, int position) {
         // Retrieve the data for that position.
         String content = followItemList.get(position).getContent();
-        String dateTime = followItemList.get(position).getDateTime();
         String image = followItemList.get(position).getImage();
         String username = followItemList.get(position).getUsername();
         // Add the data to the view holder.
@@ -55,22 +57,24 @@ public class FollowRecycleAdapter extends RecyclerView.Adapter<com.example.uides
         holder.contentView.setText(content); // 调用postList中第position的post的方法
         ImageDownloader imageDownloader = new ImageDownloader(holder.userheadView);
         imageDownloader.execute(GlobalVariables.name2url(image));
-        holder.timeView.setText(dateTime);
         holder.usernameView.setText(username);
-        holder.timeView.setText(dateTime);
         SharedPreferences prefs = ((Activity)mContext).getSharedPreferences("com.example.android.myapp", MODE_PRIVATE);
-        holder.userheadView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // 如果点击的是自己的头像，则不做任何处理 TODO：或者进入个人主页？
-                Log.d("followItemList: ", followItemList.get(position).getUsername());
-                if(followItemList.get(position).getUserid().equals(prefs.getString("userID", "")))
-                    return;
-                Intent intent = new Intent(mContext, OthersProfileActivity.class);
-                intent.putExtra("userID", followItemList.get(position).getUserid());
-                mContext.startActivity(intent);
-            }
-        });
+
+        if(!isBlock){
+            // 只有关注列表能点开具体的人的profile
+            holder.userheadView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // 如果点击的是自己的头像，则不做任何处理 TODO：或者进入个人主页？
+                    Log.d("followItemList: ", followItemList.get(position).getUsername());
+                    if(followItemList.get(position).getUserid().equals(prefs.getString("userID", "")))
+                        return;
+                    Intent intent = new Intent(mContext, OthersProfileActivity.class);
+                    intent.putExtra("userID", followItemList.get(position).getUserid());
+                    mContext.startActivity(intent);
+                }
+            });
+        }
     }
 
     @Override
@@ -84,14 +88,16 @@ class FollowItemViewHolder extends RecyclerView.ViewHolder{
     private static final String LOG_TAG = com.example.uidesign.follows.FollowItemViewHolder.class.getSimpleName();
 
     public final ImageView userheadView;
-    public final TextView usernameView, contentView, timeView;
+    public final TextView usernameView, contentView;
 
     public FollowItemViewHolder(@NonNull View itemView, com.example.uidesign.follows.FollowRecycleAdapter adapter) {
         super(itemView);
+        ScaleAnimation zoomInAnimation = new ScaleAnimation(0, 1, 0, 1);
+        zoomInAnimation.setDuration(500);
+        itemView.startAnimation(zoomInAnimation);
         // Initialize the views.
         this.userheadView = itemView.findViewById(R.id.commentUserhead);
         this.usernameView = itemView.findViewById(R.id.commentUsername);
-        this.timeView = itemView.findViewById(R.id.commentCreateAt);
         this.contentView = itemView.findViewById(R.id.lastMessageText);
     }
 }

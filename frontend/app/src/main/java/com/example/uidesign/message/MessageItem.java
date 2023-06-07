@@ -7,14 +7,15 @@ public class MessageItem {
     // TODO 把user改成string userid
     String senderid;
     String senderImg, senderName;
-    String createdAt;
+    String createdAt, date;
 
-    public MessageItem(String message, String senderid, String senderImg, String senderName, String createdAt) {
+    public MessageItem(String message, String senderid, String senderImg, String senderName, String createdAt, String date) {
         this.message = message;
         this.senderid = senderid;
         this.senderImg = senderImg;
         this.senderName = senderName;
         this.createdAt = createdAt;
+        this.date = date;
     }
     public String getMessage() {
         return message;
@@ -30,5 +31,9 @@ public class MessageItem {
     }
     public String getCreatedAt() {
         return createdAt;
+    }
+
+    public String getDate() {
+        return date;
     }
 }

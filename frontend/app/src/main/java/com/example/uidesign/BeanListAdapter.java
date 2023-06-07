@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,6 +34,7 @@ import com.example.uidesign.utils.ImageDownloader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 
+import io.noties.markwon.Markwon;
 import okhttp3.*;
 
 public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanViewHolder> {
@@ -72,18 +74,22 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
         holder.UsernameView.setText(Username);
         holder.createTime.setText(createAt);
         holder.Titletext.setText(title);
-        holder.Contenttext.setText(Content);
-        String markdownText = "This is **bold** text.\n\n" +
-                "![Image](https://example.com/image.jpg)";
-
-//        final Markwon markwon = Markwon.builder(this)
-//                .build();
-//
-//        markwon.setMarkdown(holder.Contenttext, markdownText);
+        final Markwon markwon = Markwon.builder((Activity)mContext)
+                .build();
+        markwon.setMarkdown(holder.Contenttext, Content);
         holder.commenttext.setText(String.valueOf(comment_count));
         holder.liketext.setText(String.valueOf(like_count));
         holder.startext.setText(String.valueOf(star_count));
-        holder.tagView.setText(current.gettag());
+        if(!current.getLocation().equals("")){
+            holder.locationView.setVisibility(View.VISIBLE);
+            holder.locationView.setText(current.getLocation());
+        }
+        if(current.gettag().equals("")){
+            holder.tagView.setVisibility(View.GONE);
+        }
+        else {
+            holder.tagView.setText(current.gettag());
+        }
         Comment[] comments = current.getcomment_list();
         Log.d("BeanListAdapter",  "comment count: " + current.getcomment_count());
         CommentItemList CommentList = new CommentItemList();
@@ -98,6 +104,12 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
         holder.recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         ImageDownloader headDownloader = new ImageDownloader(holder.image_user);
         headDownloader.execute(GlobalVariables.name2url(user_head));
+        if(current.getIsFollowing() == true){
+            holder.following.setVisibility(View.VISIBLE);
+        }
+        else{
+            holder.following.setVisibility(View.GONE);
+        }
         if(current.getType().equals("jpg")){
             holder.videoView.setVisibility(View.GONE);
             // 这里是六个图片的显示逻辑
@@ -135,6 +147,14 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     Log.d("BeanListAdapter", "mp4: " + GlobalVariables.name2url(imagelist[0]));
+                    holder.videoView.start();
+                    mp.setLooping(true); // 将MediaPlayer设置为循环播放
+                }
+            });
+            holder.videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    // 视频播放完成时重新开始播放
                     holder.videoView.start();
                 }
             });
@@ -271,16 +291,15 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
         public final TextView Contenttext;
         public final TextView commenttext;
         public final TextView liketext;
-        public final TextView startext;
+        public final TextView startext, following;
         public final ImageView image_user;
         public final ImageView[] imageshow = new ImageView[6];
         public final LinearLayout getdetailarea;
         public final LinearLayout likearea;
         public final LinearLayout stararea;
-
         public final ImageView likeimage;
         public final ImageView starimage;
-        public final TextView tagView;
+        public final TextView tagView, locationView;
         public RecyclerView recyclerView;
         public final VideoView videoView;
         public final GridLayout gridLayout;
@@ -307,6 +326,10 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
 
         public BeanViewHolder(@NonNull View itemView) {
             super(itemView);
+            // 淡入动画，持续时间0.5秒
+            AlphaAnimation fadeInAnimation = new AlphaAnimation(0, 1);
+            fadeInAnimation.setDuration(500);
+            itemView.startAnimation(fadeInAnimation);
             UsernameView = itemView.findViewById(R.id.username);
             createTime = itemView.findViewById(R.id.createat);
             Titletext = itemView.findViewById(R.id.titletext);
@@ -324,6 +347,10 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
             recyclerView = itemView.findViewById(R.id.commentlist);
             videoView = itemView.findViewById(R.id.videoView);
             gridLayout = itemView.findViewById(R.id.grid);
+            following = itemView.findViewById(R.id.followingShow);
+            locationView = itemView.findViewById(R.id.locationTextView);
+            following.setVisibility(View.GONE);
+            locationView.setVisibility(View.GONE);
 
             int[] imageViewIds = {R.id.imageView1, R.id.imageView2, R.id.imageView3, R.id.imageView4, R.id.imageView5,R.id.imageView6};
 

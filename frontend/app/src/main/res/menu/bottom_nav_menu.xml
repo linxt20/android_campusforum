@@ -6,13 +6,13 @@
 
     <item
         android:id="@+id/nav_topic"
-        android:icon="@drawable/message"
+        android:icon="@drawable/notification"
         android:title="消息" />
 
     <item
         android:id="@+id/nav_guide"
         android:icon="@drawable/baseline_bookmark_border_24"
-        android:title="收藏" />
+        android:title="关注" />
 
     <item
         android:id="@+id/nav_profile"

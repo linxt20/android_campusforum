@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -90,6 +91,9 @@ class BoardItemViewHolder extends RecyclerView.ViewHolder{
     public final ConstraintLayout item;
     public BoardItemViewHolder(@NonNull View itemView, RecycleAdapter adapter) {
         super(itemView);
+        AlphaAnimation fadeInAnimation = new AlphaAnimation(0, 1);
+        fadeInAnimation.setDuration(500);
+        itemView.startAnimation(fadeInAnimation);
         // Initialize the views.
         this.imgView = itemView.findViewById(R.id.image_content);
         this.titleView = itemView.findViewById(R.id.text_title);

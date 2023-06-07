@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -62,6 +63,9 @@ class CommentItemViewHolder extends RecyclerView.ViewHolder{
     public final TextView usernameView, contentView, timeView;
     public CommentItemViewHolder(@NonNull View itemView, CommentRecycleAdapter adapter) {
         super(itemView);
+        AlphaAnimation fadeInAnimation = new AlphaAnimation(0, 1);
+        fadeInAnimation.setDuration(500);
+        itemView.startAnimation(fadeInAnimation);
         // Initialize the views.
         this.userheadView = itemView.findViewById(R.id.commentUserhead);
         this.usernameView = itemView.findViewById(R.id.commentUsername);

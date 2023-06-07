@@ -20,6 +20,11 @@ public class User {
     List<String> comment_post_list;//评论过的动态列表 记录post的id
     List<String> follow_list;//关注的用户列表 记录userid
     List<String> fans_list;//粉丝列表 记录userid
+    List<String> block_list;//屏蔽列表 记录userid
+    List<Message> message_list;//通知列表
+
+    List<Chat> chat_list;//聊天列表
+
 
 
     public User(String username,
@@ -32,6 +37,9 @@ public class User {
                 List<String> follow_list,
                 List<String> fans_list,
                 List<String> comment_post_list,
+                List<String> block_list,
+                List<Message> message_list,
+                List<Chat> chat_list,
                 String id
     ) {
         this.username = username;
@@ -44,6 +52,9 @@ public class User {
         this.follow_list = follow_list;
         this.fans_list = fans_list;
         this.comment_post_list = comment_post_list;
+        this.block_list = block_list;
+        this.message_list = message_list;
+        this.chat_list = chat_list;
         this.id = id;
     }
 
@@ -64,9 +75,7 @@ public class User {
         return password;
     }
     public void setPassword(String password) { this.password = password; }
-    public String getId() {
-        Log.d("User.java", "getId: " + id);
-        return id; }
+    public String getId() { return id; }
 
     public void setUsername(String username) {
         this.username = username;
@@ -154,4 +163,41 @@ public class User {
     public List<String> getComment_post_list() {
         return comment_post_list;
     }
+
+    public List<String> getBlock_list() {
+        return block_list;
+    }
+
+    public List<Message> getMessage_list() {
+        return message_list;
+    }
+
+    public void addBlock(String userid){
+        block_list.add(userid);
+    }
+
+    public void cancelBlock(String userid){
+        block_list.remove(userid);
+    }
+
+    public List<Chat> getChat_list() {
+        return chat_list;
+    }
+    public void addChat(Chat chat){
+        chat_list.add(chat);
+    }
+
+    public void addChat_sentence(String chatid,Sentence sentence){
+        for(Chat chat:chat_list){
+            if(chat.getChat_id().equals(chatid)){
+                chat.addSentence(sentence);
+            }
+        }
+    }
+
+    public void addMessage(Message message){
+        message_list.add(message);
+    }
+
+
 }

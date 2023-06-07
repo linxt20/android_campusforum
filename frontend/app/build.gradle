@@ -42,4 +42,5 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.9.3'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.4'
     implementation 'com.google.code.gson:gson:2.8.8'
+    implementation"io.noties.markwon:core:4.6.2"
 }

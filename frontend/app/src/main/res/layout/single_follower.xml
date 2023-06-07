@@ -16,9 +16,8 @@
             android:id="@+id/commentUserhead"
             android:clickable="true"
             android:layout_width="53dp"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="10dp"
-            android:src="@drawable/man_1" />
+            android:layout_height="53dp"
+            android:layout_marginEnd="10dp" />
 
         <LinearLayout
             android:id="@+id/followDetail"
@@ -30,7 +29,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_gravity="">
                 <TextView
                     android:id="@+id/commentUsername"
                     android:text="Username"
@@ -46,13 +46,6 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1" />
 
-                <TextView
-                    android:id="@+id/commentCreateAt"
-                    android:text="last message sent time"
-                    android:layout_marginTop="5dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"/>
-
             </LinearLayout>
 
             <LinearLayout
@@ -63,7 +56,7 @@
 
                 <TextView
                     android:id="@+id/lastMessageText"
-                    android:text="lastMessage"
+                    android:text="简介"
                     android:textSize="15sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>

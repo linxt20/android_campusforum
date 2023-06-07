@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.uidesign.utils.GlobalVariables;
 
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            loginmessage.setText(responseText);
+                            // loginmessage.setText(responseText);
                             if(!responseText.equals("用户名不存在") &&!responseText.equals("密码错误")){
                                 prefs.edit().putBoolean("isLoggedIn", true).apply();
                                 prefs.edit().putString("userID", responseText).apply();
@@ -95,6 +96,15 @@ public class MainActivity extends AppCompatActivity {
                                 // 结束当前活动
                                 finish();
                             }
+
+                        }
+                    });
+                }
+                else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, "用户名或密码错误，请重试", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
