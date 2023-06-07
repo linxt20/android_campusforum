@@ -118,12 +118,12 @@ public class HomeFragment extends Fragment {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (currentSortButton != null) {
-                        currentSortButton.setTextColor(ContextCompat.getColor(view.getContext(), R.color.black));  // set the color of previously selected button to default color
-                    }
                     Button clickedButton = (Button)view;
                     if(currentSortButton == clickedButton){
                         return;
+                    }
+                    if (currentSortButton != null) {
+                        currentSortButton.setTextColor(ContextCompat.getColor(view.getContext(), R.color.black));  // set the color of previously selected button to default color
                     }
                     clickedButton.setTextColor(ContextCompat.getColor(view.getContext(), R.color.teal_200));  // set the color of selected button to blue
                     currentSortButton = clickedButton;  // save the reference to the newly selected button

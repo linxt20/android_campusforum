@@ -151,7 +151,6 @@ public class AddPostActivity extends AppCompatActivity {
         selectVideoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                videoView.setVisibility(View.VISIBLE);
                 for (int i = 0; i < 6; i++) {
                     imageshow[i].setVisibility(View.GONE);
                 }
