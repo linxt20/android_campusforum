@@ -95,9 +95,11 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
         CommentItemList CommentList = new CommentItemList();
         // Date to String
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        int count = 0; // 在主页中显示的评论数量不超过2个
         for (Comment comment: comments) {
-            // TODO 这里通过id从后端获得user_head和username
+            if(count == 2) break;
             CommentList.insert(comment.getAuthor_head(),comment.getAuthor_name(), formatter.format(comment.getCreate_time()), comment.getContent());
+            count ++;
         }
         adapter = new CommentRecycleAdapter(mContext, CommentList);
         holder.recyclerView.setAdapter(adapter);
@@ -209,7 +211,7 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
                     @Override
                     public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                         String responseData = response.body().string();
-                        Log.d("BeanListAdapter， reponse: ", responseData);
+                        Log.d("BeanListAdapter， response: ", responseData);
                         if(current.getIf_like() == 0){
                             current.setIf_like(1);
                         }

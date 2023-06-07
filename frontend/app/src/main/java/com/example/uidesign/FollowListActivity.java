@@ -6,6 +6,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import com.example.uidesign.follows.FollowPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
@@ -39,5 +40,9 @@ public class FollowListActivity extends AppCompatActivity {
         TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(tabTitles.get(position)));
         tabLayoutMediator.attach();
 
+    }
+
+    public void goback(View view){
+        finish();
     }
 }

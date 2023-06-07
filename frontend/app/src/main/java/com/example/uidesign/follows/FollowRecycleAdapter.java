@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -92,9 +93,9 @@ class FollowItemViewHolder extends RecyclerView.ViewHolder{
 
     public FollowItemViewHolder(@NonNull View itemView, com.example.uidesign.follows.FollowRecycleAdapter adapter) {
         super(itemView);
-        ScaleAnimation zoomInAnimation = new ScaleAnimation(0, 1, 0, 1);
-        zoomInAnimation.setDuration(500);
-        itemView.startAnimation(zoomInAnimation);
+        AlphaAnimation fadeInAnimation = new AlphaAnimation(0, 1);
+        fadeInAnimation.setDuration(500);
+        itemView.startAnimation(fadeInAnimation);
         // Initialize the views.
         this.userheadView = itemView.findViewById(R.id.commentUserhead);
         this.usernameView = itemView.findViewById(R.id.commentUsername);

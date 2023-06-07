@@ -57,9 +57,16 @@ public class FollowListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        followItemList =  new FollowItemList();
         View view = inflater.inflate(R.layout.fragment_follow_list, container, false);
         recyclerView = (RecyclerView)view.findViewById(R.id.followListRecyclerview);
 
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         OkHttpClient client = new OkHttpClient();
 
         RequestBody body = new FormBody.Builder()
@@ -79,6 +86,7 @@ public class FollowListFragment extends Fragment {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                followItemList =  new FollowItemList();
                 String responseText = response.body().string();
                 Log.d("followList response: ", responseText);
                 final List<User> myResponse = new Gson().fromJson(responseText, new TypeToken<List<User>>(){}.getType());
@@ -97,6 +105,5 @@ public class FollowListFragment extends Fragment {
                 });
             }
         });
-        return view;
     }
 }

@@ -151,6 +151,51 @@ public class FollowFragment extends Fragment {
             }
         });
 
+        Button btn = view.findViewById(R.id.add_button);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), AddPostActivity.class);
+                // TODO 诶这个世界好像不对吧应该是发送的时间
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String currentDateTime = dateFormat.format(new Date());
+                // TODO 从后端获得name 头像 关注被关注等信息
+                OkHttpClient client = new OkHttpClient();
+                RequestBody body = new FormBody.Builder()
+                        .add("userid", userID)
+                        .build();
+                Request request = new Request.Builder()
+                        .url(GlobalVariables.get_user_url)
+                        .post(body)
+                        .build();
+                client.newCall(request).enqueue(new okhttp3.Callback() {
+                    @Override
+                    public void onFailure(okhttp3.Call call, IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
+                        String responseText = response.body().string();
+                        Log.d("NewPostFragment", "responseText: " + responseText);
+                        // if(responseText == null) return;
+                        final User myResponse = new Gson().fromJson(responseText, new TypeToken<User>(){}.getType());
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // 将时间和用户名作为额外数据添加到 Intent
+                                intent.putExtra("currentTime", currentDateTime);
+                                intent.putExtra("username", myResponse.getUsername());
+                                intent.putExtra("user_head",myResponse.getUser_head());
+                                startActivity(intent);
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
         return view;
     }
 }
