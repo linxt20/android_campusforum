@@ -77,30 +77,6 @@ public class HotFragment extends Fragment {
         userID = prefs.getString("userID", "");
 
         OkHttpClient client = new OkHttpClient();
-        RequestBody body = new FormBody.Builder()
-                .add("userid", userID)
-                .build();
-        Request request = new Request.Builder()
-                .url(GlobalVariables.get_user_url)
-                .post(body)
-                .build();
-        client.newCall(request).enqueue(new okhttp3.Callback() {
-            @Override
-            public void onFailure(okhttp3.Call call, IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
-                String responseText = response.body().string();
-                Log.d("AddPost", "responseText: " + responseText);
-                // if(responseText == null) return;
-                final User myResponse = new Gson().fromJson(responseText, new TypeToken<User>(){}.getType());
-                following = myResponse.getFollow_list();
-            }
-        });
-
-        client = new OkHttpClient();
         /*
        @RequestParam String userid,
        @RequestParam String search_key,
@@ -108,14 +84,14 @@ public class HotFragment extends Fragment {
        @RequestParam String sort_by)
        */
         Log.d("NewPost", "search: " + search_key + "====================x");
-        body = new FormBody.Builder()
+        RequestBody body = new FormBody.Builder()
                 .add("userid", userID)
                 .add("search_key", search_key)
                 .add("tag",tag)
                 .add("sort_by", sort)
                 .add("type", "hot")
                 .build();
-        request = new Request.Builder()
+        Request request = new Request.Builder()
                 .url(GlobalVariables.get_posts_url)
                 .post(body)
                 .build();
@@ -151,7 +127,7 @@ public class HotFragment extends Fragment {
                     BeanList.insert(myResponse.get(i).getAuthor_name(), myResponse.get(i).getCreate_time(), myResponse.get(i).getTag(), myResponse.get(i).getTitle()
                             , myResponse.get(i).getContent(),myResponse.get(i).getComment_count(), myResponse.get(i).getLike_count(), myResponse.get(i).getIf_like()
                             , myResponse.get(i).getStar_count(), myResponse.get(i).getIf_star(), myResponse.get(i).getAuthor_head(), myResponse.get(i).getResource_list()
-                            , comments, myResponse.get(i).getPostid(), myResponse.get(i).getAuthor_id(), myResponse.get(i).getResource_type(), isFollowing,  myResponse.get(i).getLocation());
+                            , comments, myResponse.get(i).getPostid(), myResponse.get(i).getAuthor_id(), myResponse.get(i).getResource_type(), myResponse.get(i).getIf_following(),  myResponse.get(i).getLocation());
                 }
                 getActivity().runOnUiThread(new Runnable() {
                     @Override

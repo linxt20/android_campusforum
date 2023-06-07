@@ -21,7 +21,7 @@ public class Bean {
     private int if_star = 0;
     private String user_head;
     private String postid, userid, type;
-    private Boolean isFollowing;
+    private int isFollowing;
 
     private String location;
 
@@ -43,7 +43,7 @@ public class Bean {
                  String postid,
                  String userid,
                  String type,
-                 Boolean isFollowing,
+                 int isFollowing,
                  String location){
         this.Username = Username;
         this.createAt = createAt;
@@ -96,7 +96,7 @@ public class Bean {
     public int getstar_count() {
         return star_count;
     }
-    public Boolean getIsFollowing() { return isFollowing; }
+    public int getIsFollowing() { return isFollowing; }
     public String getuser_head() { return user_head;}
 
     public String[] getimagelist() { return imagelist; }

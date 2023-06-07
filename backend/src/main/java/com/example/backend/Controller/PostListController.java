@@ -248,7 +248,7 @@ public class PostListController {
     public boolean if_contain_serchkey_list(Post post, List<String> key_list){
         //判断post中是否包含key_list中的每一个值
         //但不要求key_list中的值必须全部包含在用户名或内容或标题或标签的一个之中
-        List<String> key_list_tmp = key_list;
+        List<String> key_list_tmp = new ArrayList<>(key_list);
         if(post.getTitle()!=null){
             key_list_tmp.removeIf(key -> post.getTitle().contains(key));
             if(key_list_tmp.size()==0){
@@ -587,6 +587,25 @@ public class PostListController {
                 else{
                     post.setIf_star(0);
                 }
+            }
+            Query query2 = new Query();
+            query2.addCriteria(Criteria.where("userid").is(userid));
+            User user = mongoTemplate.findOne(query2, User.class);
+            //确认用户存在
+            if(user==null){
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            //获取用户的关注列表，若post的作者id再里面，则设置为1，反之为0
+            if(user.getFollow_list()!=null){
+                if(user.getFollow_list().contains(post.getAuthor_id())){
+                    post.setIf_following(1);
+                }
+                else{
+                    post.setIf_following(0);
+                }
+            }
+            else{
+                post.setIf_following(0);
             }
             System.out.println("Get post success");
             return ResponseEntity.ok().body(post);

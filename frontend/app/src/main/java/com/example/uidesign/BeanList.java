@@ -25,7 +25,7 @@ public class BeanList {
                         String postid,
                         String userid,
                         String type,
-                        Boolean isFollowing,
+                        int isFollowing,
                         String location) {
         data.add(0,new Bean(Username,createAt,tag,title,content,comment_count,like_count,if_like,star_count,if_star,user_head,imagelist,commentList,postid, userid, type, isFollowing, location));
     }

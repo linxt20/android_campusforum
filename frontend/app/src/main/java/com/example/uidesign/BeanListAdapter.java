@@ -104,7 +104,7 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
         holder.recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         ImageDownloader headDownloader = new ImageDownloader(holder.image_user);
         headDownloader.execute(GlobalVariables.name2url(user_head));
-        if(current.getIsFollowing() == true){
+        if(current.getIsFollowing() == 1){
             holder.following.setVisibility(View.VISIBLE);
         }
         else{

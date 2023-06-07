@@ -51,7 +51,7 @@ import okhttp3.*;
 
 public class DetailActivity extends AppCompatActivity {
     public TextView UsernameView;
-    public TextView createTime;
+    public TextView createTime, followingShow;
     public TextView tagshow;
     public TextView Titletext, locationView;
     public TextView Contenttext;
@@ -106,6 +106,8 @@ public class DetailActivity extends AppCompatActivity {
         commentArea.setVisibility(View.GONE);
         gridLayout = findViewById(R.id.grid);
         locationView = findViewById(R.id.locationTextView);
+        followingShow = findViewById(R.id.followingShow);
+        followingShow.setVisibility(View.GONE);
         commentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -291,6 +293,7 @@ public class DetailActivity extends AppCompatActivity {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     final String responseText = response.body().string();
+                    Log.d("DetailActivity", responseText);
                     final Post myResponse = new Gson().fromJson(responseText, new TypeToken<Post>(){}.getType());
                     runOnUiThread(new Runnable() {
                         @Override
@@ -321,6 +324,9 @@ public class DetailActivity extends AppCompatActivity {
                             startext.setText(myResponse.getStar_count() + "");
                             isLiked = myResponse.getIf_like();
                             isStarred = myResponse.getIf_star();
+                            if(myResponse.getIf_following() == 1){
+                                followingShow.setVisibility(View.VISIBLE);
+                            }
                             if(isLiked == 0){
                                 likeimage.setImageResource(R.drawable.baseline_favorite_border_24);
                             }
