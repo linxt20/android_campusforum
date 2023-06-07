@@ -195,6 +195,7 @@ public class PostListController {
             System.out.println("Start set like and star");
             //输出Post的like_userid_list和star_userid_list
             System.out.println("userid: "+userid);
+            //设置用户的关注状态
             for(Post post:rv){
                 if(post.getLike_userid_list()!=null){
                     if(post.getLike_userid_list().contains(userid)){
@@ -218,6 +219,19 @@ public class PostListController {
                 else{
                     post.setIf_star(0);
                 }
+                //获取用户的关注列表，若post的作者id再里面，则设置为1，反之为0
+                if(user.getFollow_list()!=null){
+                    if(user.getFollow_list().contains(post.getAuthor_id())){
+                        post.setIf_following(1);
+                    }
+                    else{
+                        post.setIf_following(0);
+                    }
+                }
+                else{
+                    post.setIf_following(0);
+                }
+
             }
             System.out.println(rv.get(0).getIf_like());
 
