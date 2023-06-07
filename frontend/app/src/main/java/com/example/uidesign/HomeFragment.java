@@ -102,13 +102,13 @@ public class HomeFragment extends Fragment {
 
             linearLayout.addView(button);
         }
-        String []names = {"按评论量排序", "按点赞量排序", "按发布时间排序"};
+        String []names = {"按评论数量排序", "按点赞数量排序", "按发布时间排序"};
 
         for (int i = 0; i < 3; i++) {
             Button button = new Button(getContext());
             button.setText(names[i]);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            layoutParams.setMargins(10, 10, 10, 10);
+            layoutParams.setMargins(25, 10, 25, 10);
             button.setLayoutParams(layoutParams);
             if(i == 2){
                 // 默认选择按时间排序
