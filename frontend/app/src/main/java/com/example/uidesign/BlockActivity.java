@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import com.example.uidesign.follows.FollowItemList;
 import com.example.uidesign.follows.FollowRecycleAdapter;
@@ -25,6 +27,7 @@ import okhttp3.RequestBody;
 
 public class BlockActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
+    private TextView ifNoBlock;
     private FollowRecycleAdapter adapter;//声明适配器
     public FollowItemList followItemList = new FollowItemList();
     String userID;
@@ -37,6 +40,8 @@ public class BlockActivity extends AppCompatActivity {
 
         prefs = getSharedPreferences("com.example.android.myapp", 0);
         userID = prefs.getString("userID", "");
+        ifNoBlock = findViewById(R.id.ifNoBlock);
+        ifNoBlock.setVisibility(View.GONE);
 
         recyclerView = findViewById(R.id.blockList);
 
@@ -60,6 +65,14 @@ public class BlockActivity extends AppCompatActivity {
                 Log.d("AddPost", "responseText: " + responseText);
                 // if(responseText == null) return;
                 final List<User> myResponse = new Gson().fromJson(responseText, new TypeToken<List<User>>(){}.getType());
+                if(myResponse.size() == 0){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ifNoBlock.setVisibility(View.VISIBLE);
+                        }
+                    });
+                }
                 for(User user:myResponse){
                     followItemList.insert(user.getUser_head(), user.getUsername(), user.getDescription(), user.getId());
                 }

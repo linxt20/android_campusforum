@@ -55,6 +55,7 @@ public class DetailActivity extends AppCompatActivity {
     public TextView tagshow;
     public TextView Titletext, locationView;
     public TextView Contenttext;
+    private Boolean hasComment = false;
 
     public TextView commenttext;
     public TextView liketext;
@@ -158,6 +159,7 @@ public class DetailActivity extends AppCompatActivity {
                                 public void run() {
                                     commentArea.setVisibility(View.GONE);
                                     showCommentLayout = false;
+                                    hasComment = true;
                                     Toast.makeText(DetailActivity.this, "评论成功",Toast.LENGTH_SHORT).show();
                                     initView();
                                 }
@@ -396,8 +398,10 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     public void getback(View view) {
-        Intent intent = new Intent(this, ContentAll.class);
-        startActivity(intent);
+        if(hasComment){
+            Intent intent = new Intent(this, ContentAll.class);
+            startActivity(intent);
+        }
         finish();
     }
 
