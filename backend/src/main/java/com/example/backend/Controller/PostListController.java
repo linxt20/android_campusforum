@@ -42,7 +42,6 @@ public class PostListController {
         * tag: 标签
         * type: 帖子类型 //hot 热门  follow 关注的人发的帖子 all 所有帖子
         * sort_by: 排序依据 //"time" 时间倒序排序 "like" 点赞数降序排序 "comment" 评论数降序排序
-        * if_follow: 是否只返回关注的人发布的帖子
         * 输出： List<Post> 所有帖子
         * */
 
@@ -195,8 +194,6 @@ public class PostListController {
             //根据用户id设置Post的点赞、收藏状态，若userid在点赞列表中则设置为true，反之为false
             System.out.println("Start set like and star");
             //输出Post的like_userid_list和star_userid_list
-            System.out.println("Post like_userid_list: "+rv.get(0).getLike_userid_list());
-            System.out.println("Post star_userid_list: "+rv.get(0).getStar_userid_list());
             System.out.println("userid: "+userid);
             for(Post post:rv){
                 if(post.getLike_userid_list()!=null){

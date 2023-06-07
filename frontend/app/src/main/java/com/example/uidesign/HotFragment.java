@@ -44,12 +44,13 @@ public class HotFragment extends Fragment {
     SharedPreferences prefs;
     String userID;
     BeanListAdapter adapter;
-    String search_key, tag;
+    String search_key, tag, sort;
     public List<String> following = new ArrayList<>();
 
-    public HotFragment(String search_key, String tag) {
+    public HotFragment(String search_key, String tag, String sort) {
         this.search_key = search_key;
         this.tag = tag;
+        this.sort = sort;
     }
 
     @Override
@@ -111,8 +112,8 @@ public class HotFragment extends Fragment {
                 .add("userid", userID)
                 .add("search_key", search_key)
                 .add("tag",tag)
-                .add("sort_by", "hot")
-                .add("if_follow", "false")
+                .add("sort_by", sort)
+                .add("type", "hot")
                 .build();
         request = new Request.Builder()
                 .url(GlobalVariables.get_posts_url)

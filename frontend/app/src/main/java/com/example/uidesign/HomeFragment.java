@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -25,11 +26,12 @@ import java.util.List;
 
 public class HomeFragment extends Fragment {
 
-    private LinearLayout linearLayout;
-    private Button currentSelectedButton;
+    private LinearLayout linearLayout, linearLayoutSort;
+    private Button currentSelectedButton = null, currentSortButton = null;
 
     private EditText searchText;
-    private ImageView searchButton;
+    private ImageView searchButton, filterButton;
+    private HorizontalScrollView tags, sort;
     private String search_key = "";
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,11 +47,18 @@ public class HomeFragment extends Fragment {
         ViewPager2 viewPager = view.findViewById(R.id.view_pager);
 
         linearLayout = view.findViewById(R.id.linear_layout);
+        linearLayoutSort = view.findViewById(R.id.linear_layout_sort);
+        filterButton = view.findViewById(R.id.filter);
         searchText = view.findViewById(R.id.tv_search);
         searchButton = view.findViewById(R.id.IV_serach);
-        List<String> tabTitles = Arrays.asList("新发表","热门", "关注");
+        tags = view.findViewById(R.id.horizontal_scroll_view);
+        sort = view.findViewById(R.id.horizontal_scroll_view_sort);
+        tags.setVisibility(View.GONE);
+        sort.setVisibility(View.GONE);
+        List<String> tabTitles = Arrays.asList("所有","热门", "关注");
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getActivity(), tabTitles, "",
-                currentSelectedButton == null? "": currentSelectedButton.getText().toString());
+                currentSelectedButton == null? "": currentSelectedButton.getText().toString(),
+                currentSortButton == null? "": currentSortButton.getText().toString());
         viewPager.setAdapter(sectionsPagerAdapter);
 
         TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(tabTitles.get(position)));
@@ -68,12 +77,21 @@ public class HomeFragment extends Fragment {
                         currentSelectedButton.setTextColor(ContextCompat.getColor(view.getContext(), R.color.black));  // set the color of previously selected button to default color
                     }
                     Button clickedButton = (Button)view;
-                    clickedButton.setTextColor(ContextCompat.getColor(view.getContext(), R.color.teal_200));  // set the color of selected button to blue
-                    currentSelectedButton = clickedButton;  // save the reference to the newly selected button
-                    Toast.makeText(getContext(), "你选择了\"" +  clickedButton.getText().toString() + "\"标签",
-                            Toast.LENGTH_SHORT).show();
+                    if(currentSelectedButton == clickedButton){
+                        currentSelectedButton.setTextColor(ContextCompat.getColor(view.getContext(), R.color.black));
+                        currentSelectedButton = null;
+                        Toast.makeText(getContext(), "你取消了\"" +  button.getText().toString() + "\"标签",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        clickedButton.setTextColor(ContextCompat.getColor(view.getContext(), R.color.teal_200));  // set the color of selected button to blue
+                        currentSelectedButton = clickedButton;  // save the reference to the newly selected button
+                        Toast.makeText(getContext(), "你选择了\"" +  clickedButton.getText().toString() + "\"标签",
+                                Toast.LENGTH_SHORT).show();
+                    }
                     SectionsPagerAdapter sectionsPagerAdapter2 = new SectionsPagerAdapter(getActivity(), tabTitles, search_key ,
-                            currentSelectedButton == null? "": currentSelectedButton.getText().toString());
+                            currentSelectedButton == null? "": currentSelectedButton.getText().toString(),
+                            currentSortButton == null? "": currentSortButton.getText().toString());
                     viewPager.setAdapter(sectionsPagerAdapter2);
                     viewPager.setCurrentItem(0);
                     TabLayoutMediator tabLayoutMediator2 = new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(tabTitles.get(position)));
@@ -84,6 +102,56 @@ public class HomeFragment extends Fragment {
 
             linearLayout.addView(button);
         }
+        String []names = {"按评论量排序", "按点赞量排序", "按发布时间排序"};
+
+        for (int i = 0; i < 3; i++) {
+            Button button = new Button(getContext());
+            button.setText(names[i]);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(10, 10, 10, 10);
+            button.setLayoutParams(layoutParams);
+            if(i == 2){
+                // 默认选择按时间排序
+                currentSortButton = button;
+                currentSortButton.setTextColor(ContextCompat.getColor(view.getContext(), R.color.teal_200));
+            }
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (currentSortButton != null) {
+                        currentSortButton.setTextColor(ContextCompat.getColor(view.getContext(), R.color.black));  // set the color of previously selected button to default color
+                    }
+                    Button clickedButton = (Button)view;
+                    if(currentSortButton == clickedButton){
+                        return;
+                    }
+                    clickedButton.setTextColor(ContextCompat.getColor(view.getContext(), R.color.teal_200));  // set the color of selected button to blue
+                    currentSortButton = clickedButton;  // save the reference to the newly selected button
+                    Toast.makeText(getContext(), "你选择了\"" +  clickedButton.getText().toString() + "\"筛选条件",
+                            Toast.LENGTH_SHORT).show();
+                    // TODO
+                    SectionsPagerAdapter sectionsPagerAdapter2 = new SectionsPagerAdapter(getActivity(), tabTitles, search_key, currentSelectedButton == null? "": currentSelectedButton.getText().toString() ,
+                            currentSortButton == null? "": currentSortButton.getText().toString());
+                    viewPager.setAdapter(sectionsPagerAdapter2);
+                    viewPager.setCurrentItem(0);
+                    TabLayoutMediator tabLayoutMediator2 = new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(tabTitles.get(position)));
+                    tabLayoutMediator2.attach();
+                }
+            });
+
+
+            linearLayoutSort.addView(button);
+        }
+
+        filterButton.setOnClickListener(v -> {
+            if (tags.getVisibility() == View.GONE) {
+                tags.setVisibility(View.VISIBLE);
+                sort.setVisibility(View.VISIBLE);
+            } else {
+                tags.setVisibility(View.GONE);
+                sort.setVisibility(View.GONE);
+            }
+        });
 
         searchButton.setOnClickListener(v -> {
             search_key = searchText.getText().toString();
@@ -95,7 +163,7 @@ public class HomeFragment extends Fragment {
             Toast.makeText(getContext(), "Searching...",
                     Toast.LENGTH_SHORT).show();
             SectionsPagerAdapter sectionsPagerAdapter2 = new SectionsPagerAdapter(getActivity(), tabTitles, search_key,
-                    currentSelectedButton == null? "": currentSelectedButton.getText().toString());
+                    currentSelectedButton == null? "": currentSelectedButton.getText().toString(), currentSortButton == null? "": currentSortButton.getText().toString());
             viewPager.setAdapter(sectionsPagerAdapter2);
             viewPager.setCurrentItem(0);
             TabLayoutMediator tabLayoutMediator2 = new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(tabTitles.get(position)));

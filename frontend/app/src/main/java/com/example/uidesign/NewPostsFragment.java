@@ -40,12 +40,13 @@ public class NewPostsFragment extends Fragment {
     SharedPreferences prefs;
     String userID;
     BeanListAdapter adapter;
-    String search_key, tag;
+    String search_key, tag, sort;
     public List<String> following = new ArrayList<>();
 
-    public NewPostsFragment(String search_key, String tag) {
+    public NewPostsFragment(String search_key, String tag, String sort) {
         this.search_key = search_key;
         this.tag = tag;
+        this.sort = sort;
     }
 
     @Override
@@ -107,8 +108,8 @@ public class NewPostsFragment extends Fragment {
                 .add("userid", userID)
                 .add("search_key", search_key)
                 .add("tag",tag)
-                .add("sort_by", "time")
-                .add("if_follow", "false")
+                .add("type", "all")
+                .add("sort_by", sort)
                 .build();
         request = new Request.Builder()
                 .url(GlobalVariables.get_posts_url)
