@@ -370,9 +370,11 @@ public class DetailActivity extends AppCompatActivity {
                                         throw new RuntimeException(e);
                                     }
                                 }
-                                while (i<3){
+                                for(; i < 3; i++) {
                                     imageshow[i].setVisibility(View.INVISIBLE);
-                                    i++;
+                                }
+                                for(; i < 6; i++) {
+                                    imageshow[i].setVisibility(View.GONE);
                                 }
                             }
                             else{

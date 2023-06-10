@@ -1,7 +1,10 @@
 package com.example.uidesign.utils;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
@@ -36,7 +39,9 @@ public class ImageDownloader extends AsyncTask<String, Void, Bitmap> {
     @Override
     protected void onPostExecute(Bitmap result) {
         if (result != null) {
-            imageView.setImageBitmap(result);
+            Context context = imageView.getContext();
+            Drawable drawable = new BitmapDrawable(context.getResources(), result);
+            imageView.setBackground(drawable);
         }
     }
 }

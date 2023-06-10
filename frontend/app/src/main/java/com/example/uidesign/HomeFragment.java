@@ -32,6 +32,7 @@ public class HomeFragment extends Fragment {
     private EditText searchText;
     private ImageView searchButton, filterButton;
     private HorizontalScrollView tags, sort;
+    private View border_line;
     private String search_key = "";
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,8 +54,10 @@ public class HomeFragment extends Fragment {
         searchButton = view.findViewById(R.id.IV_serach);
         tags = view.findViewById(R.id.horizontal_scroll_view);
         sort = view.findViewById(R.id.horizontal_scroll_view_sort);
+        border_line = view.findViewById(R.id.border_line);
         tags.setVisibility(View.GONE);
         sort.setVisibility(View.GONE);
+        border_line.setVisibility(View.GONE);
         List<String> tabTitles = Arrays.asList("所有","热门", "关注");
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getActivity(), tabTitles, "",
                 currentSelectedButton == null? "": currentSelectedButton.getText().toString(),
@@ -147,9 +150,11 @@ public class HomeFragment extends Fragment {
             if (tags.getVisibility() == View.GONE) {
                 tags.setVisibility(View.VISIBLE);
                 sort.setVisibility(View.VISIBLE);
+                border_line.setVisibility(View.VISIBLE);
             } else {
                 tags.setVisibility(View.GONE);
                 sort.setVisibility(View.GONE);
+                border_line.setVisibility(View.GONE);
             }
         });
 

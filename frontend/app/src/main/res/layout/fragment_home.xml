@@ -63,7 +63,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal" />
+
     </HorizontalScrollView>
+
+    <View
+        android:id="@+id/border_line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#808080"
+        app:layout_constraintTop_toBottomOf="@+id/horizontal_scroll_view"/> <!-- 分界线的样式，可以自行修改颜色和高度 -->
 
     <HorizontalScrollView
         android:id="@+id/horizontal_scroll_view_sort"

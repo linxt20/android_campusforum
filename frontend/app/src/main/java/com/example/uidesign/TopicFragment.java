@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.uidesign.model.Comment;
 import com.example.uidesign.model.Message;
@@ -42,6 +43,7 @@ public class TopicFragment extends Fragment {
     RecyclerView recyclerView;
     NoticeAdapter adapter;
     SharedPreferences prefs;
+    TextView ifNoMessage;
     String userID;
     NoticeList noticeList = new NoticeList();
     @Override
@@ -54,6 +56,8 @@ public class TopicFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_topic, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.notification_list);
+        ifNoMessage = view.findViewById(R.id.ifNoMessage);
+        ifNoMessage.setVisibility(View.GONE);
         adapter = new NoticeAdapter(getContext(), noticeList);
         ActivityResultLauncher<Intent> activityLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -87,6 +91,14 @@ public class TopicFragment extends Fragment {
                 Log.d("TopicFragment response: ", responseText);
                 final List<Message> myResponse = new Gson().fromJson(responseText, new TypeToken<List<Message>>(){}.getType());
                 if(myResponse == null) return;
+                if(myResponse.size() == 0){
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ifNoMessage.setVisibility(View.VISIBLE);
+                        }
+                    });
+                }
                 for(int i = myResponse.size() - 1; i >= 0; i--){
                     Log.d("TopicFragment", myResponse.get(i).toString());
                     String title = myResponse.get(i).getTitle();

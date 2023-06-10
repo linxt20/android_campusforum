@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/border_grey" /> <!-- 边框样式 -->
+    <item>
+        <shape>
+            <solid android:color="@color/foreground" /> <!-- 背景颜色 -->
+            <corners android:radius="7dp" /> <!-- 圆角矩形的半径 -->
+        </shape>
+    </item>
+</layer-list>

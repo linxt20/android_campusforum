@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.uidesign.follows.FollowItemList;
 import com.example.uidesign.follows.FollowRecycleAdapter;
@@ -38,6 +39,7 @@ public class FollowListFragment extends Fragment {
     private RecyclerView recyclerView;
     private FollowRecycleAdapter adapter;//声明适配器
     public FollowItemList followItemList = new FollowItemList();
+    private TextView ifNoPeople;
     String userID;
     private Boolean isFollower;  //  true: follower, false: following
 
@@ -60,7 +62,8 @@ public class FollowListFragment extends Fragment {
         followItemList =  new FollowItemList();
         View view = inflater.inflate(R.layout.fragment_follow_list, container, false);
         recyclerView = (RecyclerView)view.findViewById(R.id.followListRecyclerview);
-
+        ifNoPeople = view.findViewById(R.id.ifNoPeople);
+        ifNoPeople.setVisibility(View.GONE);
         return view;
     }
 
@@ -90,6 +93,14 @@ public class FollowListFragment extends Fragment {
                 String responseText = response.body().string();
                 Log.d("followList response: ", responseText);
                 final List<User> myResponse = new Gson().fromJson(responseText, new TypeToken<List<User>>(){}.getType());
+                if(myResponse.size() == 0){
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ifNoPeople.setVisibility(View.VISIBLE);
+                        }
+                    });
+                }
                 for(int i = 0; i < myResponse.size(); i++){
                     Log.d("FollowListFragment", myResponse.get(i).toString());
                     followItemList.insert(myResponse.get(i).getUser_head(), myResponse.get(i).getUsername(), myResponse.get(i).getDescription(), myResponse.get(i).getId());

@@ -4,7 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:background="@drawable/border_grey"
+    android:background="@drawable/background_item"
+    app:cardCornerRadius="5dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
     android:orientation="vertical">
     <LinearLayout
         android:clickable="true"
@@ -13,12 +18,12 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-    <com.example.uidesign.utils.CircleImageView
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:id="@+id/noticeUserImage"
-        android:layout_margin="10dp"
-  />
+        <com.example.uidesign.utils.CircleImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/noticeUserImage"
+            android:layout_margin="10dp"
+        />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -37,58 +42,53 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/notificationDetail"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:orientation="vertical">
         <LinearLayout
-            android:id="@+id/notificationDetail"
-            android:clickable="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:clickable="true"
+                android:id="@+id/notification_title"
+                android:text="Title"
+                android:layout_width="wrap_content"
+                android:textSize="14sp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:textStyle="bold"/>
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+            <TextView
+                android:id="@+id/notificationCreateTime"
+                android:text="notification sent time"
+                android:layout_marginTop="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/getdetailarea"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/notificationContent"
+                android:text="lastMessage"
+                android:textSize="15sp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <TextView
-                    android:clickable="true"
-                    android:id="@+id/notification_title"
-                    android:text="Title"
-                    android:layout_width="wrap_content"
-                    android:textSize="14sp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:textStyle="bold"/>
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <TextView
-                    android:id="@+id/notificationCreateTime"
-                    android:text="notification sent time"
-                    android:layout_marginTop="5dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/getdetailarea"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/notificationContent"
-                    android:text="lastMessage"
-                    android:textSize="15sp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-            </LinearLayout>
-
+                android:layout_height="wrap_content"/>
         </LinearLayout>
-
+    </LinearLayout>
 
 </LinearLayout>

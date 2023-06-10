@@ -2,71 +2,61 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:orientation="vertical">
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_item"
+    app:cardCornerRadius="5dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:orientation="horizontal">
 
+    <com.example.uidesign.utils.CircleImageView
+        android:id="@+id/commentUserhead"
+        android:clickable="true"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="10dp" />
     <LinearLayout
+        android:id="@+id/followDetail"
+        android:clickable="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/border_grey"
-        android:orientation="horizontal">
-
-        <com.example.uidesign.utils.CircleImageView
-            android:id="@+id/commentUserhead"
-            android:clickable="true"
-            android:layout_width="53dp"
-            android:layout_height="53dp"
-            android:layout_marginEnd="10dp" />
-
+        android:orientation="vertical">
         <LinearLayout
-            android:id="@+id/followDetail"
-            android:clickable="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="">
+            <TextView
+                android:id="@+id/commentUsername"
+                android:text="Username"
+                android:layout_width="wrap_content"
+                android:textSize="14sp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:textStyle="bold"/>
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/getdetailarea"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/lastMessageText"
+                android:text="简介"
+                android:textSize="15sp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="">
-                <TextView
-                    android:id="@+id/commentUsername"
-                    android:text="Username"
-                    android:layout_width="wrap_content"
-                    android:textSize="14sp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:textStyle="bold"/>
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/getdetailarea"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/lastMessageText"
-                    android:text="简介"
-                    android:textSize="15sp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-            </LinearLayout>
-
+                android:layout_height="wrap_content"/>
         </LinearLayout>
-
-
     </LinearLayout>
-
 
 </LinearLayout>

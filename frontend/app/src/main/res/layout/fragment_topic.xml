@@ -1,14 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TopicFragment">
+    android:background="@color/background"
+    tools:context=".TopicFragment"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/title_notice"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:text="通知消息"
+        android:gravity="center"
+        android:textSize="22sp"
+        android:textColor="#666666"
+        android:background="@color/white"/>
+
+    <TextView
+        android:id="@+id/ifNoMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="你还没有收到消息哦～再等等" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/notification_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </androidx.recyclerview.widget.RecyclerView>
+        android:layout_height="match_parent"/>
 
-</FrameLayout>
+</LinearLayout>
