@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.uidesign.utils.GlobalVariables;
+import com.example.uidesign.utils.ZoomOutPageTransformer;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -61,6 +62,7 @@ public class HomeFragment extends Fragment {
                 currentSelectedButton == null? "": currentSelectedButton.getText().toString(),
                 currentSortButton == null? "": currentSortButton.getText().toString());
         viewPager.setAdapter(sectionsPagerAdapter);
+        viewPager.setPageTransformer(new ZoomOutPageTransformer());
 
         TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(tabTitles.get(position)));
         tabLayoutMediator.attach();
