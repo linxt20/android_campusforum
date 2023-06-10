@@ -64,6 +64,9 @@ public class FollowListFragment extends Fragment {
         recyclerView = (RecyclerView)view.findViewById(R.id.followListRecyclerview);
         ifNoPeople = view.findViewById(R.id.ifNoPeople);
         ifNoPeople.setVisibility(View.GONE);
+        if(ifNoPeople){
+            ifNoFollow.setText("你还没有粉丝哦～");
+        }
         return view;
     }
 

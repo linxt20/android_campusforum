@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.uidesign.follows.FollowPagerAdapter;
+import com.example.uidesign.utils.ZoomOutPageTransformer;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -40,6 +41,7 @@ public class GuideFragment extends Fragment {
         String userID = prefs.getString("userID", "");
         FollowPagerAdapter sectionsPagerAdapter = new FollowPagerAdapter(this, tabTitles, userID);
         viewPager.setAdapter(sectionsPagerAdapter);
+        viewPager.setPageTransformer(new ZoomOutPageTransformer());
 
         TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(tabTitles.get(position)));
         tabLayoutMediator.attach();

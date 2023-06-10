@@ -86,7 +86,7 @@ public class ProfileMyPostsFragment extends Fragment {
                 String responseText = response.body().string();
                 Log.d("ProfileMyPost response: ", responseText);
                 final List<Post> myResponse = new Gson().fromJson(responseText, new TypeToken<List<Post>>(){}.getType());
-                for(int i = 0; i < myResponse.size(); i++){
+                for(int i = myResponse.size() - 1; i >= 0 ; i--){
                     Log.d("ProfileMyPostsFragment", myResponse.get(i).toString());
                     String[] images = myResponse.get(i).getResource_list();
                     if(images.length == 0 || myResponse.get(i).getResource_type().equals("mp4")) {

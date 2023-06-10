@@ -44,6 +44,8 @@ public class FollowFragment extends Fragment {
     String userID;
     BeanListAdapter adapter;
     String search_key, tag, sort;
+    RecyclerView recyclerView;
+    ActivityResultLauncher<Intent> activityLauncher;
 
     public List<String> following = new ArrayList<>();
 
@@ -61,9 +63,9 @@ public class FollowFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_follow, container, false);
-        RecyclerView recyclerView = view.findViewById(R.id.recyclerview);
+        recyclerView = view.findViewById(R.id.recyclerview);
         adapter = new BeanListAdapter(getContext(), BeanList);
-        ActivityResultLauncher<Intent> activityLauncher = registerForActivityResult(
+        activityLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK) {
@@ -72,84 +74,6 @@ public class FollowFragment extends Fragment {
                 }
         );
 
-        prefs = getActivity().getSharedPreferences("com.example.android.myapp", 0);
-        userID = prefs.getString("userID", "");
-
-        OkHttpClient client = new OkHttpClient();
-        /*
-       @RequestParam String userid,
-       @RequestParam String search_key,
-       @RequestParam String tag,
-       @RequestParam String sort_by)
-       */
-        Log.d("NewPost", "search: " + search_key + "====================x");
-        RequestBody body = new FormBody.Builder()
-                .add("userid", userID)
-                .add("search_key", search_key)
-                .add("tag",tag)
-                .add("sort_by", sort)
-                .add("type", "follow")
-                .build();
-        Request request = new Request.Builder()
-                .url(GlobalVariables.get_posts_url)
-                .post(body)
-                .build();
-
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String responseText = response.body().string();
-                Log.d("FollowFragment response: ", responseText);
-                final List<Post> myResponse = new Gson().fromJson(responseText, new TypeToken<List<Post>>(){}.getType());
-                if(myResponse == null) return;
-                BeanList.clear();
-                for(int i = 0; i < myResponse.size(); i++){
-                    Log.d("FollowFragmentsFragment", myResponse.get(i).toString());
-                    String[] images = myResponse.get(i).getResource_list();
-                    // if(images.length == 0) return;
-                    // TODO 这里将 List<Comment> 转换为 Comment[]有些繁琐，后续可能要修改
-                    Comment[] comments = new Comment[myResponse.get(i).getComment_count()];
-                    Log.d("FollowFragment", "comments: " + myResponse.get(i).getComment_list());
-                    for(int j = 0; j < myResponse.get(i).getComment_count(); j++){
-                        comments[j] = myResponse.get(i).getComment_list().get(j);
-                    }
-                    Boolean isFollowing = false;
-                    if(following.contains(myResponse.get(i).getAuthor_id())){
-                        isFollowing = true;
-                    }
-                    Log.d("FollowFragment", "head: " + myResponse.get(i).getAuthor_head());
-                    BeanList.insert(myResponse.get(i).getAuthor_name(), myResponse.get(i).getCreate_time(), myResponse.get(i).getTag(), myResponse.get(i).getTitle()
-                            , myResponse.get(i).getContent(),myResponse.get(i).getComment_count(), myResponse.get(i).getLike_count(), myResponse.get(i).getIf_like()
-                            , myResponse.get(i).getStar_count(), myResponse.get(i).getIf_star(), myResponse.get(i).getAuthor_head(), myResponse.get(i).getResource_list()
-                            , comments, myResponse.get(i).getPostid(), myResponse.get(i).getAuthor_id(),myResponse.get(i).getResource_type(),myResponse.get(i).getIf_following(), myResponse.get(i).getLocation());
-                }
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        adapter =  new BeanListAdapter(getContext(), BeanList);
-                        // TODO 可能有点慢，目前还不知道怎么改。。。
-                        adapter.setRecyclerItemClickListener(new BeanListAdapter.OnRecyclerItemClickListener() {
-                            @Override
-                            public void onRecyclerItemClick(int position) {
-                                Bean current = BeanList.get(position);
-                                String postid = current.getPostid();
-                                Intent intent = new Intent(requireActivity(), DetailActivity.class);
-                                intent.putExtra("postid", postid);
-                                activityLauncher.launch(intent);
-                            }
-                        });
-                        recyclerView.setAdapter(adapter);
-                        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                    }
-                });
-            }
-        });
 
         Button btn = view.findViewById(R.id.add_button);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -197,5 +121,89 @@ public class FollowFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        prefs = getActivity().getSharedPreferences("com.example.android.myapp", 0);
+        userID = prefs.getString("userID", "");
+
+        OkHttpClient client = new OkHttpClient();
+        /*
+       @RequestParam String userid,
+       @RequestParam String search_key,
+       @RequestParam String tag,
+       @RequestParam String sort_by)
+       */
+        Log.d("NewPost", "search: " + search_key + "====================x");
+        RequestBody body = new FormBody.Builder()
+                .add("userid", userID)
+                .add("search_key", search_key)
+                .add("tag",tag)
+                .add("sort_by", sort)
+                .add("type", "follow")
+                .build();
+        Request request = new Request.Builder()
+                .url(GlobalVariables.get_posts_url)
+                .post(body)
+                .build();
+
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseText = response.body().string();
+                Log.d("FollowFragment response: ", responseText);
+                final List<Post> myResponse = new Gson().fromJson(responseText, new TypeToken<List<Post>>(){}.getType());
+                if(myResponse == null) return;
+                BeanList.clear();
+                for(int i = myResponse.size() - 1; i >= 0 ; i--){
+                    Log.d("FollowFragmentsFragment", myResponse.get(i).toString());
+                    String[] images = myResponse.get(i).getResource_list();
+                    // if(images.length == 0) return;
+                    // TODO 这里将 List<Comment> 转换为 Comment[]有些繁琐，后续可能要修改
+                    Comment[] comments = new Comment[myResponse.get(i).getComment_count()];
+                    Log.d("FollowFragment", "comments: " + myResponse.get(i).getComment_list());
+                    for(int j = 0; j < myResponse.get(i).getComment_count(); j++){
+                        comments[j] = myResponse.get(i).getComment_list().get(j);
+                    }
+                    Boolean isFollowing = false;
+                    if(following.contains(myResponse.get(i).getAuthor_id())){
+                        isFollowing = true;
+                    }
+                    Log.d("FollowFragment", "head: " + myResponse.get(i).getAuthor_head());
+                    BeanList.insert(myResponse.get(i).getAuthor_name(), myResponse.get(i).getCreate_time(), myResponse.get(i).getTag(), myResponse.get(i).getTitle()
+                            , myResponse.get(i).getContent(),myResponse.get(i).getComment_count(), myResponse.get(i).getLike_count(), myResponse.get(i).getIf_like()
+                            , myResponse.get(i).getStar_count(), myResponse.get(i).getIf_star(), myResponse.get(i).getAuthor_head(), myResponse.get(i).getResource_list()
+                            , comments, myResponse.get(i).getPostid(), myResponse.get(i).getAuthor_id(),myResponse.get(i).getResource_type(),myResponse.get(i).getIf_following(), myResponse.get(i).getLocation());
+                }
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter =  new BeanListAdapter(getContext(), BeanList);
+                        // TODO 可能有点慢，目前还不知道怎么改。。。
+                        adapter.setRecyclerItemClickListener(new BeanListAdapter.OnRecyclerItemClickListener() {
+                            @Override
+                            public void onRecyclerItemClick(int position) {
+                                Bean current = BeanList.get(position);
+                                String postid = current.getPostid();
+                                Intent intent = new Intent(requireActivity(), DetailActivity.class);
+                                intent.putExtra("postid", postid);
+                                activityLauncher.launch(intent);
+                            }
+                        });
+                        recyclerView.setAdapter(adapter);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                    }
+                });
+            }
+        });
     }
 }

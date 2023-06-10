@@ -2,12 +2,52 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/background"
         android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                app:layout_constraintTop_toTopOf="parent"
+                android:id="@+id/beforeButton"
+                android:clickable="true"
+                android:onClick="goback"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_before" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:onClick="reset"
+                android:background="@drawable/reset"
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="10dp"
+                android:gravity="end"
+                />
+            <ImageButton
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:onClick="push"
+                android:background="@drawable/send"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="20dp"
+                android:gravity="end"
+                />
+        </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -165,7 +205,7 @@
                 android:layout_width="0dp"
                 android:layout_height="100dp"
                 android:layout_columnWeight="1"
-                
+                android:scaleType="centerCrop"
                 android:layout_margin="2dp"/>
 
             <ImageView
@@ -174,7 +214,7 @@
                 android:layout_width="0dp"
                 android:layout_height="100dp"
                 android:layout_columnWeight="1"
-                
+                android:scaleType="centerCrop"
                 android:layout_margin="2dp"/>
 
             <ImageView
@@ -183,7 +223,7 @@
                 android:layout_width="0dp"
                 android:layout_height="100dp"
                 android:layout_columnWeight="1"
-                
+                android:scaleType="centerCrop"
                 android:layout_margin="2dp"/>
 
             <ImageView
@@ -192,7 +232,7 @@
                 android:layout_width="0dp"
                 android:layout_height="100dp"
                 android:layout_columnWeight="1"
-                
+                android:scaleType="centerCrop"
                 android:layout_margin="2dp"/>
 
             <ImageView
@@ -201,7 +241,7 @@
                 android:layout_width="0dp"
                 android:layout_height="100dp"
                 android:layout_columnWeight="1"
-                
+                android:scaleType="centerCrop"
                 android:layout_margin="2dp"/>
 
             <ImageView
@@ -210,7 +250,7 @@
                 android:layout_width="0dp"
                 android:layout_height="100dp"
                 android:layout_columnWeight="1"
-                
+                android:scaleType="centerCrop"
                 android:layout_margin="2dp"/>
         </GridLayout>
 
@@ -221,34 +261,7 @@
             android:layout_margin="10dp"/>
     </LinearLayout>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="@string/act_back"
-        android:onClick="goback"
-        android:background="@drawable/rectangle_circle"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        />
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="@string/act_reset"
-        android:onClick="reset"
-        android:background="@drawable/rectangle_circle"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        />
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="@string/act_push"
-        android:onClick="push"
-        android:background="@drawable/rectangle_circle"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        />
+
+
     </LinearLayout>
 </ScrollView>

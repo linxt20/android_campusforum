@@ -2,6 +2,8 @@ package com.example.uidesign;
 
 import static android.app.Activity.RESULT_OK;
 
+import static java.lang.Thread.sleep;
+
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
@@ -151,40 +153,14 @@ public class ProfileFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
         // TODO 换头像
         imageUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                OkHttpClient client = new OkHttpClient();
-                RequestBody body = new FormBody.Builder()
-                        .add("userid", userID)
-                        .build();
-                Request request = new Request.Builder()
-                        .url(GlobalVariables.change_avatar_url)
-                        .post(body)
-                        .build();
-                client.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        Log.e("Image", "failed");
-                    }
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        String responseText = response.body().string();
-                        Log.d("Profile Image", responseText);
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new  Intent(Intent.ACTION_GET_CONTENT);
-                                imageName = responseText;
-                                intent.setType("image/*");
-                                startActivityForResult(intent, REQUEST_CODE_SELECT_IMAGE);
-                                Toast.makeText(getContext(), "头像已更换", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                });
+                Intent intent = new  Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+                startActivityForResult(intent, REQUEST_CODE_SELECT_IMAGE);
             }
         });
 
@@ -204,49 +180,77 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        OkHttpClient client = new OkHttpClient();
         Log.d("Profile Fragment", "entered a little!!");
-        if (requestCode == REQUEST_CODE_SELECT_IMAGE && resultCode == RESULT_OK) {
-            Uri imageUri = data.getData();
-            String mediaType = MediaType.parse(getActivity().getContentResolver().getType(imageUri)).toString();
-            InputStream inputStream = null;
-            Log.d("Profile Fragment", "entered !!!!");
-            Log.d("Profile Fragment", "got name: " + imageName);
-            if(imageName == null) return;
-            try {
-                inputStream = getActivity().getContentResolver().openInputStream(imageUri);
-                File tempFile = saveInputStreamToFile(inputStream); // 自定义方法，将输入流保存为临时文件
-                inputStream.close();
-                // RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpeg"), tempFile);
-                RequestBody requestBody = new MultipartBody.Builder()
-                        .setType(MultipartBody.FORM)
-                        .addFormDataPart("image", tempFile.getName(), RequestBody.create(MediaType.parse(mediaType), tempFile))
-                        .addFormDataPart("name", imageName)
-                        .build();
+        if (requestCode == REQUEST_CODE_SELECT_IMAGE && resultCode == RESULT_OK && data != null) {
+            OkHttpClient client = new OkHttpClient();
+            RequestBody body = new FormBody.Builder()
+                    .add("userid", userID)
+                    .build();
+            Request request = new Request.Builder()
+                    .url(GlobalVariables.change_avatar_url)
+                    .post(body)
+                    .build();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Log.e("Image", "failed");
+                }
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String responseText = response.body().string();
+                    Log.d("Profile Image", responseText);
+                    imageName = responseText;
 
-                // RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpeg"), imageData); // 或者使用临时文件：RequestBody.create(MediaType.parse("image/jpeg"), tempFile);
-                Request request = new Request.Builder()
-                        .url(GlobalVariables.test_image_url)
-                        .post(requestBody)
-                        .build();
-                client.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        // 处理响应
-                        Log.d("LOG_NAME", response.body().string());
-                    }
+                    Uri imageUri = data.getData();
+                    String mediaType = MediaType.parse(getActivity().getContentResolver().getType(imageUri)).toString();
+                    InputStream inputStream = null;
+                    Log.d("Profile Fragment", "entered !!!!");
+                    Log.d("Profile Fragment", "got name: " + responseText);
+                    try {
+                        inputStream = getActivity().getContentResolver().openInputStream(imageUri);
+                        File tempFile = saveInputStreamToFile(inputStream); // 自定义方法，将输入流保存为临时文件
+                        inputStream.close();
+                        // RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpeg"), tempFile);
+                        RequestBody requestBody = new MultipartBody.Builder()
+                                .setType(MultipartBody.FORM)
+                                .addFormDataPart("image", tempFile.getName(), RequestBody.create(MediaType.parse(mediaType), tempFile))
+                                .addFormDataPart("name", responseText)
+                                .build();
 
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        e.printStackTrace();
-                        // 处理异常
+                        // RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpeg"), imageData); // 或者使用临时文件：RequestBody.create(MediaType.parse("image/jpeg"), tempFile);
+                        Request request = new Request.Builder()
+                                .url(GlobalVariables.test_image_url)
+                                .post(requestBody)
+                                .build();
+                        OkHttpClient client = new OkHttpClient();
+                        client.newCall(request).enqueue(new Callback() {
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                // 处理响应
+                                Log.d("LOG_NAME", response.body().string());
+                            }
+
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                e.printStackTrace();
+                                // 处理异常
+                            }
+                        });
+                    } catch (FileNotFoundException e) {
+                        throw new RuntimeException(e);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
-                });
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getContext(), "头像已更换", Toast.LENGTH_SHORT).show();
+                            imageUser.setImageURI(imageUri);
+                        }
+                    });
+                }
+            });
+
         }
     }
     private File saveInputStreamToFile(InputStream inputStream) throws IOException {

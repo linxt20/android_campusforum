@@ -12,9 +12,9 @@ public class CommentItemList {
     public CommentItemList() {
     }
 
-    public void insert(String Img, String username, String date, String content) {
+    public void insert(String Img, String username, String date, String content, String userid) {
 
-        data.add(new CommentItem(Img,username,date, content));
+        data.add(new CommentItem(Img,username,date, content, userid));
         // TODO 在加入的时候就进行排序
         count++;
     }

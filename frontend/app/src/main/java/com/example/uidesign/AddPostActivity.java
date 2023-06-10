@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.Manifest;
 import android.content.ClipData;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -56,6 +58,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -183,7 +187,7 @@ public class AddPostActivity extends AppCompatActivity {
 
         for (int i = 1; i <= 10; i++) {
             Button button = new Button(this);
-            button.setText("标签" + i);
+            button.setText(GlobalVariables.tagTexts[i-1]);
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -348,11 +352,28 @@ public class AddPostActivity extends AppCompatActivity {
             // get single image
             count = 0;
             // 将照片存入图库
-            String imageUri = MediaStore.Images.Media.insertImage(getContentResolver(), imageBitmap, TitleGenerator.generateTitle(), null);
+            //String imageUri = MediaStore.Images.Media.insertImage(getContentResolver(), imageBitmap, TitleGenerator.generateTitle(), null);
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.DISPLAY_NAME, TitleGenerator.generateTitle());
+            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
 
-             // 获取存入图库后的URI
-            Uri uri = Uri.parse(imageUri);
-            urilist[count] = uri;
+            ContentResolver resolver = getContentResolver();
+            Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+            OutputStream outputStream;
+            try {
+                outputStream = resolver.openOutputStream(imageUri);
+                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+                outputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            Log.d("LOG_NAME", "imageUri: " + imageUri.toString());
+
+            // 获取存入图库后的URI
+            //Uri uri = Uri.parse(imageUri);
+            urilist[count] = imageUri;
             Log.d("LOG_NAME", "uri: " + urilist[count]);
             stringlist[count] = urilist[count].toString();
             try {
@@ -714,31 +735,39 @@ public class AddPostActivity extends AppCompatActivity {
             @Override
             public void onLocationChanged(Location location) {
                 // 处理新的位置数据
-                Geocoder geocoder = new Geocoder(AddPostActivity.this, Locale.CHINA);
+                Geocoder geocoder = new Geocoder(AddPostActivity.this, Locale.getDefault());
                 double latitude = location.getLatitude(); // 替换为你的纬度
                 double longitude = location.getLongitude(); // 替换为你的经度
                 Log.d("test", "la: " + latitude + ", lo: " + longitude);
                 String address = "";
-                try {
-                    Address getAddress = geocoder.getFromLocation(latitude, longitude, 1).get(0);
-                    for(int i = 0; i < getAddress.getMaxAddressLineIndex(); i++){
-                        address += getAddress.getAddressLine(i);
-                    }
-
-                    if (!address.equals("")) {
-                        //Address address = addresses.get(0);
-                        //String addressLine = address.getAddressLine(0); // 获取第一行地址信息
-                        Log.d("test address", "Address: " + address);
-                        locationView.setVisibility(View.VISIBLE);
-                        locationView.setText(address);
-                    } else {
+//                try {
+//                    Address getAddress = geocoder.getFromLocation(latitude, longitude, 1).get(0);
+//                    for(int i = 0; i < getAddress.getMaxAddressLineIndex(); i++){
+//                        address += getAddress.getAddressLine(i);
+//                    }
+//
+//                    if (!address.equals("")) {
+//                        //Address address = addresses.get(0);
+//                        //String addressLine = address.getAddressLine(0); // 获取第一行地址信息
+//                        Log.d("test address", "Address: " + address);
+//                        locationView.setVisibility(View.VISIBLE);
+//                        locationView.setText(address);
+//                        locationString = address;
+//                    } else {
                         Log.d("test address", "No address found");
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                        locationView.setVisibility(View.VISIBLE);
+                        //locationView.setText(address);
+                        DecimalFormat decimalFormat = new DecimalFormat("#.###");
+                        locationString = "经度：" + decimalFormat.format(location.getLongitude()) + " 纬度：" + decimalFormat.format(location.getLatitude());
+                        locationView.setText(locationString);
+//                    }
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
 
-                locationString =  location.toString();
+//                locationString =  location.toString();
+//                locationView.setVisibility(View.VISIBLE);
+//                locationView.setText("经度：" + location.getLongitude() + " 纬度：" + location.getLatitude());
             }
 
             // 其他回调方法...
@@ -751,7 +780,7 @@ public class AddPostActivity extends AppCompatActivity {
         Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (location != null) {
             Log.d("test", "location: " + location.toString());
-            locationString =  location.toString();
+            // locationString =  location.toString();
         } else {
             Log.d("test", "location: null");
         }

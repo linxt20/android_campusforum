@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.view.animation.AlphaAnimation;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.VideoView;
 
@@ -96,9 +98,10 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
         // Date to String
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         int count = 0; // 在主页中显示的评论数量不超过2个
+        SharedPreferences prefs = ((Activity)mContext).getSharedPreferences("com.example.android.myapp", MODE_PRIVATE);
         for (Comment comment: comments) {
             if(count == 2) break;
-            CommentList.insert(comment.getAuthor_head(),comment.getAuthor_name(), formatter.format(comment.getCreate_time()), comment.getContent());
+            CommentList.insert(comment.getAuthor_head(),comment.getAuthor_name(), formatter.format(comment.getCreate_time()), comment.getContent(), comment.getAuthor_id());
             count ++;
         }
         adapter = new CommentRecycleAdapter(mContext, CommentList);
@@ -174,12 +177,12 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
         else {
             holder.starimage.setImageResource(R.drawable.collect_red);
         }
-        SharedPreferences prefs = ((Activity)mContext).getSharedPreferences("com.example.android.myapp", MODE_PRIVATE);
+        SharedPreferences pref = ((Activity)mContext).getSharedPreferences("com.example.android.myapp", MODE_PRIVATE);
         holder.image_user.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // 如果点击的是自己的头像，则不做任何处理 TODO：或者进入个人主页？
-                if(current.getUserid().equals(prefs.getString("userID", "")))
+                if(current.getUserid().equals(pref.getString("userID", "")))
                     return;
                 Intent intent = new Intent(mContext, OthersProfileActivity.class);
                 intent.putExtra("userID", current.getUserid());
@@ -296,6 +299,8 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
         public final TextView startext, following;
         public final ImageView image_user;
         public final ImageView[] imageshow = new ImageView[6];
+        public final LinearLayout allarea;
+        public final ProgressBar progressBar;
         public final LinearLayout getdetailarea;
         public final LinearLayout likearea;
         public final LinearLayout stararea;
@@ -328,10 +333,13 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
 
         public BeanViewHolder(@NonNull View itemView) {
             super(itemView);
-            // 淡入动画，持续时间0.5秒
-            AlphaAnimation fadeInAnimation = new AlphaAnimation(0, 1);
-            fadeInAnimation.setDuration(500);
-            itemView.startAnimation(fadeInAnimation);
+            // 动画，持续时间0.5秒
+            allarea = itemView.findViewById(R.id.post_all);
+            progressBar = itemView.findViewById(R.id.progressBar);
+            allarea.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
+
+
             UsernameView = itemView.findViewById(R.id.username);
             createTime = itemView.findViewById(R.id.createat);
             Titletext = itemView.findViewById(R.id.titletext);
@@ -354,6 +362,7 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
             following.setVisibility(View.GONE);
             locationView.setVisibility(View.GONE);
 
+
             int[] imageViewIds = {R.id.imageView1, R.id.imageView2, R.id.imageView3, R.id.imageView4, R.id.imageView5,R.id.imageView6};
 
             for (int i = 0; i < 6; i++) {
@@ -368,6 +377,14 @@ public class BeanListAdapter extends RecyclerView.Adapter<BeanListAdapter.BeanVi
                     }
                 }
             });
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    progressBar.setVisibility(View.GONE); // 隐藏 ProgressBar
+                    allarea.setVisibility(View.VISIBLE); // 显示内容
+                }
+            }, 250); // 延迟 0.25 秒后执行隐藏操作
         }
     }
 

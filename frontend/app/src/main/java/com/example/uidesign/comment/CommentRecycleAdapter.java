@@ -1,6 +1,9 @@
 package com.example.uidesign.comment;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.uidesign.OthersProfileActivity;
 import com.example.uidesign.R;
 import com.example.uidesign.utils.GlobalVariables;
 import com.example.uidesign.utils.ImageDownloader;
@@ -19,10 +23,12 @@ public class CommentRecycleAdapter extends RecyclerView.Adapter<CommentItemViewH
 
     private final CommentItemList commentItemList;
     private final LayoutInflater inflater;
+    private Context mContext;
 
     public CommentRecycleAdapter(Context context, CommentItemList cItemList) {
         inflater = LayoutInflater.from(context);
         this.commentItemList = cItemList;
+        this.mContext = context;
     }
 
     @NonNull
@@ -41,11 +47,25 @@ public class CommentRecycleAdapter extends RecyclerView.Adapter<CommentItemViewH
         String dateTime = commentItemList.get(position).getDateTime();
         String image = commentItemList.get(position).getImage();
         String username = commentItemList.get(position).getUsername();
+        String userid = commentItemList.get(position).getUserid();
         // Add the data to the view holder.
         // !!!!!!!!!!!!
         holder.contentView.setText(content); // 调用postList中第position的post的方法
         ImageDownloader imageDownloader = new ImageDownloader(holder.userheadView);
         imageDownloader.execute(GlobalVariables.name2url(image));
+        holder.userheadView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // 如果点击的是自己的头像，则不做任何处理 TODO：或者进入个人主页？
+                SharedPreferences prefs = mContext.getSharedPreferences("com.example.android.myapp", 0);
+                if(userid.equals(prefs.getString("userID", "")))
+                    return;
+                Intent intent = new Intent(mContext, OthersProfileActivity.class);
+                intent.putExtra("userID", userid);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // 添加FLAG_ACTIVITY_NEW_TASK标志
+                mContext.startActivity(intent);
+            }
+        });
         holder.timeView.setText(dateTime);
         holder.usernameView.setText(username);
     }

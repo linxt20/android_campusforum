@@ -37,7 +37,6 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeViewHolder> {
 
     private final NoticeList noticeList;
     private Context mContext;
-    Boolean showContent = false;
     private final LayoutInflater inflater;
 
     public NoticeAdapter(Context context, NoticeList cItemList) {
@@ -103,12 +102,10 @@ public class NoticeAdapter extends RecyclerView.Adapter<NoticeViewHolder> {
         holder.titleView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(showContent){
+                if(holder.contentView.getVisibility() == View.VISIBLE) {
                     holder.contentView.setVisibility(View.GONE);
-                    showContent = false;
                 }else{
                     holder.contentView.setVisibility(View.VISIBLE);
-                    showContent = true;
                 }
             }
         });
