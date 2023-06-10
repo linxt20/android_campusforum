@@ -5,7 +5,7 @@ import com.example.uidesign.model.Comment;
 import java.util.ArrayList;
 
 public class BeanList {
-    private ArrayList<Bean> data = new ArrayList<>();
+    public ArrayList<Bean> data = new ArrayList<>();
     public BeanList() {
     }
 

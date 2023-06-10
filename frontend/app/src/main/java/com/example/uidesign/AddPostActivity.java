@@ -738,7 +738,9 @@ public class AddPostActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                locationString =  location.toString();
+//                locationString =  location.toString();
+//                locationView.setVisibility(View.VISIBLE);
+//                locationView.setText("经度：" + location.getLongitude() + " 纬度：" + location.getLatitude());
             }
 
             // 其他回调方法...

@@ -342,7 +342,7 @@ public class DetailActivity extends AppCompatActivity {
                             CommentItemList commentItemList = new CommentItemList();
                             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                             for(Comment comment:comments){
-                                commentItemList.insert(comment.getAuthor_head(), comment.getAuthor_name(), formatter.format(comment.getCreate_time()), comment.getContent());
+                                commentItemList.insert(comment.getAuthor_head(), comment.getAuthor_name(), formatter.format(comment.getCreate_time()), comment.getContent(), comment.getAuthor_id());
                             }
                             // TODO 这里getBaseContext()可能会有问题
                             adapter = new CommentRecycleAdapter(getBaseContext(), commentItemList);
@@ -356,6 +356,17 @@ public class DetailActivity extends AppCompatActivity {
                                 imageshow[i].setVisibility(View.GONE);
                                 i++;
                             }
+                            image_user.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    // 如果点击的是自己的头像，则不做任何处理 TODO：或者进入个人主页？
+                                    if(myResponse.getAuthor_id().equals(prefs.getString("userID", "")))
+                                        return;
+                                    Intent intent = new Intent(DetailActivity.this, OthersProfileActivity.class);
+                                    intent.putExtra("userID", myResponse.getAuthor_id());
+                                    DetailActivity.this.startActivity(intent);
+                                }
+                            });
                             gridLayout.setVisibility(View.GONE);
                             if(myResponse.getResource_type().equals("jpg")){
                                 videoView.setVisibility(View.GONE);
@@ -404,10 +415,10 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     public void getback(View view) {
-        if(hasComment){
-            Intent intent = new Intent(this, ContentAll.class);
-            startActivity(intent);
-        }
+//        if(hasComment){
+//            Intent intent = new Intent(this, ContentAll.class);
+//            startActivity(intent);
+//        }
         finish();
     }
 

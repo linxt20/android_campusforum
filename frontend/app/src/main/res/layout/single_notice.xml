@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:background="@drawable/border_grey"
+    android:background="@drawable/grey_border"
     android:orientation="vertical">
     <LinearLayout
         android:clickable="true"
@@ -47,6 +47,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="10dp"
                 android:orientation="horizontal">
                 <TextView
                     android:clickable="true"
@@ -77,6 +78,7 @@
                 android:id="@+id/getdetailarea"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="10dp"
                 android:orientation="vertical">
 
                 <TextView

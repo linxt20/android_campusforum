@@ -18,16 +18,13 @@ public class SectionsPagerAdapter extends FragmentStateAdapter {
         this.search_key = search_key;
         this.tag = tag;
         // "按评论量排序", "按点赞量排序", "按发布时间排序"
-        if(sort.equals("")){
-            this.sort = "time";
-        }
-        else if(sort.equals("按评论量排序")){
+        if(sort.equals("按评论量排序")){
             this.sort = "comment";
         }
         else if(sort.equals("按点赞量排序")){
             this.sort = "like";
         }
-        else if(sort.equals("按发布时间排序")){
+        else{
             this.sort = "time";
         }
     }
