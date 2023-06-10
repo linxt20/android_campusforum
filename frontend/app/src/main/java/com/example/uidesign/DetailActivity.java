@@ -385,6 +385,10 @@ public class DetailActivity extends AppCompatActivity {
                                     imageshow[i].setVisibility(View.INVISIBLE);
                                     i++;
                                 }
+                                while (i<6){
+                                    imageshow[i].setVisibility(View.GONE);
+                                    i++;
+                                }
                             }
                             else{
                                 gridLayout.setVisibility(View.GONE);

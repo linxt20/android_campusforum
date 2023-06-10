@@ -18,6 +18,7 @@ import com.example.uidesign.DetailActivity;
 import com.example.uidesign.utils.GlobalVariables;
 import com.example.uidesign.utils.ImageDownloader;
 import com.example.uidesign.R;
+import com.example.uidesign.utils.ImageDownloader2;
 
 public class RecycleAdapter extends RecyclerView.Adapter<BoardItemViewHolder> {
 
@@ -55,8 +56,9 @@ public class RecycleAdapter extends RecyclerView.Adapter<BoardItemViewHolder> {
         //Log.d("RecycleAdapter", "avatar: " + id);
         //holder.imgView.setImageResource(id);
 
-        ImageDownloader imageDownloader = new ImageDownloader(holder.imgView);
+        ImageDownloader2 imageDownloader = new ImageDownloader2(holder.imgView);
         imageDownloader.execute(GlobalVariables.name2url(image));
+
         holder.timeView.setText(dateTime);
         holder.item.setOnClickListener(new View.OnClickListener() {
             @Override

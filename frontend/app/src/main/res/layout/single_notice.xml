@@ -28,8 +28,9 @@
             <TextView
                 android:id="@+id/noticeUsername"
                 android:text="Username"
+                android:layout_marginLeft="10dp"
                 android:layout_width="wrap_content"
-                android:textSize="14sp"
+                android:textSize="18sp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:textStyle="bold"/>
@@ -47,7 +48,10 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:orientation="horizontal">
                 <TextView
                     android:clickable="true"
@@ -56,8 +60,6 @@
                     android:layout_width="wrap_content"
                     android:textSize="14sp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
                     android:textStyle="bold"/>
 
                 <Space
@@ -68,27 +70,24 @@
                 <TextView
                     android:id="@+id/notificationCreateTime"
                     android:text="notification sent time"
-                    android:layout_marginTop="5dp"
+
                     android:layout_width="wrap_content"
                     android:layout_height="20dp"/>
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/getdetailarea"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:orientation="vertical">
 
                 <TextView
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="10dp"
                     android:id="@+id/notificationContent"
                     android:text="lastMessage"
-                    android:textSize="15sp"
+                    android:textSize="13sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
-            </LinearLayout>
 
         </LinearLayout>
 

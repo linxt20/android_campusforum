@@ -1,7 +1,8 @@
 package com.example.uidesign.utils;
 
 public class GlobalVariables  {
-    public static String host = "10.0.2.2";//;"172.20.10.3"
+    public static String tagTexts[] = {"校园资讯", "二手交易", "美食分享", "活动通知", "失物招领", "学习交流", "娱乐", "校园招聘", "日常", "校园问答"};
+    public static String host = "183.172.204.62";//;"172.20.10.3"
     public static String login_url = "http://" + host + ":8080/user/login";
     public static String register_url = "http://" + host + ":8080/user/register";
     public static String get_chat_url = "http://" + host + ":8080/user/get_chat";

@@ -2,6 +2,8 @@ package com.example.uidesign;
 
 import static android.app.Activity.RESULT_OK;
 
+import static java.lang.Thread.sleep;
+
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
@@ -203,8 +205,7 @@ public class ProfileFragment extends Fragment {
                     String mediaType = MediaType.parse(getActivity().getContentResolver().getType(imageUri)).toString();
                     InputStream inputStream = null;
                     Log.d("Profile Fragment", "entered !!!!");
-                    Log.d("Profile Fragment", "got name: " + imageName);
-                    if(imageName == null) return;
+                    Log.d("Profile Fragment", "got name: " + responseText);
                     try {
                         inputStream = getActivity().getContentResolver().openInputStream(imageUri);
                         File tempFile = saveInputStreamToFile(inputStream); // 自定义方法，将输入流保存为临时文件
@@ -213,7 +214,7 @@ public class ProfileFragment extends Fragment {
                         RequestBody requestBody = new MultipartBody.Builder()
                                 .setType(MultipartBody.FORM)
                                 .addFormDataPart("image", tempFile.getName(), RequestBody.create(MediaType.parse(mediaType), tempFile))
-                                .addFormDataPart("name", imageName)
+                                .addFormDataPart("name", responseText)
                                 .build();
 
                         // RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpeg"), imageData); // 或者使用临时文件：RequestBody.create(MediaType.parse("image/jpeg"), tempFile);
@@ -244,8 +245,7 @@ public class ProfileFragment extends Fragment {
                         @Override
                         public void run() {
                             Toast.makeText(getContext(), "头像已更换", Toast.LENGTH_SHORT).show();
-                            ImageDownloader headDownloader = new ImageDownloader(imageUser);
-                            headDownloader.execute(GlobalVariables.name2url(imageName));
+                            imageUser.setImageURI(imageUri);
                         }
                     });
                 }

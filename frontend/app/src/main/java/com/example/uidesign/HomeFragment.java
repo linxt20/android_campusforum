@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.uidesign.utils.GlobalVariables;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -66,7 +67,7 @@ public class HomeFragment extends Fragment {
 
         for (int i = 1; i <= 10; i++) {
             Button button = new Button(getContext());
-            button.setText("标签" + i);
+            button.setText(GlobalVariables.tagTexts[i - 1]);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             layoutParams.setMargins(10, 10, 10, 10);
             button.setLayoutParams(layoutParams);
