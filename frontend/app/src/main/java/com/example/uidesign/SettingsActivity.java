@@ -154,7 +154,7 @@ public class SettingsActivity extends AppCompatActivity {
                                         nameView.setText(username);
                                         TextView descriptionView = findViewById(R.id.descriptionTextView);
                                         descriptionView.setText(description);
-                                        Toast.makeText(SettingsActivity.this, "Successfully updated user info",
+                                        Toast.makeText(SettingsActivity.this, "修改用户名和简介成功",
                                                 Toast.LENGTH_LONG).show();
                                         isVisibleInfo = false;
                                         expandableLayoutInfo.setVisibility(View.GONE);

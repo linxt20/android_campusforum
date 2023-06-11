@@ -53,47 +53,12 @@
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:orientation="vertical">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                android:clickable="true"
-                android:id="@+id/notification_title"
-                android:text="Title"
-                android:layout_width="wrap_content"
-                android:textSize="14sp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:textStyle="bold"/>
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-            <TextView
-                android:id="@+id/notificationCreateTime"
-                android:text="notification sent time"
-                android:layout_marginTop="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"/>
-        </LinearLayout>
+
         <LinearLayout
             android:id="@+id/getdetailarea"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <TextView
-                android:id="@+id/notificationContent"
-                android:text="lastMessage"
-                android:textSize="15sp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:orientation="horizontal">
                 <TextView
                     android:clickable="true"
                     android:id="@+id/notification_title"
@@ -131,6 +96,5 @@
 
 
         </LinearLayout>
-    </LinearLayout>
 
 </LinearLayout>
