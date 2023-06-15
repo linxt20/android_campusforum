@@ -39,9 +39,9 @@ public class ImageDownloader extends AsyncTask<String, Void, Bitmap> {
     @Override
     protected void onPostExecute(Bitmap result) {
         if (result != null) {
-            Context context = imageView.getContext();
-            Drawable drawable = new BitmapDrawable(context.getResources(), result);
-            imageView.setBackground(drawable);
+            //Context context = imageView.getContext();
+            //Drawable drawable = new BitmapDrawable(context.getResources(), result);
+            imageView.setImageBitmap(result);
         }
     }
 }

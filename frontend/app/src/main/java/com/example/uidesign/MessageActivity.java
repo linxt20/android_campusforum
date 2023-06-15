@@ -47,7 +47,7 @@ public class MessageActivity extends AppCompatActivity {
     EditText sendText;
     // 设置轮询时间间隔（单位：毫秒）
     long interval = 1000; // 每隔1秒轮询一次
-    String myUserID, otherUserID, otherUserImage;
+    String myUserID, otherUserID, otherUserImage, otherUsername;
     MessageListAdapter adapter;
     RecyclerView recyclerView;
     @Override
@@ -91,6 +91,7 @@ public class MessageActivity extends AppCompatActivity {
                 // if(responseText == null) return;
                 final User myResponse = new Gson().fromJson(responseText, new TypeToken<User>(){}.getType());
                 otherUserImage = myResponse.getUser_head();
+                otherUsername = myResponse.getUsername();
             }
         });
 
@@ -124,7 +125,7 @@ public class MessageActivity extends AppCompatActivity {
                     Log.d("MessageActivity", responseData);
                     if(responseData.equals("success")){
                         mMessageList.add(new MessageItem(sendText.getText().toString(), myUserID, GlobalVariables.name2url(otherUserImage),
-                                "test", nowTime.split(" ")[1], nowTime.split(" ")[0].split("-", 2)[1]));
+                                otherUsername, nowTime.split(" ")[1], nowTime.split(" ")[0].split("-", 2)[1]));
                         runOnUiThread(() -> {
                             adapter =  new MessageListAdapter(MessageActivity.this, mMessageList);
                             recyclerView.setAdapter(adapter);
@@ -169,7 +170,7 @@ public class MessageActivity extends AppCompatActivity {
                         SimpleDateFormat dateFormatter = new SimpleDateFormat("MM-dd");
                         mMessageList.add(
                                 new MessageItem(sentence.getContent(), sentence.getSender_id(), GlobalVariables.name2url(otherUserImage),
-                                        "test", formatter.format(sentence.getCreate_time()), dateFormatter.format(sentence.getCreate_time())));
+                                        otherUsername, formatter.format(sentence.getCreate_time()), dateFormatter.format(sentence.getCreate_time())));
                     }
                     runOnUiThread(new Runnable() {
                         @Override
@@ -236,7 +237,7 @@ public class MessageActivity extends AppCompatActivity {
                                 SimpleDateFormat dateFormatter = new SimpleDateFormat("MM-dd");
                                 tmp.add(
                                         new MessageItem(sentence.getContent(), sentence.getSender_id(), GlobalVariables.name2url(otherUserImage),
-                                                "test", formatter.format(sentence.getCreate_time()), dateFormatter.format(sentence.getCreate_time())));
+                                                otherUsername, formatter.format(sentence.getCreate_time()), dateFormatter.format(sentence.getCreate_time())));
                             }
                             // 更新UI
                             runOnUiThread(new Runnable() {
